@@ -4,6 +4,8 @@
 
 This repository contains example of very simple code to manipulate samples in various programming languages. As of now, it may be useful for checking the validity of simple estimations.
 
+The title of this repository is a pun on two meanings of "time to": "how much time does it take to do x", and "let's do x".
+
 ## Current languages
 
 - Python
@@ -16,11 +18,11 @@ This repository contains example of very simple code to manipulate samples in va
 - Julia 
 - Rust
 - C
-- ... and suggestions later
+- ... and suggestions welcome
 
 ## Roadmap
 
-The future of this project is uncertain. In most words, I simply forget about this repository.
+uhe future of this project is uncertain. In most words, I simply forget about this repository.
 
 ## Other similar projects
 
