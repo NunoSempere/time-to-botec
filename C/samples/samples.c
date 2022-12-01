@@ -4,7 +4,7 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-#define N 10000000
+#define N 1000000
 /* 
  * For very high values of N, you will want to increase the maximum stack trace, otherwise you will suffer a segmentation fault
  * In Ubuntu/bash you can do this with $ ulimit -Ss 256000 ## ~256Mbs
@@ -89,9 +89,10 @@ void mixture(gsl_rng * r, double *dists[], double *weights, int n, double *resul
       }
     }
     if(index_found == 0) {
-      printf("\nThis shouldn't have happened");
+      printf("\nThis shouldn't be able to happen");
       // gsl_rng_free (r);
       // abort(); // this shouldn't have happened.
+      
     }else{
       int sample_index = (int) floor(p_2 * N);
       results[i] = dists[index_counter][sample_index];

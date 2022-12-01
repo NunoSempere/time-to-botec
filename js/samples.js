@@ -38,6 +38,9 @@ const mixture = (dists_array, weights_array, n = DEFAULT_N) => {
   const helper_probs = [...new Array(n)].map(_ => Math.random())
   const results = helper_probs.map(p => {
     let match_index = cummulative_sums.findIndex(x => x > p)
+    if(match_index == -1){
+      console.log("Error: This should never happen.")
+    }
     let target_loc = match_index // == -1 ? 0 : match_index
     let target_samples = dists_array[target_loc]
     return target_samples[Math.floor(Math.random() * target_samples.length)];
