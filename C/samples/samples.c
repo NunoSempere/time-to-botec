@@ -74,7 +74,7 @@ void mixture(gsl_rng * r, double *dists[], double *weights, int n, double *resul
   double cummulative_weights[n];
   cumsum(normalized_weights, cummulative_weights, n);
   
-  /* Get N uniformly distributed vars */
+  /* Get N samples, drawn from the different distributions in proportion to their weights. */
   for(int i=0; i<N; i++){
     double p_1 = gsl_rng_uniform(r);
     double p_2 = gsl_rng_uniform(r);
@@ -98,8 +98,6 @@ void mixture(gsl_rng * r, double *dists[], double *weights, int n, double *resul
       results[i] = dists[index_counter][sample_index];
     }
   }
-
-
 }
 
 /* Main */
@@ -128,7 +126,7 @@ int main(void){
 
   /* Generate mixture */
   int n = 4;
-  double weights[] = { 1 - p_c, p_c/2, p_c/4, p_c/4};
+  double weights[] = { 1 - p_c, p_c/2, p_c/4, p_c/4 };
   double *dists[] = { dist_none, dist_one, dist_few, dist_many };
   
   mixture(r, dists, weights, n, dist_mixture);

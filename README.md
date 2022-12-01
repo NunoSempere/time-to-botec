@@ -39,6 +39,9 @@ I was very surprised that Node/Squiggle code was almost as fast as the raw C cod
 
 The future of this project is uncertain. In most words, I simply forget about this repository.
 
+To do:
+- [ ] Check whether the Squiggle code is producing 1M samples.
+
 ## Other similar projects
 
 - Squigglepy: <https://github.com/rethinkpriorities/squigglepy>
