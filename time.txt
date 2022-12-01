@@ -1,0 +1,39 @@
+# C
+
+0.888458
+
+real    0m0,442s
+user    0m0,378s
+sys     0m0,064s
+
+# Squiggle
+
+real    0m0,488s
+user    0m0,567s
+sys     0m0,099s
+
+
+# NodeJS
+
+0.8849940532403973
+
+real    0m0,732s
+user    0m0,769s
+sys     0m0,131s
+
+
+## Python
+
+0.8887373869178242
+
+real    0m16,641s
+user    0m16,693s
+sys     0m0,517s
+
+## R
+[1] 0.885141
+
+real    0m7,000s
+user    0m6,944s
+sys     0m0,052s
+

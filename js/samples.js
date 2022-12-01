@@ -4,7 +4,7 @@ import stdlib_normal from '@stdlib/random/base/normal/lib/main.js';
 import stdlib_lognormal from '@stdlib/random/base/lognormal/lib/main.js';
 
 // Functions
-const DEFAULT_N = 10**5
+const DEFAULT_N = 10**6
 function generator(f) {
   let g = (a, b, n = DEFAULT_N) => {
     let result = new Array(n)
@@ -38,7 +38,7 @@ const mixture = (dists_array, weights_array, n = DEFAULT_N) => {
   const helper_probs = [...new Array(n)].map(_ => Math.random())
   const results = helper_probs.map(p => {
     let match_index = cummulative_sums.findIndex(x => x > p)
-    let target_loc = match_index == -1 ? 0 : match_index
+    let target_loc = match_index // == -1 ? 0 : match_index
     let target_samples = dists_array[target_loc]
     return target_samples[Math.floor(Math.random() * target_samples.length)];
   })

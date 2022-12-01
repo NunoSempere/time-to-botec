@@ -1,5 +1,5 @@
 # Three simple functions
-DEFAULT_N = 10000
+DEFAULT_N = 1000000
 normal <- function (mean, std, n=DEFAULT_N){
   return(rnorm(n, mean, std))
 }
@@ -24,7 +24,8 @@ mixture <- function(samples_list, weights_array, n=DEFAULT_N){ # note that this 
   results = vector(mode='numeric', length=n)
   for(i in c(1:n)){
     helper_which_list = which(cummulative_sums > helper_probs[i])
-    helper_loc = ifelse(is.na(helper_which_list[1]), 1, helper_which_list[1])
+    # helper_loc = ifelse(is.na(helper_which_list[1]), 1, helper_which_list[1])
+    helper_loc = helper_which_list[1]
     target_samples = samples_list[[helper_loc]]
     result = sample(target_samples, 1)
     results[i] = result

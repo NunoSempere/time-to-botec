@@ -1,7 +1,7 @@
 # imports
 import numpy as np
 rng = np.random.default_rng(123)
-DEFAULT_N = 100000
+DEFAULT_N = 1000000
 
 # three simple functions
 
