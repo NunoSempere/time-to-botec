@@ -21,10 +21,11 @@ With the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1
 | Language | Time      |
 |----------|-----------|
 | C        | 0m0,442s  |
-| Squiggle | 0m0,488s  |
 | Node     | 0m0,732s  |
+| Squiggle | 0m1,536s  |
 | R        | 0m7,000s  |
 | Python (CPython)  | 0m16,641s |
+
 
 I was very surprised that Node/Squiggle code was almost as fast as the raw C code. For the Python code, it's possible that the lack of speed is more a function of me not being as familiar with Python. It's also very possible that the code would run faster with [PyPy](https://doc.pypy.org)
  
@@ -40,7 +41,7 @@ I was very surprised that Node/Squiggle code was almost as fast as the raw C cod
 The future of this project is uncertain. In most words, I simply forget about this repository.
 
 To do:
-- [ ] Check whether the Squiggle code is producing 1M samples.
+- [x] Check whether the Squiggle code is producing 1M samples.
 
 ## Other similar projects
 
