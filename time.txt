@@ -8,10 +8,9 @@ sys     0m0,064s
 
 # Squiggle
 
-real    0m0,488s
-user    0m0,567s
-sys     0m0,099s
-
+real    0m1,536s
+user    0m1,564s
+sys     0m0,240s
 
 # NodeJS
 
