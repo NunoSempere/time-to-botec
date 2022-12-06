@@ -35,13 +35,15 @@ I was very surprised that Node/Squiggle code was almost as fast as the raw C cod
 - Rust
 - Lisp
 - ... and suggestions welcome
+- Stan
 
 ## Roadmap
 
 The future of this project is uncertain. In most words, I simply forget about this repository.
 
 To do:
-- [x] Check whether the Squiggle code is producing 1M samples.
+- [ ] Check whether the Squiggle code is producing 1M samples. Still not too sure.
+- Differentiate between initial startup time (e.g., compiling, loading environment) and runtime. This matters because startup time could be ~constant, so for larger projects only the runtime matters.
 
 ## Other similar projects
 
