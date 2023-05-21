@@ -126,3 +126,20 @@ proc mixture(sxs: seq[seq[float]], ps: seq[float], n: int): seq[float] =
   
   return toSeq(1..n).map(_ => get_mixture_sample())
 
+## Actual model
+
+let n = 1000000
+
+let p_a = 0.8
+let p_b = 0.5
+let p_c = p_a * p_b
+
+let weights = @[ 1.0 - p_c, p_c/2.0, p_c/4.0, p_c/4.0 ]
+
+let fs = [ () => 0.0, () => 1.0, () => to(1.0, 3.0), () => to(2.0, 10.0)  ]
+let dists = fs.map(f => make_samples(f, n))
+let result = mixture(dists, weights, n)
+let mean_result = foldl(result, a + b, 0.0) / float(result.len)
+
+# echo result
+echo mean_result
