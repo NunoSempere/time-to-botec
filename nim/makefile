@@ -8,4 +8,5 @@ run: samples
 	./samples $(VERBOSE)
 
 examine: samples
-	nim c $(VERBOSE) -d:release samples.nim && time ./samples $(VERBOSE)
+	nim c $(VERBOSE) -d:release samples.nim && time ./samples $(VERBOSE) && echo
+	nim c $(VERBOSE) -d:danger samples.nim && time ./samples $(VERBOSE)
