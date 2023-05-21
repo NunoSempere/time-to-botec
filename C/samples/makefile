@@ -35,11 +35,11 @@ format: $(SRC)
 
 run: $(SRC) $(OUTPUT)
 	echo "Increasing stack size limit, because we are dealing with 1M samples"
-	ulimit -Ss 256000
-	# ^ Increase stack size limit
+	# ulimit: increase stack size limit
 	# -Ss: the soft limit. If you set the hard limit, you then can't raise it
 	# 256000: around 250Mbs, if I'm reading it correctly.
-	./$(OUTPUT)
+	# Then run the program
+	ulimit -Ss 256000 && ./$(OUTPUT)
 
 
 
