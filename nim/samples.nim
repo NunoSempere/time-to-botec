@@ -37,13 +37,9 @@ proc to(low: float, high: float): float =
 
 ## Manipulate samples
 
-proc make_samples(f: () -> float, n: int): seq[float] = 
-  result = toSeq(1..n).map(_ => f())
-  return result
-
-proc mixture(sxs: seq[seq[float]], ps: seq[float], n: int): seq[float] = 
+proc mixture(fs: seq[proc (): float{.nimcall.}], ps: seq[float], n: int): seq[float] = 
   
-  assert sxs.len == ps.len
+  assert fs.len == ps.len
 
   var ws: seq[float]
   var sum = 0.0
@@ -52,23 +48,23 @@ proc mixture(sxs: seq[seq[float]], ps: seq[float], n: int): seq[float] =
     ws.add(sum)
   ws = ws.map(w => w/sum)
   
-  proc get_mixture_sample(): float = 
-    let r = rand(1.0)
-    var i = ws.len - 1
-    for j, w in ws:
+  var samples: seq[float]
+  let rs = toSeq(1..n).map(_=>rand(1.0))
+  for i in 0..(n-1):
+    let r = rs[i]
+    var j = ws.len - 1
+    for k, w in ws:
       if r < w:
-        i = j
+        j = k
         break
-    ## only occasion when ^ doesn't assign i
+    ## only occasion when ^ doesn't assign j
     ## is when r is exactly 1
     ## which would correspond to choosing the last item in ws
-    ## which is why i is initialized to ws.len
-    let xs = sxs[i]
-    let l = xs.len-1
-    let k = rand(0..l)
-    return xs[k]
-  
-  return toSeq(1..n).map(_ => get_mixture_sample())
+    ## which is why j is initialized to ws.len - 1
+    let f = fs[j]
+    samples.add(f())
+  return samples
+
 
 ## Actual model
 
@@ -80,9 +76,8 @@ let p_c = p_a * p_b
 
 let weights = @[ 1.0 - p_c, p_c/2.0, p_c/4.0, p_c/4.0 ]
 
-let fs = [ () => 0.0, () => 1.0, () => to(1.0, 3.0), () => to(2.0, 10.0)  ]
-let dists = fs.map(f => make_samples(f, n))
-let result = mixture(dists, weights, n)
+let fs = @[ proc (): float = 0.0, proc (): float = 1.0, proc (): float = to(1.0, 3.0), proc (): float = to(2.0, 10.0)]
+let result = mixture(fs, weights, n)
 let mean_result = foldl(result, a + b, 0.0) / float(result.len)
 
 # echo result

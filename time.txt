@@ -1,10 +1,18 @@
 # C
 
+## normal compilation
 0.888458
 
 real    0m0,442s
 user    0m0,378s
 sys     0m0,064s
+
+## -Ofast
+0.888458
+
+real    0m0.292s
+user    0m0.266s
+sys     0m0.026s
 
 # Squiggle
 
@@ -39,22 +47,22 @@ sys     0m0,052s
 ## Nim
 
 nim c --verbosity:0 samples.nim && time ./samples --verbosity:0 && echo
-0.8881633539025908
+0.8860780498240779
 
-real    0m0.706s
-user    0m0.685s
+real    0m0.234s
+user    0m0.214s
 sys     0m0.020s
 
 nim c --verbosity:0 -d:release samples.nim && time ./samples --verbosity:0 && echo
-0.8861663545062978
+0.884035098700204
 
-real    0m0.184s
-user    0m0.151s
-sys     0m0.032s
+real    0m0.074s
+user    0m0.043s
+sys     0m0.031s
 
 nim c --verbosity:0 -d:danger samples.nim && time ./samples --verbosity:0
-0.8879220244477399
+0.8892827195895541
 
-real    0m0.158s
-user    0m0.130s
-sys     0m0.028s
+real    0m0.068s
+user    0m0.048s
+sys     0m0.020s
