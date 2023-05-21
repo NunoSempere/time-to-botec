@@ -27,9 +27,7 @@ As of now, it may be useful for checking the validity of simple estimations. The
 - [x] Python
 - [x] Nim 
 
-## Performance table
-
-With the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples:
+## Comparison table
 
 | Language             | Time      | Lines of code |
 |----------------------|-----------|---------------|
@@ -39,6 +37,8 @@ With the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1
 | Squiggle             | 0m1,536s  | 14  |
 | R                    | 0m7,000s  | 49  |
 | Python (CPython)     | 0m16,641s | 56  |
+
+Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples:
 
 ## Notes
 
