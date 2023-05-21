@@ -48,6 +48,3 @@ weights = c((1 - p_c), p_c/2, p_c/4, p_c/4)
 result = mixture(dists, weights)
 mean_result = mean(result)
 print(mean_result)
-
-
-
