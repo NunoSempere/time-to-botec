@@ -1,5 +1,7 @@
 import std/math
+import std/sugar
 import std/random
+import std/sequtils
 
 randomize()
 
@@ -84,7 +86,43 @@ proc to(low: float, high: float): float =
   let logsigma = (loghigh - loglow) / (2.0 * normal95confidencePoint);
   return lognormal(logmean, logsigma)
 
-echo ur_normal()
-echo normal(10, 20)
-echo lognormal(2, 4)
-echo to(10, 90)
+## echo ur_normal()
+## echo normal(10, 20)
+## echo lognormal(2, 4)
+## echo to(10, 90)
+
+## Manipulate samples
+
+proc make_samples(f: () -> float, n: int): seq[float] = 
+  result = toSeq(1..n).map(_ => f())
+  return result
+
+proc mixture(sxs: seq[seq[float]], ps: seq[float], n: int): seq[float] = 
+  
+  assert sxs.len == ps.len
+
+  var ws: seq[float]
+  var sum = 0.0
+  for i, p in ps:
+    sum = sum + p
+    ws.add(sum)
+  ws = ws.map(w => w/sum)
+  
+  proc get_mixture_sample(): float = 
+    let r = rand(1.0)
+    var i = ws.len - 1
+    for j, w in ws:
+      if r < w:
+        i = j
+        break
+    ## only occasion when ^ doesn't assign i
+    ## is when r is exactly 1
+    ## which would correspond to choosing the last item in ws
+    ## which is why i is initialized to ws.len
+    let xs = sxs[i]
+    let l = xs.len-1
+    let k = rand(0..l)
+    return xs[k]
+  
+  return toSeq(1..n).map(_ => get_mixture_sample())
+
