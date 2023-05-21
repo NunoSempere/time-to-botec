@@ -7,20 +7,18 @@ proc pow2(x:float, y:int): float =
 
 proc sine(x: float): float = 
   let n = 100
-  var result = 0.0
+  var acc = 0.0
   for i in 0..n:
     let k = 2*n + 1
-    let taylor = pow2(x, k)/ float(k)
-    result = result + taylor
-  return result
+    let taylor = pow2(x, k) / float(k)
+    acc = acc + taylor
+  return acc
 
 proc log(x: float): float = 
   var y = x - 1 
-  var result = 0.0
   let n = 1000
   for i in 1..n:
-    let taylor = pow2(-1, n+1) * pow2(y, n) / float(n)
-    let n = 1000
+    let taylor = pow2(-1.0, n+1) * pow2(y, n) / float(n)
     result = result + taylor
   return result
 
@@ -31,4 +29,4 @@ proc normal(): float =
   # see https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Basic_form
 
 
-echo log(1.0)
+echo sine(0.1)
