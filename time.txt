@@ -38,16 +38,23 @@ sys     0m0,052s
 
 ## Nim
 
-nim c --verbosity:0 -d:release samples.nim && time ./samples --verbosity:0 && echo
-0.8873815480558296
+nim c --verbosity:0 samples.nim && time ./samples --verbosity:0 && echo
+0.8881633539025908
 
-real    0m0.183s
-user    0m0.150s
+real    0m0.706s
+user    0m0.685s
+sys     0m0.020s
+
+nim c --verbosity:0 -d:release samples.nim && time ./samples --verbosity:0 && echo
+0.8861663545062978
+
+real    0m0.184s
+user    0m0.151s
 sys     0m0.032s
 
 nim c --verbosity:0 -d:danger samples.nim && time ./samples --verbosity:0
-0.8886260086130379
+0.8879220244477399
 
-real    0m0.157s
-user    0m0.136s
-sys     0m0.020s
+real    0m0.158s
+user    0m0.130s
+sys     0m0.028s
