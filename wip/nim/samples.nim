@@ -1,7 +1,7 @@
 import std/math
 import std/random
 
-# randomize()
+randomize()
 
 ## Basic math functions
 proc factorial(n: int): int = 
@@ -23,18 +23,6 @@ proc sine(x: float): float =
   return acc 
 
 ## Log function
-
-## Old implementation using Taylor expansion
-proc log_slow(x: float): float = 
-  var y = x - 1 
-  let n = 100000000
-  var acc = 0.0
-  for i in 1..n:
-    let taylor = pow(-1.0, float(i+1)) * pow(y, i.float) / i.float
-    acc = acc + taylor
-  return acc 
-
-## New implementation
 ## <https://en.wikipedia.org/wiki/Natural_logarithm#High_precision>
 
 ## Arithmetic-geomtric mean
@@ -64,16 +52,39 @@ proc log(x: float): float =
   return ( PI / (2.0 * ag(1, 4.0/s)) ) - m * ln2
 
 ## Test these functions
-echo factorial(5)
-echo sine(1.0)
-echo log(1.0)
-echo log(2.0)
-echo log(3.0)
-echo pow(2.0, 32.float)
-
+## echo factorial(5)
+## echo sine(1.0)
+## echo log(0.1)
+## echo log(2.0)
+## echo log(3.0)
+## echo pow(2.0, 32.float)
+   
 ## Distribution functions
-proc normal(): float = 
+
+## Normal
+## <https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Basic_form>
+proc ur_normal(): float = 
   let u1 = rand(1.0)
   let u2 = rand(1.0)
-  let z = 1
-  # see https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Basic_form
+  let z = sqrt(-2.0 * log(u1)) * sine(2 * PI * u2)
+  return z
+
+proc normal(mean: float, sigma: float): float = 
+  return (mean + sigma * ur_normal())
+
+proc lognormal(logmean: float, logsigma: float): float =
+  let answer = pow(E, normal(logmean, logsigma))
+  return answer
+
+proc to(low: float, high: float): float = 
+  let normal95confidencePoint = 1.6448536269514722
+  let loglow = log(low)
+  let loghigh = log(high)
+  let logmean = (loglow + loghigh)/2
+  let logsigma = (loghigh - loglow) / (2.0 * normal95confidencePoint);
+  return lognormal(logmean, logsigma)
+
+echo ur_normal()
+echo normal(10, 20)
+echo lognormal(2, 4)
+echo to(10, 90)
