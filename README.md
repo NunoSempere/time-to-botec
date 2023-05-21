@@ -31,14 +31,14 @@ As of now, it may be useful for checking the validity of simple estimations. The
 
 With the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples:
 
-| Language             | Time      |
-|----------------------|-----------|
-| Nim                  | 0m0.068s  |
-| C                    | 0m0.292s  |
-| Javascript (NodeJS)  | 0m0,732s  |
-| Squiggle             | 0m1,536s  |
-| R                    | 0m7,000s  |
-| Python (CPython)     | 0m16,641s |
+| Language             | Time      | Lines of code |
+|----------------------|-----------|---------------|
+| Nim                  | 0m0.068s  | 84  |
+| C                    | 0m0.292s  | 149 |
+| Javascript (NodeJS)  | 0m0,732s  | 69  |
+| Squiggle             | 0m1,536s  | 14  |
+| R                    | 0m7,000s  | 49  |
+| Python (CPython)     | 0m16,641s | 56  |
 
 ## Notes
 
@@ -55,6 +55,10 @@ For C, I enabled the `-Ofast` compilation flag. Without it, it instead takes ~0.
 
 For the Python code, it's possible that the lack of speed is more a function of me not being as familiar with Python. It's also very possible that the code would run faster with [PyPy](https://doc.pypy.org).
 
+R has a warm place in my heart from back in the day, and it has predefined functions to do everything. It was particularly fast to write for me, though not particularly fast to run :)
+
+Overall I don't think that this is a fair comparison of the languages intrinsically, because I'm just differentially good at them, because I've chosen to put more effort in ones than in others. But it is still useful to me personally, and perhaps mildly informative to others. 
+
 ## Languages I may add later
 
 - [ ] Julia (TuringML) 
@@ -64,6 +68,9 @@ For the Python code, it's possible that the lack of speed is more a function of 
 - [ ] Go 
 - [ ] Zig
 - [ ] Forth
+- [ ] OCaml
+- [ ] Haskell
+- [ ] CUDA
 - ... and suggestions welcome
 
 ## Roadmap
@@ -72,7 +79,7 @@ The future of this project is uncertain. In most words, I simply forget about th
 
 To do:
 - [ ] Check whether the Squiggle code is producing 1M samples. Still not too sure.
-- Differentiate between initial startup time (e.g., compiling, loading environment) and runtime. This matters because startup time could be ~constant, so for larger projects only the runtime matters.
+- [-] Differentiate between initial startup time (e.g., compiling, loading environment) and runtime. This matters because startup time could be ~constant, so for larger projects only the runtime matters. Particularly for Julia. <= nah, too difficult.
 
 ## Other similar projects
 
