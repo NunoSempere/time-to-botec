@@ -22,23 +22,10 @@ proc sine(x: float): float =
     acc = acc + taylor
   return acc 
 
-# Helpers for calculating the log function
+## Log function
 
-## Arithmetic-geomtric mean
-proc ag(x: float, y: float): float = 
-  let n = 100
-  var a = (x + y)/2.0
-  var b = sqrt(x * y)
-  for i in 0..n:
-    let temp = a
-    a = (a+b)/2.0
-    b = sqrt(b*temp)
-  return a
-
-## Find m such that x * 2^m > 2^100
-
+## Old implementation using Taylor expansion
 proc log_slow(x: float): float = 
-  # See: <https://en.wikipedia.org/wiki/Natural_logarithm#High_precision>
   var y = x - 1 
   let n = 100000000
   var acc = 0.0
@@ -47,14 +34,42 @@ proc log_slow(x: float): float =
     acc = acc + taylor
   return acc 
 
+## New implementation
+## <https://en.wikipedia.org/wiki/Natural_logarithm#High_precision>
+
+## Arithmetic-geomtric mean
+proc ag(x: float, y: float): float = 
+  let n = 128 # just some high number
+  var a = (x + y)/2.0
+  var b = sqrt(x * y)
+  for i in 0..n:
+    let temp = a
+    a = (a+b)/2.0
+    b = sqrt(b*temp)
+  return a
+
+## Find m such that x * 2^m > 2^precision/2
+proc find_m(x:float): float = 
+  var m = 0.0;
+  let precision = 64 # bits
+  let c = pow(2.0, precision.float / 2.0)
+  while x * pow(2.0, m) < c:
+    m = m + 1
+  return m
+
 proc log(x: float): float = 
-  return 1 
+  let m = find_m(x)
+  let s = x * pow(2.0, m)
+  let ln2 = 0.6931471805599453
+  return ( PI / (2.0 * ag(1, 4.0/s)) ) - m * ln2
 
 ## Test these functions
 echo factorial(5)
 echo sine(1.0)
 echo log(1.0)
 echo log(2.0)
+echo log(3.0)
+echo pow(2.0, 32.float)
 
 ## Distribution functions
 proc normal(): float = 
