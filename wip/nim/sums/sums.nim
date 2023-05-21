@@ -1,5 +1,4 @@
 import std/math
-# randomize()
 
 proc factorial(n: int): int = 
   if n == 0 or n < 0: 
@@ -19,5 +18,5 @@ proc sine(x: float): float =
     acc = acc + taylor
   return acc 
 
-# echo factorial(17)
+echo factorial(17)
 echo sine(1.0)
