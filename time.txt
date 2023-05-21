@@ -36,3 +36,18 @@ real    0m7,000s
 user    0m6,944s
 sys     0m0,052s
 
+## Nim
+
+nim c --verbosity:0 -d:release samples.nim && time ./samples --verbosity:0 && echo
+0.8873815480558296
+
+real    0m0.183s
+user    0m0.150s
+sys     0m0.032s
+
+nim c --verbosity:0 -d:danger samples.nim && time ./samples --verbosity:0
+0.8886260086130379
+
+real    0m0.157s
+user    0m0.136s
+sys     0m0.020s

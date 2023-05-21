@@ -29,7 +29,7 @@ proc sine(x: float): float =
 
 ## Arithmetic-geomtric mean
 proc ag(x: float, y: float): float = 
-  let n = 16 # just some high number
+  let n = 32 # just some high number
   var a = (x + y)/2.0
   var b = sqrt(x * y)
   for i in 0..n:
@@ -41,7 +41,7 @@ proc ag(x: float, y: float): float =
 ## Find m such that x * 2^m > 2^precision/2
 proc find_m(x:float): float = 
   var m = 0.0;
-  let precision = 32 # bits
+  let precision = 64 # bits
   let c = pow(2.0, precision.float / 2.0)
   while x * pow(2.0, m) < c:
     m = m + 1
