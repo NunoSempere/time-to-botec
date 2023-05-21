@@ -21,7 +21,7 @@ LIBS=`pkg-config --libs ${DEPS}`
 DEBUG= #'-g'
 STANDARD=-std=c99
 WARNINGS=-Wall
-
+FAST=-Ofast
 ## Formatter
 STYLE_BLUEPRINT=webkit
 FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
@@ -29,6 +29,9 @@ FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
 ## make build
 build: $(SRC)
 	$(CC) $(DEBUG) $(INCS) $(PLUGS) $(SRC) -o samples $(LIBS)
+
+fast: $(SRC)
+	$(CC) $(FAST) $(DEBUG) $(INCS) $(PLUGS) $(SRC) -o samples $(LIBS)
 
 format: $(SRC)
 	$(FORMATTER) $(SRC)
