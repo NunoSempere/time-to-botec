@@ -27,7 +27,7 @@ proc to(low: float, high: float): float =
   let loglow = ln(low)
   let loghigh = ln(high)
   let logmean = (loglow + loghigh)/2
-  let logsigma = (loghigh - loglow) / (2.0 * normal95confidencePoint);
+  let logsigma = (loghigh - loglow) / (2.0 * normal95confidencePoint)
   return lognormal(logmean, logsigma)
 
 ## echo ur_normal()
