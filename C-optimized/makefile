@@ -10,7 +10,7 @@ CC=gcc
 
 # Main file
 SRC=samples.c
-OUTPUT=samples
+OUTPUT=out/samples
 
 ## Dependencies
 #  Has no dependencies
@@ -44,7 +44,7 @@ run: $(SRC) $(OUTPUT)
 #	# Then run the program
 #	ulimit -Ss 256000 && ./$(OUTPUT)
 
-linux:
+linux-install:
 	sudo apt-get install libomp-dev
 
 # Old:
