@@ -242,35 +242,37 @@ float split_array_sum(float** meta_array, int length, int divided_into)
 
 int main()
 {
-    clock_t start, end;
-    start = clock();
     //initialize randomness
     srand(time(NULL));
-    // Toy example
-    // Declare variables in play
-    float p_a, p_b, p_c;
-    int n_threads = omp_get_max_threads();
-    // printf("Max threads: %d\n", n_threads);
-    // omp_set_num_threads(n_threads);
-    float** dist_mixture = malloc(n_threads * sizeof(float*));
-    split_array_allocate(dist_mixture, N, n_threads);
+    
+		clock_t start, end;
+		start = clock();
 
-    // Initialize variables
-    p_a = 0.8;
-    p_b = 0.5;
-    p_c = p_a * p_b;
+		// Toy example
+		// Declare variables in play
+		float p_a, p_b, p_c;
+		int n_threads = omp_get_max_threads();
+		// printf("Max threads: %d\n", n_threads);
+		// omp_set_num_threads(n_threads);
+		float** dist_mixture = malloc(n_threads * sizeof(float*));
+		split_array_allocate(dist_mixture, N, n_threads);
 
-    // Generate mixture
-    int n_dists = 4;
-    float weights[] = { 1 - p_c, p_c / 2, p_c / 4, p_c / 4 };
-    float (*samplers[])(void) = { sample_0, sample_1, sample_few, sample_many };
+		// Initialize variables
+		p_a = 0.8;
+		p_b = 0.5;
+		p_c = p_a * p_b;
 
-    mixture_f(samplers, weights, n_dists, dist_mixture, n_threads);
-    printf("Sum(dist_mixture, N)/N = %f\n", split_array_sum(dist_mixture, N, n_threads) / N);
+		// Generate mixture
+		int n_dists = 4;
+		float weights[] = { 1 - p_c, p_c / 2, p_c / 4, p_c / 4 };
+		float (*samplers[])(void) = { sample_0, sample_1, sample_few, sample_many };
 
-    end = clock();
-    split_array_free(dist_mixture, n_threads);
+		mixture_f(samplers, weights, n_dists, dist_mixture, n_threads);
+		printf("Sum(dist_mixture, N)/N = %f\n", split_array_sum(dist_mixture, N, n_threads) / N);
 
-    printf("Total time (ms): %f\n", ((double)(end - start)) / CLOCKS_PER_SEC * 1000);
+		split_array_free(dist_mixture, n_threads);
+		
+		end = clock();
+		printf("Time (ms): %f\n", ((double)(end - start)) / (CLOCKS_PER_SEC * 10) * 1000);
     return 0;
 }
