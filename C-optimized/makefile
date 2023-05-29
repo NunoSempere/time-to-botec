@@ -12,6 +12,9 @@ CC=gcc
 SRC=samples.c
 OUTPUT=out/samples
 
+SRC_ONE_THREAD=./samples-one-thread.c
+OUTPUT_ONE_THREAD=out/samples-one-thread
+
 ## Dependencies
 #  Has no dependencies
 MATH=-lm
@@ -30,24 +33,20 @@ FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
 ## make build
 build: $(SRC)
 	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
-	
-#fast: Has been removed, compilation of "build" is very fast and it outputs optimized code by default
+	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC_ONE_THREAD) $(OPENMP) $(MATH) -o $(OUTPUT_ONE_THREAD)
 
 format: $(SRC)
 	$(FORMATTER) $(SRC)
 
 run: $(SRC) $(OUTPUT)
 	OMP_NUM_THREADS=1 ./$(OUTPUT)
-
-multi: $(SRC) $(OUTPUT)
-	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo
-	OMP_NUM_THREADS=2 ./$(OUTPUT) && echo
-	OMP_NUM_THREADS=4 ./$(OUTPUT)
+	./$(OUTPUT_ONE_THREAD)
 
 time:
 	OMP_NUM_THREADS=1 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=2 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=4 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	/bin/time -f "Time: %es" ./$(OUTPUT_ONE_THREAD) && echo
 
 linux-install:
 	sudo apt-get install libomp-dev
