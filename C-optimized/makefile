@@ -21,14 +21,14 @@ STANDARD=-std=c99
 WARNINGS=-Wall
 OPTIMIZED=-O3 #-O3 actually gives better performance than -Ofast, at least for this version
 OPENMP=-fopenmp
-
+MATH=-lm
 ## Formatter
 STYLE_BLUEPRINT=webkit
 FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
 
 ## make build
 build: $(SRC)
-	$(CC) $(OPTIMIZED) $(DEBUG) $(OPENMP) $(SRC) -o $(OUTPUT)
+	$(CC) $(OPTIMIZED) $(DEBUG) $(OPENMP) $(SRC) $(MATH) -o $(OUTPUT)
 	
 #fast: Has been removed, compilation of "build" is very fast and it outputs optimized code by default
 
@@ -36,6 +36,7 @@ format: $(SRC)
 	$(FORMATTER) $(SRC)
 
 run: $(SRC) $(OUTPUT)
+	./$(OUTPUT)
 #	echo "Increasing stack size limit, because we are dealing with 1M samples"
 #	# ulimit: increase stack size limit
 #	# -Ss: the soft limit. If you set the hard limit, you then can't raise it
@@ -43,7 +44,8 @@ run: $(SRC) $(OUTPUT)
 #	# Then run the program
 #	ulimit -Ss 256000 && ./$(OUTPUT)
 
-
+linux:
+	sudo apt-get install libomp-dev
 
 # Old:
 # Link libraries, for good measure
