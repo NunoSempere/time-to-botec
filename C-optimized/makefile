@@ -5,7 +5,7 @@
 #   make run
 
 # Compiler
-CC=gcc
+CC=gcc -v
 # CC=tcc # <= faster compilation
 
 # Main file
@@ -14,6 +14,7 @@ OUTPUT=out/samples
 
 ## Dependencies
 #  Has no dependencies
+MATH=-lm
 
 ## Flags
 DEBUG= #'-g'
@@ -21,14 +22,14 @@ STANDARD=-std=c99
 WARNINGS=-Wall
 OPTIMIZED=-O3 #-O3 actually gives better performance than -Ofast, at least for this version
 OPENMP=-fopenmp
-MATH=-lm
+
 ## Formatter
 STYLE_BLUEPRINT=webkit
 FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
 
 ## make build
 build: $(SRC)
-	$(CC) $(OPTIMIZED) $(DEBUG) $(OPENMP) $(SRC) $(MATH) -o $(OUTPUT)
+	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
 	
 #fast: Has been removed, compilation of "build" is very fast and it outputs optimized code by default
 
