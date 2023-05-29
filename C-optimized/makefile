@@ -37,7 +37,7 @@ format: $(SRC)
 	$(FORMATTER) $(SRC)
 
 run: $(SRC) $(OUTPUT)
-	export OMP_NUM_THREADS=4; ./$(OUTPUT)
+	OMP_NUM_THREADS=4 ./$(OUTPUT)
 
 test: $(SRC) $(OUTPUT)
 	OMP_NUM_THREADS=1 ./$(OUTPUT)
