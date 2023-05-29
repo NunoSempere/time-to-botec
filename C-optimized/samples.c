@@ -258,7 +258,7 @@ int main() {
     float (*samplers[])(void) = {sample_0, sample_1, sample_few, sample_many};
 
     mixture_f(samplers, weights, n_dists, dist_mixture, n_threads);
-    // printf("Sum(dist_mixture, N)/N = %f\n", split_array_sum(dist_mixture, N, n_threads) / N);
+    printf("Sum(dist_mixture, N)/N = %f\n", split_array_sum(dist_mixture, N, n_threads) / N);
 
     end = clock();
     split_array_free(dist_mixture, n_threads);
