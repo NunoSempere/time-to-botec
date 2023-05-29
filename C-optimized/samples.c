@@ -245,8 +245,8 @@ int main()
     //initialize randomness
     srand(time(NULL));
     
-		clock_t start, end;
-		start = clock();
+		// clock_t start, end;
+		// start = clock();
 
 		// Toy example
 		// Declare variables in play
@@ -269,10 +269,14 @@ int main()
 
 		mixture_f(samplers, weights, n_dists, dist_mixture, n_threads);
 		printf("Sum(dist_mixture, N)/N = %f\n", split_array_sum(dist_mixture, N, n_threads) / N);
-
+		// array_print(dist_mixture[0], N);
 		split_array_free(dist_mixture, n_threads);
 		
-		end = clock();
-		printf("Time (ms): %f\n", ((double)(end - start)) / (CLOCKS_PER_SEC * 10) * 1000);
+		// end = clock();
+		// printf("Time (ms): %f\n", ((double)(end - start)) / (CLOCKS_PER_SEC * 10) * 1000);
+		// ^ Will only measure how long it takes the inner main to run, not the whole program, 
+		// including e.g., loading the program into memory or smth.
+		// Also CLOCKS_PER_SEC in POSIX is a constant equal to 1000000.
+		// See: https://stackoverflow.com/questions/10455905/why-is-clocks-per-sec-not-the-actual-number-of-clocks-per-second
     return 0;
 }

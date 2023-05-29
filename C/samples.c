@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define N 1000000
 /* 
@@ -111,6 +112,10 @@ void mixture(gsl_rng* r, double* dists[], double* weights, int n, double* result
 /* Main */
 int main(void)
 {
+		// Start clock
+    clock_t start, end;
+    start = clock();
+
     /* Initialize GNU Statistical Library (GSL) stuff */
     const gsl_rng_type* T;
     gsl_rng* r;
@@ -143,7 +148,10 @@ int main(void)
 
     /* Clean up GSL */
     gsl_rng_free(r);
-
+		
+		// End clock
+    end = clock();
+    printf("Total time (ms): %f\n", ((double)(end - start)) / CLOCKS_PER_SEC * 1000);
     /* Return success*/
     return EXIT_SUCCESS;
 }
