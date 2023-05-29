@@ -5,7 +5,7 @@
 #   make run
 
 # Compiler
-CC=gcc -v
+CC=gcc
 # CC=tcc # <= faster compilation
 
 # Main file
@@ -37,7 +37,15 @@ format: $(SRC)
 	$(FORMATTER) $(SRC)
 
 run: $(SRC) $(OUTPUT)
-	./$(OUTPUT)
+	export OMP_NUM_THREADS=4; ./$(OUTPUT)
+
+test: $(SRC) $(OUTPUT)
+	OMP_NUM_THREADS=1 ./$(OUTPUT)
+	echo ""
+	OMP_NUM_THREADS=2 ./$(OUTPUT)
+	echo ""
+	OMP_NUM_THREADS=4 ./$(OUTPUT)
+
 #	echo "Increasing stack size limit, because we are dealing with 1M samples"
 #	# ulimit: increase stack size limit
 #	# -Ss: the soft limit. If you set the hard limit, you then can't raise it

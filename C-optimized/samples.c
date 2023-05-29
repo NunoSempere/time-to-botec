@@ -21,9 +21,9 @@ void array_print(float* array, int length)
 void array_fill(float* array, int length, float item)
 {
     int i;
-#pragma omp private(i)
+    #pragma omp private(i)
     {
-#pragma omp for
+        #pragma omp for
         for (i = 0; i < length; i++) {
             array[i] = item;
         }
@@ -88,9 +88,9 @@ inline float random_to(float low, float high)
 void array_random_to(float* array, int length, float low, float high)
 {
     int i;
-#pragma omp private(i)
+    #pragma omp private(i)
     {
-#pragma omp for
+        #pragma omp for
         for (i = 0; i < length; i++) {
             array[i] = random_to(low, high);
         }
@@ -118,9 +118,9 @@ void mixture(float* dists[], float* weights, int n_dists, float* results)
     float p1, p2;
     int index_found, index_counter, sample_index, i;
 
-#pragma omp parallel private(i, p1, p2, index_found, index_counter, sample_index)
+    #pragma omp parallel private(i, p1, p2, index_found, index_counter, sample_index)
     {
-#pragma omp for
+        #pragma omp for
         for (i = 0; i < N; i++) {
             p1 = random_uniform(0, 1);
             p2 = random_uniform(0, 1);
@@ -161,9 +161,9 @@ void mixture_f(float (*samplers[])(void), float* weights, int n_dists, float** r
     float p1;
     int sample_index, i, own_length;
 
-#pragma omp parallel private(i, p1, sample_index, own_length)
+    #pragma omp parallel private(i, p1, sample_index, own_length)
     {
-#pragma omp for
+        #pragma omp for
         for (i = 0; i < n_threads; i++) {
             own_length = split_array_get_my_length(i, N, n_threads);
             for (int j = 0; j < own_length; j++) {
@@ -225,7 +225,7 @@ float split_array_sum(float** meta_array, int length, int divided_into)
     float output;
     float* partial_sum = malloc(divided_into * sizeof(float));
 
-#pragma omp private(i) shared(partial_sum)
+    #pragma omp private(i) shared(partial_sum)
     for (int i = 0; i < divided_into; i++) {
         float own_partial_sum = 0;
         int own_length = split_array_get_my_length(i, length, divided_into);
@@ -246,10 +246,12 @@ int main()
     start = clock();
     //initialize randomness
     srand(time(NULL));
-    //Toy example
+    // Toy example
     // Declare variables in play
     float p_a, p_b, p_c;
     int n_threads = omp_get_max_threads();
+    // printf("Max threads: %d\n", n_threads);
+    // omp_set_num_threads(n_threads);
     float** dist_mixture = malloc(n_threads * sizeof(float*));
     split_array_allocate(dist_mixture, N, n_threads);
 
