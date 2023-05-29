@@ -1,3 +1,17 @@
+# Optimized C
+
+OMP_NUM_THREADS=1 /bin/time -f "Time: %es" ./out/samples && echo
+Sum(dist_mixture, N)/N = 0.885837
+Time: 0.02s
+
+OMP_NUM_THREADS=2 /bin/time -f "Time: %es" ./out/samples && echo
+Sum(dist_mixture, N)/N = 0.885123
+Time: 0.14s
+
+OMP_NUM_THREADS=4 /bin/time -f "Time: %es" ./out/samples && echo
+Sum(dist_mixture, N)/N = 0.886255
+Time: 0.11s
+
 # C
 
 ## normal compilation

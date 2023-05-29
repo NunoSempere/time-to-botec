@@ -29,14 +29,15 @@ As of now, it may be useful for checking the validity of simple estimations. The
 
 ## Comparison table
 
-| Language             | Time      | Lines of code |
-|----------------------|-----------|---------------|
-| Nim                  | 0m0.068s  | 84  |
-| C                    | 0m0.292s  | 149 |
-| Javascript (NodeJS)  | 0m0,732s  | 69  |
-| Squiggle             | 0m1,536s  | 14  |
-| R                    | 0m7,000s  | 49  |
-| Python (CPython)     | 0m16,641s | 56  |
+| Language                 | Time      | Lines of code |
+|--------------------------|-----------|---------------|
+| C (optimized, 1 thread)  | ~30ms     | 282 |
+| Nim                      | 68ms      | 84  |
+| C                        | 292ms     | 149 |
+| Javascript (NodeJS)      | 732ms     | 69  |
+| Squiggle                 | 1,536s    | 14  |
+| R                        | 7,000s    | 49  |
+| Python (CPython)         | 16,641s   | 56  |
 
 Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples:
 
@@ -51,7 +52,9 @@ I was really happy trying [Nim](https://nim-lang.org/), and as a result the Nim 
 
 Without 1. and 2., the nim code takes 0m0.183s instead. But I don't think that these are unfair advantages: I liked trying out nim and therefore put in more love into the code, and this seems like it could be a recurring factor.
 
-For C, I enabled the `-Ofast` compilation flag. Without it, it instead takes ~0.4 seconds. Initially, before I enabled the `-Ofast` flag, I was surprised that the Node and Squiggle code were comparable to the C code. Using [bun](https://bun.sh/) instead of node is actually a bit slower.
+For the initial C code, I enabled the `-Ofast` compilation flag. Without it, it instead takes ~0.4 seconds. Initially, before I enabled the `-Ofast` flag, I was surprised that the Node and Squiggle code were comparable to the C code. Using [bun](https://bun.sh/) instead of node is actually a bit slower.
+
+For the optimized C code, see [that folder's README](./C-optimized/README.md).
 
 For the Python code, it's possible that the lack of speed is more a function of me not being as familiar with Python. It's also very possible that the code would run faster with [PyPy](https://doc.pypy.org).
 

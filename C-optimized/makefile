@@ -37,27 +37,17 @@ format: $(SRC)
 	$(FORMATTER) $(SRC)
 
 run: $(SRC) $(OUTPUT)
-	OMP_NUM_THREADS=4 ./$(OUTPUT)
-
-test: $(SRC) $(OUTPUT)
 	OMP_NUM_THREADS=1 ./$(OUTPUT)
-	echo ""
-	OMP_NUM_THREADS=2 ./$(OUTPUT)
-	echo ""
+
+multi: $(SRC) $(OUTPUT)
+	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=2 ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=4 ./$(OUTPUT)
 
-#	echo "Increasing stack size limit, because we are dealing with 1M samples"
-#	# ulimit: increase stack size limit
-#	# -Ss: the soft limit. If you set the hard limit, you then can't raise it
-#	# 256000: around 250Mbs, if I'm reading it correctly.
-#	# Then run the program
-#	ulimit -Ss 256000 && ./$(OUTPUT)
+time:
+	OMP_NUM_THREADS=1 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=2 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=4 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 
 linux-install:
 	sudo apt-get install libomp-dev
-
-# Old:
-# Link libraries, for good measure
-# LD_LIBRARY_PATH=/usr/local/lib
-# export LD_LIBRARY_PATH
-
