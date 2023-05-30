@@ -22,3 +22,10 @@ Also, the time data has been collected by executing the interior of the main() f
 Take into account that the multi-threading introduces a bit of dispersion in the execution time due to the creation and destruction of threads. 
 
 In Nuño's machine, multithreading actually introduces a noticeable slowdown factor.
+
+## To do
+
+- [ ] Update above with correct timing
+- [ ] Add Windows/Powershell time-measuring commands
+- [ ] Add CUDA?
+- [ ] See if program can be reworded so as to use multithreading effectively, e.g., so that you see speed gains proportional to the number of threads used
