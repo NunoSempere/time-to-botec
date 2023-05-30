@@ -273,7 +273,7 @@ int main()
 		split_array_free(dist_mixture, n_threads);
 		
 		// end = clock();
-		// printf("Time (ms): %f\n", ((double)(end - start)) / (CLOCKS_PER_SEC * 10) * 1000);
+		// printf("Time (ms): %f\n", ((double)(end - start)) / (CLOCKS_PER_SEC) * 1000);
 		// ^ Will only measure how long it takes the inner main to run, not the whole program, 
 		// including e.g., loading the program into memory or smth.
 		// Also CLOCKS_PER_SEC in POSIX is a constant equal to 1000000.
