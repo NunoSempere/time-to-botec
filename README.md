@@ -31,7 +31,7 @@ As of now, it may be useful for checking the validity of simple estimations. The
 
 | Language                 | Time      | Lines of code |
 |--------------------------|-----------|---------------|
-| C (optimized, 1 thread)  | ~30ms     | 183 |
+| C (optimized, 1 thread)  | 30ms      | 183 |
 | Nim                      | 68ms      | 84  |
 | C                        | 292ms     | 149 |
 | Javascript (NodeJS)      | 732ms     | 69  |

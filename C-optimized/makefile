@@ -42,11 +42,18 @@ run: $(SRC) $(OUTPUT)
 	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo
 	./$(OUTPUT_ONE_THREAD)
 
-time:
+multi:
+	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=2 ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=4 ./$(OUTPUT) && echo
+	./$(OUTPUT_ONE_THREAD) && echo
+
+time-linux:
+	echo "Requires /bin/time, found on GNU/Linux systems" && echo
 	OMP_NUM_THREADS=1 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=2 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=4 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	/bin/time -f "Time: %es" ./$(OUTPUT_ONE_THREAD) && echo
 
-linux-install:
+debian-install-dependencies:
 	sudo apt-get install libomp-dev
