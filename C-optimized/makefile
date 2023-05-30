@@ -39,7 +39,7 @@ format: $(SRC)
 	$(FORMATTER) $(SRC)
 
 run: $(SRC) $(OUTPUT)
-	OMP_NUM_THREADS=1 ./$(OUTPUT)
+	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo
 	./$(OUTPUT_ONE_THREAD)
 
 time:
