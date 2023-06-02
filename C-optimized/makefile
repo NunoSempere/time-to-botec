@@ -50,8 +50,8 @@ multi:
 	OMP_NUM_THREADS=16 ./$(OUTPUT) && echo
 	./$(OUTPUT_ONE_THREAD) && echo
 
-time-linux:
-	echo "Requires /bin/time, found on GNU/Linux systems" && echo
+time-linux-simple:
+	@echo "Requires /bin/time, found on GNU/Linux systems" && echo
 	OMP_NUM_THREADS=1 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=2 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=4 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
@@ -59,9 +59,23 @@ time-linux:
 	OMP_NUM_THREADS=16 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	/bin/time -f "Time: %es" ./$(OUTPUT_ONE_THREAD) && echo
 
-time-linux-2: 
-	echo "Requires /bin/time, found on GNU/Linux systems" && echo
-	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..10}; do OMP_NUM_THREADS=2 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=4; $$t / 10" | bc | sed "s|^|Time for 2 threads: |" | sed 's|$$|s|'
+time-linux: 
+	@echo "Requires /bin/time, found on GNU/Linux systems" && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=1 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=1 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time using 1 thread: |" | sed 's|$$|ms|' && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=2 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=2 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time using 2 threads: |" | sed 's|$$|ms|' && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=4 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=4 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time for 4 threads: |" | sed 's|$$|ms|' && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=8 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=8 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time using 8 threads: |" | sed 's|$$|ms|' && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=16 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=16 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time using 16 threads: |" | sed 's|$$|ms|' && echo
 
 debian-install-dependencies:
 	sudo apt-get install libomp-dev
