@@ -59,5 +59,10 @@ time-linux:
 	OMP_NUM_THREADS=16 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	/bin/time -f "Time: %es" ./$(OUTPUT_ONE_THREAD) && echo
 
+time-linux-2: 
+	echo "Requires /bin/time, found on GNU/Linux systems" && echo
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..10}; do OMP_NUM_THREADS=2 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=4; $$t / 10" | bc | sed "s|^|Time for 2 threads: |" | sed 's|$$|s|'
+
 debian-install-dependencies:
 	sudo apt-get install libomp-dev
+

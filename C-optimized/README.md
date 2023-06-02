@@ -25,6 +25,7 @@ In Nuño's machine, multithreading actually introduces a noticeable slowdown fac
 
 ## To do
 
+- [ ] Use proper profiling tool to capture timing with 1M samples.
 - [ ] Update above with correct timing
 - [ ] Add Windows/Powershell time-measuring commands
 - [ ] Add CUDA?
