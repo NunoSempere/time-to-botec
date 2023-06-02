@@ -76,7 +76,9 @@ Although the above paragraphs were written in the first person, the C code was w
 
 ### NodeJS and Squiggle
 
-Using [bun](https://bun.sh/) instead of node is actually a bit slower. Also, both the NodeJS and the Squiggle code use stdlib in their innards, which has a bunch of interleaved functions that make the code slower. It's possible that not using that external library could make the code faster, but at the same time, the js approach does seem to be to use external libraries whenever possible.
+Using [bun](https://bun.sh/) instead of node is actually a bit slower. Also, both the NodeJS and the Squiggle code use [stdlib](https://stdlib.io/) in their innards, which has a bunch of interleaved functions that make the code slower. It's possible that not using that external library could make the code faster, but at the same time, the js approach does seem to be to use external libraries whenever possible.
+
+I am not particularly sure that the Squiggle code is actually producing 1M samples, but also have no particular plan to debug this.
 
 ### Python
 
@@ -107,10 +109,6 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 ## Roadmap
 
 The future of this project is uncertain. In most words, I simply forget about this repository.
-
-To do:
-- [ ] Check whether the Squiggle code is producing 1M samples. Still not too sure.
-- [-] Differentiate between initial startup time (e.g., compiling, loading environment) and runtime. This matters because startup time could be ~constant, so for larger projects only the runtime matters. Particularly for Julia. <= nah, too difficult.
 
 ## Other similar projects
 
