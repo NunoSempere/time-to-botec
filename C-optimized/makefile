@@ -46,6 +46,8 @@ multi:
 	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=2 ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=4 ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=8 ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=16 ./$(OUTPUT) && echo
 	./$(OUTPUT_ONE_THREAD) && echo
 
 time-linux:
@@ -53,6 +55,8 @@ time-linux:
 	OMP_NUM_THREADS=1 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=2 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=4 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=8 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=16 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	/bin/time -f "Time: %es" ./$(OUTPUT_ONE_THREAD) && echo
 
 debian-install-dependencies:

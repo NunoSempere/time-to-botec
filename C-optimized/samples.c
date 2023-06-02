@@ -6,7 +6,7 @@
 
 const float PI = 3.14159265358979323846;
 
-#define N 100000000
+#define N 10000000
 
 //Array helpers
 
@@ -50,6 +50,8 @@ void array_cumsum(float* array_to_sum, float* array_cumsummed, int length)
 float rand_float(float to, unsigned int* seed)
 {
     return ((float)rand_r(seed) / (float)RAND_MAX) * to;
+		// See: <https://stackoverflow.com/questions/43151361/how-to-create-thread-safe-random-number-generator-in-c-using-rand-r>
+		// rand() is not thread-safe, as it relies on (shared) hidden state.
 }
 
 float ur_normal(unsigned int* seed)
