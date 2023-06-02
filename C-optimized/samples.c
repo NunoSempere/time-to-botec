@@ -6,7 +6,7 @@
 
 const float PI = 3.14159265358979323846;
 
-#define N 10000000
+#define N 1000000
 
 //Array helpers
 
