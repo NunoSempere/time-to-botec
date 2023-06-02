@@ -6,7 +6,7 @@
 
 const float PI = 3.14159265358979323846;
 
-#define N 1000000
+#define N 100000000
 
 //Array helpers
 
@@ -47,54 +47,42 @@ void array_cumsum(float* array_to_sum, float* array_cumsummed, int length)
     }
 }
 
-float rand_float(float to)
+float rand_float(float to, unsigned int* seed)
 {
-    return ((float)rand() / (float)RAND_MAX) * to;
+    return ((float)rand_r(seed) / (float)RAND_MAX) * to;
 }
 
-float ur_normal()
+float ur_normal(unsigned int* seed)
 {
-    float u1 = rand_float(1.0);
-    float u2 = rand_float(1.0);
+    float u1 = rand_float(1.0, seed);
+    float u2 = rand_float(1.0, seed);
     float z = sqrtf(-2.0 * log(u1)) * sin(2 * PI * u2);
     return z;
 }
 
-inline float random_uniform(float from, float to)
+inline float random_uniform(float from, float to, unsigned int* seed)
 {
-    return ((float)rand() / (float)RAND_MAX) * (to - from) + from;
+    return ((float) rand_r(seed) / (float)RAND_MAX) * (to - from) + from;
 }
 
-inline float random_normal(float mean, float sigma)
+inline float random_normal(float mean, float sigma, unsigned int* seed)
 {
-    return (mean + sigma * ur_normal());
+    return (mean + sigma * ur_normal(seed));
 }
 
-inline float random_lognormal(float logmean, float logsigma)
+inline float random_lognormal(float logmean, float logsigma, unsigned int* seed)
 {
-    return expf(random_normal(logmean, logsigma));
+    return expf(random_normal(logmean, logsigma, seed));
 }
 
-inline float random_to(float low, float high)
+inline float random_to(float low, float high, unsigned int* seed)
 {
     const float NORMAL95CONFIDENCE = 1.6448536269514722;
     float loglow = logf(low);
     float loghigh = logf(high);
     float logmean = (loglow + loghigh) / 2;
     float logsigma = (loghigh - loglow) / (2.0 * NORMAL95CONFIDENCE);
-    return random_lognormal(logmean, logsigma);
-}
-
-void array_random_to(float* array, int length, float low, float high)
-{
-    int i;
-    #pragma omp private(i)
-    {
-        #pragma omp for
-        for (i = 0; i < length; i++) {
-            array[i] = random_to(low, high);
-        }
-    }
+    return random_lognormal(logmean, logsigma, seed);
 }
 
 int split_array_get_my_length(int index, int total_length, int n_threads)
@@ -103,6 +91,7 @@ int split_array_get_my_length(int index, int total_length, int n_threads)
 }
 
 //Old version, don't use it!! Optimized version is called mixture_f. This one is just for display
+/*
 void mixture(float* dists[], float* weights, int n_dists, float* results)
 {
     float sum_weights = array_sum(weights, n_dists);
@@ -145,8 +134,8 @@ void mixture(float* dists[], float* weights, int n_dists, float* results)
     free(normalized_weights);
     free(cummulative_weights);
 }
-
-void mixture_f(float (*samplers[])(void), float* weights, int n_dists, float** results, int n_threads)
+*/
+void mixture_f(float (*samplers[])(unsigned int* ), float* weights, int n_dists, float** results, int n_threads)
 {
     float sum_weights = array_sum(weights, n_dists);
     float* normalized_weights = malloc(n_dists * sizeof(float));
@@ -160,6 +149,11 @@ void mixture_f(float (*samplers[])(void), float* weights, int n_dists, float** r
     //create var holders
     float p1;
     int sample_index, i, own_length;
+		unsigned int* seeds[n_threads];
+		for(unsigned int i=0; i<n_threads; i++){
+			seeds[i] = malloc(sizeof(unsigned int));
+			*seeds[i] = i;
+		}
 
     #pragma omp parallel private(i, p1, sample_index, own_length)
     {
@@ -167,10 +161,10 @@ void mixture_f(float (*samplers[])(void), float* weights, int n_dists, float** r
         for (i = 0; i < n_threads; i++) {
             own_length = split_array_get_my_length(i, N, n_threads);
             for (int j = 0; j < own_length; j++) {
-                p1 = random_uniform(0, 1);
+                p1 = random_uniform(0, 1, seeds[i]);
                 for (int k = 0; k < n_dists; k++) {
                     if (p1 < cummulative_weights[k]) {
-                        results[i][j] = samplers[k]();
+                        results[i][j] = samplers[k](seeds[i]);
                         break;
                     }
                 }
@@ -179,26 +173,29 @@ void mixture_f(float (*samplers[])(void), float* weights, int n_dists, float** r
     }
     free(normalized_weights);
     free(cummulative_weights);
+		for(unsigned int i=0; i<n_threads; i++){
+			free(seeds[i]);
+		}
 }
 
-float sample_0()
+float sample_0(unsigned int* seed)
 {
     return 0;
 }
 
-float sample_1()
+float sample_1(unsigned int* seed)
 {
     return 1;
 }
 
-float sample_few()
+float sample_few(unsigned int* seed)
 {
-    return random_to(1, 3);
+    return random_to(1, 3, seed);
 }
 
-float sample_many()
+float sample_many(unsigned int* seed)
 {
-    return random_to(2, 10);
+    return random_to(2, 10, seed);
 }
 
 void split_array_allocate(float** meta_array, int length, int divide_into)
@@ -265,7 +262,7 @@ int main()
 		// Generate mixture
 		int n_dists = 4;
 		float weights[] = { 1 - p_c, p_c / 2, p_c / 4, p_c / 4 };
-		float (*samplers[])(void) = { sample_0, sample_1, sample_few, sample_many };
+		float (*samplers[])(unsigned int* ) = { sample_0, sample_1, sample_few, sample_many };
 
 		mixture_f(samplers, weights, n_dists, dist_mixture, n_threads);
 		printf("Sum(dist_mixture, N)/N = %f\n", split_array_sum(dist_mixture, N, n_threads) / N);
