@@ -2,7 +2,7 @@
 
 ## About
 
-This repository contains example of very simple code to manipulate samples in various programming languages. It implements this platonic estimate:
+This repository contains example of very simple code to manipulate samples in various programming languages, and tallies their speed and the complexity of their code. It implements this platonic estimate:
 
 ```
 p_a = 0.8
@@ -16,7 +16,9 @@ result = mixture(dists, weights) # should be 1M samples
 mean(result)
 ```
 
-As of now, it may be useful for checking the validity of simple estimations. The title of this repository is a pun on two meanings of "time to": "how much time does it take to do x", and "let's do x".
+I don't particularly care about the speed of this particular example, but rather think that the speed in this simple exaxmple would be indicative of the speed when considering 100x or 1000x more complicated models. As of now, it may also be useful for checking the validity of simple estimations. 
+
+The title of this repository is a pun on two meanings of "time to": "how much time does it take to do x", and "let's do x". "BOTEC" stands for "back of the envelope calculation".
 
 ## Current languages
 
