@@ -1,16 +1,22 @@
 # Optimized C
 
-OMP_NUM_THREADS=1 /bin/time -f "Time: %es" ./out/samples && echo
-Sum(dist_mixture, N)/N = 0.885837
-Time: 0.02s
+$ make time-linux
+Requires /bin/time, found on GNU/Linux systems
 
-OMP_NUM_THREADS=2 /bin/time -f "Time: %es" ./out/samples && echo
-Sum(dist_mixture, N)/N = 0.885123
-Time: 0.14s
+Running 100x and taking avg time: OMP_NUM_THREADS=1 out/samples
+Time using 1 thread: 24.00ms
 
-OMP_NUM_THREADS=4 /bin/time -f "Time: %es" ./out/samples && echo
-Sum(dist_mixture, N)/N = 0.886255
-Time: 0.11s
+Running 100x and taking avg time: OMP_NUM_THREADS=2 out/samples
+Time using 2 threads: 21.80ms
+
+Running 100x and taking avg time: OMP_NUM_THREADS=4 out/samples
+Time for 4 threads: 24.40ms
+
+Running 100x and taking avg time: OMP_NUM_THREADS=8 out/samples
+Time using 8 threads: 10.40ms
+
+Running 100x and taking avg time: OMP_NUM_THREADS=16 out/samples
+Time using 16 threads: 6.60ms
 
 # C
 
