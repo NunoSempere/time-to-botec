@@ -72,7 +72,7 @@ In fact, the C code ended up being so fast that I had to measure its time by run
 
 And still, there are some missing optimizations, like tweaking the code to take into account cache misses. I'm not exactly sure how that would go, though.
 
-Although the above paragraphs were written in the first person, the C code was written together with Jorge Sierra, who translated the algorithmic improvements to it and added the initial multithreading support.
+Although the above paragraphs were written in the first person, the C code was written together with Jorge Sierra, who translated the algorithmic improvements from nim to it and added the initial multithreading support.
 
 ### NodeJS and Squiggle
 
