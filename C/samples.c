@@ -85,8 +85,8 @@ float split_array_sum(float** meta_array, int length, int divided_into)
 float rand_float(float to, unsigned int* seed)
 {
     return ((float)rand_r(seed) / (float)RAND_MAX) * to;
-		// See: <https://stackoverflow.com/questions/43151361/how-to-create-thread-safe-random-number-generator-in-c-using-rand-r> for why to use rand_r: 
-		// rand() is not thread-safe, as it relies on (shared) hidden state.
+    // See: <https://stackoverflow.com/questions/43151361/how-to-create-thread-safe-random-number-generator-in-c-using-rand-r> for why to use rand_r:
+    // rand() is not thread-safe, as it relies on (shared) hidden state.
 }
 
 float ur_normal(unsigned int* seed)
@@ -99,7 +99,7 @@ float ur_normal(unsigned int* seed)
 
 inline float random_uniform(float from, float to, unsigned int* seed)
 {
-    return ((float) rand_r(seed) / (float)RAND_MAX) * (to - from) + from;
+    return ((float)rand_r(seed) / (float)RAND_MAX) * (to - from) + from;
 }
 
 inline float random_normal(float mean, float sigma, unsigned int* seed)
@@ -123,10 +123,10 @@ inline float random_to(float low, float high, unsigned int* seed)
 }
 
 // Mixture function
-void mixture(float (*samplers[])(unsigned int* ), float* weights, int n_dists, float** results, int n_threads)
+void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, float** results, int n_threads)
 {
-	  // You can see a simpler version of this function in the git history
-		// or in C-02-better-algorithm-one-thread/
+    // You can see a simpler version of this function in the git history
+    // or in C-02-better-algorithm-one-thread/
     float sum_weights = array_sum(weights, n_dists);
     float* normalized_weights = malloc(n_dists * sizeof(float));
     for (int i = 0; i < n_dists; i++) {
@@ -139,11 +139,11 @@ void mixture(float (*samplers[])(unsigned int* ), float* weights, int n_dists, f
     //create var holders
     float p1;
     int sample_index, i, own_length;
-		unsigned int* seeds[n_threads];
-		for(unsigned int i=0; i<n_threads; i++){
-			seeds[i] = malloc(sizeof(unsigned int));
-			*seeds[i] = i;
-		}
+    unsigned int* seeds[n_threads];
+    for (unsigned int i = 0; i < n_threads; i++) {
+        seeds[i] = malloc(sizeof(unsigned int));
+        *seeds[i] = i;
+    }
 
     #pragma omp parallel private(i, p1, sample_index, own_length)
     {
@@ -163,9 +163,9 @@ void mixture(float (*samplers[])(unsigned int* ), float* weights, int n_dists, f
     }
     free(normalized_weights);
     free(cummulative_weights);
-		for(unsigned int i=0; i<n_threads; i++){
-			free(seeds[i]);
-		}
+    for (unsigned int i = 0; i < n_threads; i++) {
+        free(seeds[i]);
+    }
 }
 
 // Functions used for the BOTEC.
@@ -193,30 +193,30 @@ float sample_many(unsigned int* seed)
 
 int main()
 {
-    
-		// Toy example
-		// Declare variables in play
-		float p_a, p_b, p_c;
-		int n_threads = omp_get_max_threads();
-		// printf("Max threads: %d\n", n_threads);
-		// omp_set_num_threads(n_threads);
-		float** dist_mixture = malloc(n_threads * sizeof(float*));
-		split_array_allocate(dist_mixture, N, n_threads);
 
-		// Initialize variables
-		p_a = 0.8;
-		p_b = 0.5;
-		p_c = p_a * p_b;
+    // Toy example
+    // Declare variables in play
+    float p_a, p_b, p_c;
+    int n_threads = omp_get_max_threads();
+    // printf("Max threads: %d\n", n_threads);
+    // omp_set_num_threads(n_threads);
+    float** dist_mixture = malloc(n_threads * sizeof(float*));
+    split_array_allocate(dist_mixture, N, n_threads);
 
-		// Generate mixture
-		int n_dists = 4;
-		float weights[] = { 1 - p_c, p_c / 2, p_c / 4, p_c / 4 };
-		float (*samplers[])(unsigned int* ) = { sample_0, sample_1, sample_few, sample_many };
+    // Initialize variables
+    p_a = 0.8;
+    p_b = 0.5;
+    p_c = p_a * p_b;
 
-		mixture(samplers, weights, n_dists, dist_mixture, n_threads);
-		printf("Sum(dist_mixture, N)/N = %f\n", split_array_sum(dist_mixture, N, n_threads) / N);
-		// array_print(dist_mixture[0], N);
-		split_array_free(dist_mixture, n_threads);
-		
+    // Generate mixture
+    int n_dists = 4;
+    float weights[] = { 1 - p_c, p_c / 2, p_c / 4, p_c / 4 };
+    float (*samplers[])(unsigned int*) = { sample_0, sample_1, sample_few, sample_many };
+
+    mixture(samplers, weights, n_dists, dist_mixture, n_threads);
+    printf("Sum(dist_mixture, N)/N = %f\n", split_array_sum(dist_mixture, N, n_threads) / N);
+    // array_print(dist_mixture[0], N);
+    split_array_free(dist_mixture, n_threads);
+
     return 0;
 }
