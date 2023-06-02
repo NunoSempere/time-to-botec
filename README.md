@@ -58,14 +58,19 @@ Ultimately, these optimizations were also incorporated into the C code as well.
 
 ### C
 
-For the C code, I enabled the `-Ofast` compilation flag. Without it, it instead takes ~0.4 seconds. Initially, before I enabled the `-Ofast` flag, I was surprised that the Node and Squiggle code were comparable to the C code. 
+The optimizations which make the final C code significantly faster than the naïve implementation are:
 
-The two optimizations which make more optimized code significantly faster than the naïve implementation are:
 - To pass around pointers to functions, instead of large arrays. This is the same as in the nim implementation, but imho leads to more complex code
-- To use multithreading support
 - To use the Box-Muller transform instead of using libraries, like in nim.
+- To use multithreading support
 
-For the optimized C code, see [that folder's README](./C-optimized/README.md).
+The C code uses the `-Ofast` or `-O3` compilation flags. Initially, without using those flags and without the algorithmic improvements, the code took ~0.4 seconds to run. So I was surprised that the Node and Squiggle code were comparable to the C code. It ended up being the case that the C code could be pushed to be ~100x faster, though :)
+
+In fact, the C code ended up being so fast that I had to measure its time by running the code 100 times in a row and dividing that amount by 100, rather than by just running it once, because running it once was too fast for /bin/time. More sophisticated profiling tools exist that could e.g., account for how iddle a machine is when running the code, but I didn't think that was worth it at this point.
+
+And still, there are some missing optimizations, like tweaking the code to take into account cache misses. I'm not exactly sure how that would go, though.
+
+Although the above paragraphs were written in the first person, the C code was written together with Jorge Sierra, who translated the algorithmic improvements to it and added the initial multithreading support.
 
 ### NodeJS and Squiggle
 
