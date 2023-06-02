@@ -58,6 +58,8 @@ Without 1. and 2., the nim code takes 0m0.183s instead. But I don't think that t
 
 Ultimately, these optimizations were also incorporated into the C code as well.
 
+Nim also has multithreading support, but I haven't bothered loooking into it yet.
+
 ### C
 
 The optimizations which make the final C code significantly faster than the naïve implementation are:
