@@ -10,44 +10,73 @@ CC=gcc
 
 # Main file
 SRC=samples.c
-OUTPUT=samples
+OUTPUT=out/samples
+
+SRC_ONE_THREAD=./samples-one-thread.c
+OUTPUT_ONE_THREAD=out/samples-one-thread
 
 ## Dependencies
-DEPS='gsl'
+#  Has no dependencies
+MATH=-lm
 
 ## Flags
-INCS=`pkg-config --cflags ${DEPS}`
-LIBS=`pkg-config --libs ${DEPS}`
 DEBUG= #'-g'
 STANDARD=-std=c99
 WARNINGS=-Wall
-FAST=-Ofast
+OPTIMIZED=-O3 #-O3 actually gives better performance than -Ofast, at least for this version
+OPENMP=-fopenmp
+
 ## Formatter
 STYLE_BLUEPRINT=webkit
 FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
 
 ## make build
 build: $(SRC)
-	$(CC) $(DEBUG) $(INCS) $(PLUGS) $(SRC) -o samples $(LIBS)
-
-fast: $(SRC)
-	$(CC) $(FAST) $(DEBUG) $(INCS) $(PLUGS) $(SRC) -o samples $(LIBS)
+	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
+	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC_ONE_THREAD) $(OPENMP) $(MATH) -o $(OUTPUT_ONE_THREAD)
 
 format: $(SRC)
 	$(FORMATTER) $(SRC)
 
 run: $(SRC) $(OUTPUT)
-	echo "Increasing stack size limit, because we are dealing with 1M samples"
-	# ulimit: increase stack size limit
-	# -Ss: the soft limit. If you set the hard limit, you then can't raise it
-	# 256000: around 250Mbs, if I'm reading it correctly.
-	# Then run the program
-	ulimit -Ss 256000 && ./$(OUTPUT)
+	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo
+	./$(OUTPUT_ONE_THREAD)
 
+multi:
+	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=2 ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=4 ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=8 ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=16 ./$(OUTPUT) && echo
+	./$(OUTPUT_ONE_THREAD) && echo
 
+time-linux: 
+	@echo "Requires /bin/time, found on GNU/Linux systems" && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=1 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=1 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time using 1 thread: |" | sed 's|$$|ms|' && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=2 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=2 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time using 2 threads: |" | sed 's|$$|ms|' && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=4 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=4 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time for 4 threads: |" | sed 's|$$|ms|' && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=8 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=8 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time using 8 threads: |" | sed 's|$$|ms|' && echo
+	
+	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=16 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=16 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time using 16 threads: |" | sed 's|$$|ms|' && echo
 
-# Old:
-# Link libraries, for good measure
-# LD_LIBRARY_PATH=/usr/local/lib
-# export LD_LIBRARY_PATH
+time-linux-simple:
+	@echo "Requires /bin/time, found on GNU/Linux systems" && echo
+	OMP_NUM_THREADS=1 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=2 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=4 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=8 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	OMP_NUM_THREADS=16 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
+	/bin/time -f "Time: %es" ./$(OUTPUT_ONE_THREAD) && echo
+
+debian-install-dependencies:
+	sudo apt-get install libomp-dev
 
