@@ -29,15 +29,15 @@ As of now, it may be useful for checking the validity of simple estimations. The
 
 ## Comparison table
 
-| Language                 | Time      | Lines of code |
-|--------------------------|-----------|---------------|
-| C (optimized, 1 thread)  | 30ms      | 183 |
-| Nim                      | 68ms      | 84  |
-| C                        | 292ms     | 149 |
-| Javascript (NodeJS)      | 732ms     | 69  |
-| Squiggle                 | 1,536s    | 14  |
-| R                        | 7,000s    | 49  |
-| Python (CPython)         | 16,641s   | 56  |
+| Language                    | Time      | Lines of code |
+|-----------------------------|-----------|---------------|
+| C (optimized, 16 threads)   | 6ms       | 183 |
+| Nim                         | 68ms      | 84  |
+| C (naïve implementation)    | 292ms     | 149 |
+| Javascript (NodeJS)         | 732ms     | 69  |
+| Squiggle                    | 1,536s    | 14  |
+| R                           | 7,000s    | 49  |
+| Python (CPython)            | 16,641s   | 56  |
 
 Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples:
 
