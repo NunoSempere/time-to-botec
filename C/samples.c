@@ -128,19 +128,29 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
     // You can see a simpler version of this function in the git history
     // or in C-02-better-algorithm-one-thread/
     float sum_weights = array_sum(weights, n_dists);
-    float* normalized_weights = malloc(n_dists * sizeof(float));
+    /*float* normalized_weights = malloc(n_dists * sizeof(float));
+		// float normalized_weights[n_dists];
     for (int i = 0; i < n_dists; i++) {
         normalized_weights[i] = weights[i] / sum_weights;
     }
 
     float* cummulative_weights = malloc(n_dists * sizeof(float));
+    // float cummulative_weights[n_dists];
     array_cumsum(normalized_weights, cummulative_weights, n_dists);
+		*/
+		float* cumsummed_normalized_weights = malloc(n_dists * sizeof(float));
+		cumsummed_normalized_weights[0] = weights[0]/sum_weights;
+    for (int i = 1; i < n_dists; i++) {
+        cumsummed_normalized_weights[i] = cumsummed_normalized_weights[i - 1] + weights[i]/sum_weights;
+    }
 
     //create var holders
     float p1;
     int sample_index, i, own_length;
-    unsigned int* seeds[n_threads];
-    for (unsigned int i = 0; i < n_threads; i++) {
+    
+		// unsigned int* seeds[n_threads];
+    unsigned int** seeds = malloc(n_threads * sizeof(unsigned int*));
+		for (unsigned int i = 0; i < n_threads; i++) {
         seeds[i] = malloc(sizeof(unsigned int));
         *seeds[i] = i;
     }
@@ -153,7 +163,7 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
             for (int j = 0; j < own_length; j++) {
                 p1 = random_uniform(0, 1, seeds[i]);
                 for (int k = 0; k < n_dists; k++) {
-                    if (p1 < cummulative_weights[k]) {
+                    if (p1 < cumsummed_normalized_weights[k]) {
                         results[i][j] = samplers[k](seeds[i]);
                         break;
                     }
@@ -161,11 +171,13 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
             }
         }
     }
-    free(normalized_weights);
-    free(cummulative_weights);
+    // free(normalized_weights);
+    // free(cummulative_weights);
+		free(cumsummed_normalized_weights);
     for (unsigned int i = 0; i < n_threads; i++) {
         free(seeds[i]);
     }
+		free(seeds);
 }
 
 // Functions used for the BOTEC.
