@@ -36,7 +36,7 @@ void array_cumsum(float* array_to_sum, float* array_cumsummed, int length)
 }
 
 // Split array helpers
-int split_array_get_my_length(int index, int total_length, int n_threads)
+int split_array_get_length(int index, int total_length, int n_threads)
 {
     return (total_length % n_threads > index ? total_length / n_threads + 1 : total_length / n_threads);
 }
@@ -46,7 +46,7 @@ void split_array_allocate(float** meta_array, int length, int divide_into)
     int split_array_length;
 
     for (int i = 0; i < divide_into; i++) {
-        split_array_length = split_array_get_my_length(i, length, divide_into);
+        split_array_length = split_array_get_length(i, length, divide_into);
         meta_array[i] = malloc(split_array_length * sizeof(float));
     }
 }
@@ -67,7 +67,7 @@ float split_array_sum(float** meta_array, int length, int divided_into)
     #pragma omp parallel for reduction(+:output)
 		for (int i = 0; i < divided_into; i++) {
 				float own_partial_sum = 0;
-				int split_array_length = split_array_get_my_length(i, length, divided_into);
+				int split_array_length = split_array_get_length(i, length, divided_into);
 				for (int j = 0; j < split_array_length; j++) {
 						own_partial_sum += meta_array[i][j];
 				}
@@ -146,7 +146,7 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
     {
         #pragma omp for
         for (i = 0; i < n_threads; i++) {
-            split_array_length = split_array_get_my_length(i, N, n_threads);
+            split_array_length = split_array_get_length(i, N, n_threads);
             for (int j = 0; j < split_array_length; j++) {
                 p1 = random_uniform(0, 1, seeds[i]);
                 for (int k = 0; k < n_dists; k++) {
