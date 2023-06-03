@@ -11,6 +11,8 @@ This repository contains a few implementations of a simple botec (back-of-the-en
 - [ ] Add Windows/Powershell time-measuring commands
 - [ ] Add CUDA?
 - [x] Added results of perf. `rand_r` seems like a big chunk of it, but I'm hesitant to use lower-quality random numbers
+  - [x] used xorshift instead
+  - [ ] Use xorshift with a struct instead of a pointer? idk, could be faster for some reason?
 - [x] Update repository with correct timing
 - [x] Use better profiling approach to capture timing with 1M samples.
 - [x] See if program can be reworded so as to use multithreading effectively, e.g., so that you see speed gains proportional to the number of threads used
