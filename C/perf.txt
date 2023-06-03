@@ -1,0 +1,25 @@
+Overhead  Command  Shared Object      Symbol
+  23.94%  samples  libc-2.31.so       [.] rand_r
+  18.14%  samples  libgomp.so.1.0.0   [.] 0x000000000001d132
+  15.43%  samples  libgomp.so.1.0.0   [.] 0x000000000001d2ea
+  12.16%  samples  samples            [.] mixture._omp_fn.0
+   4.36%  samples  libm-2.31.so       [.] __sin_fma
+   3.49%  samples  libm-2.31.so       [.] __ieee754_log_fma
+   3.34%  samples  samples            [.] random_to
+   3.13%  samples  samples            [.] random_uniform
+   2.77%  samples  samples            [.] split_array_sum._omp_fn.0
+   2.01%  samples  samples            [.] rand_float
+   1.65%  samples  libm-2.31.so       [.] __logf_fma
+   0.88%  samples  libgomp.so.1.0.0   [.] 0x000000000001d2f5
+   0.86%  samples  samples            [.] ur_normal
+   0.75%  samples  libm-2.31.so       [.] __expf_fma
+   0.70%  samples  libgomp.so.1.0.0   [.] 0x000000000001d13d
+   0.69%  samples  libgomp.so.1.0.0   [.] 0x000000000001d139
+   0.57%  samples  libgomp.so.1.0.0   [.] 0x000000000001d2f1
+   0.57%  samples  samples            [.] sample_1
+   0.55%  samples  samples            [.] random_lognormal
+   0.50%  samples  [kernel.kallsyms]  [k] asm_exc_page_fault
+   0.49%  samples  [kernel.kallsyms]  [k] clear_page_rep
+   0.47%  samples  samples            [.] random_normal
+   0.38%  samples  [kernel.kallsyms]  [k] default_send_IPI_single_phys
+
