@@ -62,22 +62,19 @@ void split_array_free(float** meta_array, int divided_into)
 float split_array_sum(float** meta_array, int length, int divided_into)
 {
     int i;
-    float output;
-    float* partial_sum = malloc(divided_into * sizeof(float));
+    float output = 0;
 
-    #pragma omp private(i) shared(partial_sum)
-    for (int i = 0; i < divided_into; i++) {
-        float own_partial_sum = 0;
-        int own_length = split_array_get_my_length(i, length, divided_into);
-        for (int j = 0; j < own_length; j++) {
-            own_partial_sum += meta_array[i][j];
-        }
-        partial_sum[i] = own_partial_sum;
-    }
-    for (int i = 0; i < divided_into; i++) {
-        output += partial_sum[i];
-    }
-    return output;
+    #pragma omp parallel for reduction(+:output)
+		for (int i = 0; i < divided_into; i++) {
+				float own_partial_sum = 0;
+				int own_length = split_array_get_my_length(i, length, divided_into);
+				for (int j = 0; j < own_length; j++) {
+						own_partial_sum += meta_array[i][j];
+				}
+				output += own_partial_sum;
+		}
+		return output;
+
 }
 
 // Distribution & sampling functions
@@ -128,16 +125,6 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
     // You can see a simpler version of this function in the git history
     // or in C-02-better-algorithm-one-thread/
     float sum_weights = array_sum(weights, n_dists);
-    /*float* normalized_weights = malloc(n_dists * sizeof(float));
-		// float normalized_weights[n_dists];
-    for (int i = 0; i < n_dists; i++) {
-        normalized_weights[i] = weights[i] / sum_weights;
-    }
-
-    float* cummulative_weights = malloc(n_dists * sizeof(float));
-    // float cummulative_weights[n_dists];
-    array_cumsum(normalized_weights, cummulative_weights, n_dists);
-		*/
 		float* cumsummed_normalized_weights = malloc(n_dists * sizeof(float));
 		cumsummed_normalized_weights[0] = weights[0]/sum_weights;
     for (int i = 1; i < n_dists; i++) {
