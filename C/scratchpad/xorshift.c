@@ -13,7 +13,7 @@ uint32_t xorshift32(uint32_t* state)
 }
 
 float rand_xorshift32(uint32_t* state){
-	return (float) xorshift32(state) / UINT32_MAX;
+	return (float) xorshift32(state) / (float) UINT32_MAX;
 }
 
 int main(){
