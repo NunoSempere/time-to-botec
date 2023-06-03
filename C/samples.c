@@ -167,7 +167,7 @@ void mixture(float (*samplers[])(uint32_t*), float* weights, int n_dists, float*
     uint32_t** seeds = malloc(n_threads * sizeof(uint32_t*));
 		for (uint32_t i = 0; i < n_threads; i++) {
         seeds[i] = malloc(sizeof(uint32_t));
-        *seeds[i] = i + 1;
+        *seeds[i] = i + 1; // xorshift can't start with 0
     }
 
     #pragma omp parallel private(i, p1, sample_index, split_array_length)
