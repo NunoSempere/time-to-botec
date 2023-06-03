@@ -34,6 +34,9 @@ FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
 build: $(SRC)
 	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
 
+static:
+	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
+
 format: $(SRC)
 	$(FORMATTER) $(SRC)
 
