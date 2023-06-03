@@ -2,34 +2,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct xorshift32_state {
-    uint32_t a;
-};
-
-uint32_t xorshift32(struct xorshift32_state *state)
+uint32_t xorshift32(uint32_t* state)
 {
 	/* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */
-	uint32_t x = state->a;
+	uint32_t x = *state;
 	x ^= x << 13;
 	x ^= x >> 17;
 	x ^= x << 5;
-	return state->a = x;
+	return *state = x;
 }
 
 int main(){
-	struct xorshift32_state** state = malloc(sizeof(struct xorshift32_state*) * 4);
+	uint32_t** states = malloc(4 * sizeof(uint32_t*));
 	for(int i=0; i<4;i++){
-		state[i] = malloc(sizeof(struct xorshift32_state));
-		state[i]->a = (uint32_t) i + 1;
+		states[i] = malloc(sizeof(uint32_t));
+		*states[i] = i + 1;
 	}
 
-	printf("%i\n", xorshift32(state[0]));
-	printf("%i\n", xorshift32(state[0]));
+	printf("%i\n", xorshift32(states[0]));
+	printf("%i\n", xorshift32(states[1]));
 	for(int i=0; i<4;i++){
-		free(state[i]);
+		free(states[i]);
 	}
-	free(state);
-
+	free(states);
 
   return 0;
 }
