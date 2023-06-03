@@ -1,8 +1,8 @@
-#include <math.h>
 #include <omp.h>
+#include <math.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
-#include <time.h>
 
 const float PI = 3.14159265358979323846;
 
@@ -77,16 +77,32 @@ float split_array_sum(float** meta_array, int length, int divided_into)
 
 }
 
+// Pseudo Random number generator
+
+uint32_t xorshift32(uint32_t* state)
+{
+	/* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */
+	uint32_t x = *state;
+	x ^= x << 13;
+	x ^= x >> 17;
+	x ^= x << 5;
+	return *state = x;
+}
+
+inline float rand_xorshift32(uint32_t* state){
+	return (float) xorshift32(state) / UINT32_MAX;
+}
+
 // Distribution & sampling functions
 
-float rand_float(float to, unsigned int* seed)
+float rand_float(float to, uint32_t* seed)
 {
     return ((float)rand_r(seed) / (float)RAND_MAX) * to;
     // See: <https://stackoverflow.com/questions/43151361/how-to-create-thread-safe-random-number-generator-in-c-using-rand-r> for why to use rand_r:
     // rand() is not thread-safe, as it relies on (shared) hidden state.
 }
 
-float ur_normal(unsigned int* seed)
+float ur_normal(uint32_t* seed)
 {
     float u1 = rand_float(1.0, seed);
     float u2 = rand_float(1.0, seed);
@@ -94,22 +110,22 @@ float ur_normal(unsigned int* seed)
     return z;
 }
 
-float random_uniform(float from, float to, unsigned int* seed)
+float random_uniform(float from, float to, uint32_t* seed)
 {
     return ((float)rand_r(seed) / (float)RAND_MAX) * (to - from) + from;
 }
 
-float random_normal(float mean, float sigma, unsigned int* seed)
+float random_normal(float mean, float sigma, uint32_t* seed)
 {
     return (mean + sigma * ur_normal(seed));
 }
 
-float random_lognormal(float logmean, float logsigma, unsigned int* seed)
+float random_lognormal(float logmean, float logsigma, uint32_t* seed)
 {
     return expf(random_normal(logmean, logsigma, seed));
 }
 
-float random_to(float low, float high, unsigned int* seed)
+float random_to(float low, float high, uint32_t* seed)
 {
     const float NORMAL95CONFIDENCE = 1.6448536269514722;
     float loglow = logf(low);
@@ -120,7 +136,7 @@ float random_to(float low, float high, unsigned int* seed)
 }
 
 // Mixture function
-void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, float** results, int n_threads)
+void mixture(float (*samplers[])(uint32_t*), float* weights, int n_dists, float** results, int n_threads)
 {
     // You can see a simpler version of this function in the git history
     // or in C-02-better-algorithm-one-thread/
@@ -135,10 +151,10 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
     float p1;
     int sample_index, i, split_array_length;
     
-		// unsigned int* seeds[n_threads];
-    unsigned int** seeds = malloc(n_threads * sizeof(unsigned int*));
-		for (unsigned int i = 0; i < n_threads; i++) {
-        seeds[i] = malloc(sizeof(unsigned int));
+		// uint32_t* seeds[n_threads];
+    uint32_t** seeds = malloc(n_threads * sizeof(uint32_t*));
+		for (uint32_t i = 0; i < n_threads; i++) {
+        seeds[i] = malloc(sizeof(uint32_t));
         *seeds[i] = i;
     }
 
@@ -161,7 +177,7 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
     // free(normalized_weights);
     // free(cummulative_weights);
 		free(cumsummed_normalized_weights);
-    for (unsigned int i = 0; i < n_threads; i++) {
+    for (uint32_t i = 0; i < n_threads; i++) {
         free(seeds[i]);
     }
 		free(seeds);
@@ -170,22 +186,22 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
 // Functions used for the BOTEC.
 // Their type has to be the same, as we will be passing them around.
 
-float sample_0(unsigned int* seed)
+float sample_0(uint32_t* seed)
 {
     return 0;
 }
 
-float sample_1(unsigned int* seed)
+float sample_1(uint32_t* seed)
 {
     return 1;
 }
 
-float sample_few(unsigned int* seed)
+float sample_few(uint32_t* seed)
 {
     return random_to(1, 3, seed);
 }
 
-float sample_many(unsigned int* seed)
+float sample_many(uint32_t* seed)
 {
     return random_to(2, 10, seed);
 }
@@ -210,7 +226,7 @@ int main()
     // Generate mixture
     int n_dists = 4;
     float weights[] = { 1 - p_c, p_c / 2, p_c / 4, p_c / 4 };
-    float (*samplers[])(unsigned int*) = { sample_0, sample_1, sample_few, sample_many };
+    float (*samplers[])(uint32_t*) = { sample_0, sample_1, sample_few, sample_many };
 
     mixture(samplers, weights, n_dists, dist_mixture, n_threads);
     printf("Sum(dist_mixture, N)/N = %f\n", split_array_sum(dist_mixture, N, n_threads) / N);
