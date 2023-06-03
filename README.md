@@ -33,7 +33,7 @@ The title of this repository is a pun on two meanings of "time to": "how much ti
 
 | Language                    | Time      | Lines of code |
 |-----------------------------|-----------|---------------|
-| C (optimized, 16 threads)   | 6ms       | 222 |
+| C (optimized, 16 threads)   | 5ms       | 249 |
 | Nim                         | 68ms      | 84  |
 | C (naïve implementation)    | 292ms     | 149 |
 | Javascript (NodeJS)         | 732ms     | 69  |
@@ -73,6 +73,8 @@ The C code uses the `-Ofast` or `-O3` compilation flags. Initially, without usin
 In fact, the C code ended up being so fast that I had to measure its time by running the code 100 times in a row and dividing that amount by 100, rather than by just running it once, because running it once was too fast for /bin/time. More sophisticated profiling tools exist that could e.g., account for how iddle a machine is when running the code, but I didn't think that was worth it at this point.
 
 And still, there are some missing optimizations, like tweaking the code to take into account cache misses. I'm not exactly sure how that would go, though.
+
+Once the code was at 6.6ms, there was a 0.6ms gain possible by using OMP better, and a 1ms gain by using a xorshift algorithm instead of rand_r from stdlib.
 
 Although the above paragraphs were written in the first person, the C code was written together with Jorge Sierra, who translated the algorithmic improvements from nim to it and added the initial multithreading support.
 
