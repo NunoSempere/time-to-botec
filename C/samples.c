@@ -43,11 +43,11 @@ int split_array_get_my_length(int index, int total_length, int n_threads)
 
 void split_array_allocate(float** meta_array, int length, int divide_into)
 {
-    int own_length;
+    int split_array_length;
 
     for (int i = 0; i < divide_into; i++) {
-        own_length = split_array_get_my_length(i, length, divide_into);
-        meta_array[i] = malloc(own_length * sizeof(float));
+        split_array_length = split_array_get_my_length(i, length, divide_into);
+        meta_array[i] = malloc(split_array_length * sizeof(float));
     }
 }
 
@@ -67,8 +67,8 @@ float split_array_sum(float** meta_array, int length, int divided_into)
     #pragma omp parallel for reduction(+:output)
 		for (int i = 0; i < divided_into; i++) {
 				float own_partial_sum = 0;
-				int own_length = split_array_get_my_length(i, length, divided_into);
-				for (int j = 0; j < own_length; j++) {
+				int split_array_length = split_array_get_my_length(i, length, divided_into);
+				for (int j = 0; j < split_array_length; j++) {
 						own_partial_sum += meta_array[i][j];
 				}
 				output += own_partial_sum;
@@ -133,7 +133,7 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
 
     //create var holders
     float p1;
-    int sample_index, i, own_length;
+    int sample_index, i, split_array_length;
     
 		// unsigned int* seeds[n_threads];
     unsigned int** seeds = malloc(n_threads * sizeof(unsigned int*));
@@ -142,12 +142,12 @@ void mixture(float (*samplers[])(unsigned int*), float* weights, int n_dists, fl
         *seeds[i] = i;
     }
 
-    #pragma omp parallel private(i, p1, sample_index, own_length)
+    #pragma omp parallel private(i, p1, sample_index, split_array_length)
     {
         #pragma omp for
         for (i = 0; i < n_threads; i++) {
-            own_length = split_array_get_my_length(i, N, n_threads);
-            for (int j = 0; j < own_length; j++) {
+            split_array_length = split_array_get_my_length(i, N, n_threads);
+            for (int j = 0; j < split_array_length; j++) {
                 p1 = random_uniform(0, 1, seeds[i]);
                 for (int k = 0; k < n_dists; k++) {
                     if (p1 < cumsummed_normalized_weights[k]) {
