@@ -96,7 +96,7 @@ profile-linux:
 	# rm analysis.txt
 	# perf: 
 	OMP_NUM_THREADS=16 sudo perf record $(OUTPUT)
-	perf report
+	sudo perf report
 	rm perf.data
 	
 
