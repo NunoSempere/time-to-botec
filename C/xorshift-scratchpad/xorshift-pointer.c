@@ -20,13 +20,15 @@ int main(){
 	uint32_t** states = malloc(4 * sizeof(uint32_t*));
 	for(int i=0; i<4;i++){
 		states[i] = malloc(sizeof(uint32_t));
-		*states[i] = i + 1;
+		*states[i] = (uint32_t) i + 1;
+	}
+	for(int i=0; i<1000000000;i++){
+		uint32_t x = xorshift32(states[0]);
+		float y = rand_xorshift32(states[1]);
+		// printf("%u\n", x);
+	  // printf("%f\n", y);
 	}
   
-	for(int i=0; i<100; i++){
-		printf("%u\n", xorshift32(states[0]));
-		printf("%f\n", rand_xorshift32(states[1]));
-	}
 	for(int i=0; i<4;i++){
 		free(states[i]);
 	}
