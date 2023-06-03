@@ -165,12 +165,19 @@ void mixture(float (*samplers[])(uint32_t*), float* weights, int n_dists, float*
     float p1;
     int sample_index, i, split_array_length;
     
+
+		uint32_t* seeds = malloc(n_threads * sizeof(uint32_t));
+		for (uint32_t i = 0; i < n_threads; i++) {
+        seeds[i] = i + 1;
+    }
 		// uint32_t* seeds[n_threads];
-    uint32_t** seeds = malloc(n_threads * sizeof(uint32_t*));
+    /*
+	  uint32_t** seeds = malloc(n_threads * sizeof(uint32_t*));
 		for (uint32_t i = 0; i < n_threads; i++) {
         seeds[i] = malloc(sizeof(uint32_t));
         *seeds[i] = i + 1; // xorshift can't start with 0
     }
+		*/
 
     #pragma omp parallel private(i, p1, sample_index, split_array_length)
     {
@@ -178,10 +185,10 @@ void mixture(float (*samplers[])(uint32_t*), float* weights, int n_dists, float*
         for (i = 0; i < n_threads; i++) {
             split_array_length = split_array_get_length(i, N, n_threads);
             for (int j = 0; j < split_array_length; j++) {
-                p1 = random_uniform(0, 1, seeds[i]);
+                p1 = random_uniform(0, 1, &seeds[i]);
                 for (int k = 0; k < n_dists; k++) {
                     if (p1 < cumsummed_normalized_weights[k]) {
-                        results[i][j] = samplers[k](seeds[i]);
+                        results[i][j] = samplers[k](&seeds[i]);
                         break;
                     }
                 }
@@ -191,9 +198,9 @@ void mixture(float (*samplers[])(uint32_t*), float* weights, int n_dists, float*
     // free(normalized_weights);
     // free(cummulative_weights);
 		free(cumsummed_normalized_weights);
-    for (uint32_t i = 0; i < n_threads; i++) {
-        free(seeds[i]);
-    }
+    // for (uint32_t i = 0; i < n_threads; i++) {
+    //   free(seeds[i]);
+    // }
 		free(seeds);
 }
 
