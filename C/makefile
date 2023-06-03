@@ -83,6 +83,7 @@ time-linux-simple:
 
 profile-linux: 
 	echo "Requires perf, which depends on the kernel, and might be in linux-tools package or similar"
+	echo "Must be run as sudo"
 	$(CC) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
 	# ./$(OUTPUT)
 	# gprof: 
@@ -91,7 +92,7 @@ profile-linux:
 	# vim analysis.txt
 	# rm analysis.txt
 	# perf: 
-	perf record $(OUTPUT)
+	OMP_NUM_THREADS=16 sudo perf record $(OUTPUT)
 	perf report
 	rm perf.data
 	
