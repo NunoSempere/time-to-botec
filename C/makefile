@@ -47,6 +47,8 @@ multi:
 	OMP_NUM_THREADS=8 ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=16 ./$(OUTPUT) && echo
 
+## Timing
+
 time-linux: 
 	@echo "Requires /bin/time, found on GNU/Linux systems" && echo
 	
@@ -77,6 +79,24 @@ time-linux-simple:
 	OMP_NUM_THREADS=8 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 	OMP_NUM_THREADS=16 /bin/time -f "Time: %es" ./$(OUTPUT) && echo
 
+## Profiling
+
+profile-linux: 
+	echo "Requires perf, which depends on the kernel, and might be in linux-tools package or similar"
+	$(CC) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
+	# ./$(OUTPUT)
+	# gprof: 
+	# gprof $(OUTPUT) gmon.out > analysis.txt
+	# rm gmon.out
+	# vim analysis.txt
+	# rm analysis.txt
+	# perf: 
+	perf record $(OUTPUT)
+	perf report
+	rm perf.data
+	
+
+## Install
 debian-install-dependencies:
 	sudo apt-get install libomp-dev
 

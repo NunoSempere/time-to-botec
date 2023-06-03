@@ -94,22 +94,22 @@ float ur_normal(unsigned int* seed)
     return z;
 }
 
-inline float random_uniform(float from, float to, unsigned int* seed)
+float random_uniform(float from, float to, unsigned int* seed)
 {
     return ((float)rand_r(seed) / (float)RAND_MAX) * (to - from) + from;
 }
 
-inline float random_normal(float mean, float sigma, unsigned int* seed)
+float random_normal(float mean, float sigma, unsigned int* seed)
 {
     return (mean + sigma * ur_normal(seed));
 }
 
-inline float random_lognormal(float logmean, float logsigma, unsigned int* seed)
+float random_lognormal(float logmean, float logsigma, unsigned int* seed)
 {
     return expf(random_normal(logmean, logsigma, seed));
 }
 
-inline float random_to(float low, float high, unsigned int* seed)
+float random_to(float low, float high, unsigned int* seed)
 {
     const float NORMAL95CONFIDENCE = 1.6448536269514722;
     float loglow = logf(low);
