@@ -79,40 +79,43 @@ float split_array_sum(float** meta_array, int length, int divided_into)
 
 // Pseudo Random number generator
 
-uint32_t xorshift32(uint32_t* state)
+uint32_t xorshift32(uint32_t* seed)
 {
 	/* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */
-	uint32_t x = *state;
+	uint32_t x = *seed;
 	x ^= x << 13;
 	x ^= x >> 17;
 	x ^= x << 5;
-	return *state = x;
-}
-
-inline float rand_xorshift32(uint32_t* state){
-	return (float) xorshift32(state) / UINT32_MAX;
+	return *seed = x;
 }
 
 // Distribution & sampling functions
 
-float rand_float(float to, uint32_t* seed)
+float rand_0_to_1(uint32_t* seed){
+	return ((float) xorshift32(seed)) / ((float) UINT32_MAX);
+	// previously:
+	// ((float)rand_r(seed) / (float)RAND_MAX) 
+	// and before that: rand, but it wasn't thread-safe.
+	// See: <https://stackoverflow.com/questions/43151361/how-to-create-thread-safe-random-number-generator-in-c-using-rand-r> for why to use rand_r:
+	// rand() is not thread-safe, as it relies on (shared) hidden seed.
+}
+
+float rand_float(float max, uint32_t* seed)
 {
-    return ((float)rand_r(seed) / (float)RAND_MAX) * to;
-    // See: <https://stackoverflow.com/questions/43151361/how-to-create-thread-safe-random-number-generator-in-c-using-rand-r> for why to use rand_r:
-    // rand() is not thread-safe, as it relies on (shared) hidden state.
+    return rand_0_to_1(seed) * max;
 }
 
 float ur_normal(uint32_t* seed)
 {
-    float u1 = rand_float(1.0, seed);
-    float u2 = rand_float(1.0, seed);
+    float u1 = rand_0_to_1(seed);
+    float u2 = rand_0_to_1(seed);
     float z = sqrtf(-2.0 * log(u1)) * sin(2 * PI * u2);
     return z;
 }
 
 float random_uniform(float from, float to, uint32_t* seed)
 {
-    return ((float)rand_r(seed) / (float)RAND_MAX) * (to - from) + from;
+    return rand_0_to_1(seed) * (to - from) + from;
 }
 
 float random_normal(float mean, float sigma, uint32_t* seed)
@@ -155,7 +158,7 @@ void mixture(float (*samplers[])(uint32_t*), float* weights, int n_dists, float*
     uint32_t** seeds = malloc(n_threads * sizeof(uint32_t*));
 		for (uint32_t i = 0; i < n_threads; i++) {
         seeds[i] = malloc(sizeof(uint32_t));
-        *seeds[i] = i;
+        *seeds[i] = i + 1;
     }
 
     #pragma omp parallel private(i, p1, sample_index, split_array_length)
