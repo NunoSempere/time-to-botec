@@ -82,7 +82,7 @@ time-linux-simple:
 ## Profiling
 
 profile-linux: 
-	echo "Requires perf, which depends on the kernel, and might be in linux-tools package or similar"
+	echo "Requires perf, which depends on the kernel version, and might be in linux-tools package or similar"
 	echo "Must be run as sudo"
 	$(CC) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
 	# ./$(OUTPUT)
