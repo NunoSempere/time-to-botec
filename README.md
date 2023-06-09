@@ -41,7 +41,7 @@ The title of this repository is a pun on two meanings of "time to": "how much ti
 | R                           | 7,000s    | 49  |
 | Python (CPython)            | 16,641s   | 56  |
 
-Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples:
+Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples.
 
 ## Notes
 
