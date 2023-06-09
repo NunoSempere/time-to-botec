@@ -88,3 +88,12 @@ nim c --verbosity:0 -d:danger samples.nim && time ./samples --verbosity:0
 real    0m0.068s
 user    0m0.048s
 sys     0m0.020s
+
+## Squigglepy
+
+$ time python3 samples.py
+0.8847701592663298
+
+real    0m14.305s
+user    0m14.130s
+sys     0m0.494s
