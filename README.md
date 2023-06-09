@@ -102,13 +102,14 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 - [ ] Julia (TuringML) 
 - [ ] Rust
 - [ ] Lisp
-- [ ] Stan
 - [ ] Go 
 - [ ] Zig
 - [ ] Forth
 - [ ] OCaml
 - [ ] Haskell
 - [ ] CUDA
+- [-] Stan => As far as I can tell, Stan is designed to generate samples from the posterior distribution given some data, not to create data by drawing samples from an arbitrary distribution.
+  - [ ] Maybe still worth reversing the process?
 - ... and suggestions welcome
 
 ## Roadmap
