@@ -5,8 +5,8 @@ p_a = 0.8
 p_b = 0.5
 p_c = p_a * p_b
 
-dist_0 = sq.discrete({0: 1})
-dist_1 = sq.discrete({1: 1})
+dist_0 = 0
+dist_1 = 1
 dist_some = sq.to(1, 3)
 dist_many = sq.to(2, 10)
 
