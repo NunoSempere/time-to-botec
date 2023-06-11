@@ -99,7 +99,7 @@ R has a warm place in my heart from back in the day, and it has predefined funct
 
 ### Lua 
 
-I was also really pleased with Lua. I liked the simplicity and elegance, and lack of warts. And coming from javascript, I appreciated that the program did not fail silently, but rather gave me useful errors, like:
+I was also really pleased with Lua. I liked the simplicity. And coming from javascript, I appreciated that the program did not fail silently, but rather gave me useful errors, like:
 
 ```
 lua samples.lua
@@ -111,9 +111,16 @@ stack traceback:
 make: *** [makefile:14: run] Error 1
 ```
 
-I also appreciated the speedup when using the LuaJIT interpreter.
+I also appreciated the speedup when using the LuaJIT interpreter. You can install it with commands similar to 
 
-Overall I'm thinking that a combination of lua at least for scripting and ¿nim/C/tbd?
+```
+git clone https://luajit.org/git/luajit.git
+make
+sudo make install
+sudo ln -sf luajit-2.1.0-beta3 /usr/local/bin/luajit
+```
+
+Overall I'm thinking that a combination of lua at least for scripting and ¿nim/C/tbd? for more serious programs could be quite powerful.
 
 ### Overall thoughts
 
