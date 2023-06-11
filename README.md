@@ -33,16 +33,20 @@ The title of this repository is a pun on two meanings of "time to": "how much ti
 
 | Language                    | Time      | Lines of code |
 |-----------------------------|-----------|---------------|
-| C (optimized, 16 threads)   | 5ms       | 249 |
-| Nim                         | 68ms      | 84  |
-| C (naïve implementation)    | 292ms     | 149 |
-| Javascript (NodeJS)         | 732ms     | 69  |
-| Squiggle                    | 1,536s    | 14  |
-| SquigglePy                  | 1.602s    | 18  |
-| R                           | 7,000s    | 49  |
-| Python (CPython)            | 16,641s   | 56  |
+| C (optimized, 16 threads)   | 5ms       | 249  |
+| Nim                         | 38ms      | 84   |
+| Lua (LuaJIT)                | 68ms      | 82   |
+| Lua                         | 278ms     | 82   |
+| C (naïve implementation)    | 292ms     | 149  |
+| Javascript (NodeJS)         | 732ms     | 69   |
+| Squiggle                    | 1,536s    | 14*  |
+| SquigglePy                  | 1.602s    | 18*  |
+| R                           | 7,000s    | 49   |
+| Python (CPython)            | 16,641s   | 56   |
 
-Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples.
+Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples. But different implementations use different algorithms and, occasionally, different time measuring methodologies (for the C, Nim and Lua implementations, I run the program 100 times and take the mean). Their speed was also measured under different loads in my machine. So I think that these time estimates are accurate within maybe ~2x or so.
+
+Note that the number of lines is much shorter for Squiggle and SquigglePy because I'm just counting the lines needed to get Squiggle and SquigglePy to output a model, not the lines inside them.
 
 ## Notes
 
@@ -93,6 +97,24 @@ For the Python code, it's possible that the lack of speed is more a function of 
 
 R has a warm place in my heart from back in the day, and it has predefined functions to do everything. It was particularly fast to write for me, though not particularly fast to run :) However, I do recall that R does have some multithreading support; it wasn't used.
 
+### Lua 
+
+I was also really pleased with Lua. I liked the simplicity and elegance, and lack of warts. And coming from javascript, I appreciated that the program did not fail silently, but rather gave me useful errors, like:
+
+```
+lua samples.lua
+lua: samples.lua:42: table index is nil
+stack traceback:
+        samples.lua:42: in function 'mixture'
+        samples.lua:49: in main chunk
+        [C]: in ?
+make: *** [makefile:14: run] Error 1
+```
+
+I also appreciated the speedup when using the LuaJIT interpreter.
+
+Overall I'm thinking that a combination of lua at least for scripting and ¿nim/C/tbd?
+
 ### Overall thoughts
 
 Overall I don't think that this is a fair comparison of the languages intrinsically, because I'm just differentially good at them, because I've chosen to put more effort in ones than in others. But it is still useful to me personally, and perhaps mildly informative to others. 
@@ -105,12 +127,24 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 - [ ] Go 
 - [ ] Zig
 - [ ] Forth
+- [ ] sh/bash, lol?
 - [ ] OCaml
 - [ ] Haskell
 - [ ] CUDA
 - [-] Stan => As far as I can tell, Stan is designed to generate samples from the posterior distribution given some data, not to create data by drawing samples from an arbitrary distribution.
   - [ ] Maybe still worth reversing the process?
 - ... and suggestions welcome
+
+## Languages added so far
+
+- [x] Squiggle
+- [x] Javascript (NodeJS)
+- [x] Python (CPython)
+- [x] R
+- [x] C
+- [x] Nim
+- [x] SquigglePy
+- [x] Lua
 
 ## Roadmap
 

@@ -89,6 +89,12 @@ real    0m0.068s
 user    0m0.048s
 sys     0m0.020s
 
+— make time-linux
+Requires /bin/time, found on GNU/Linux systems
+
+Running 100x and taking avg time of:
+Time: 38.90ms
+
 ## Squigglepy
 
 
@@ -101,3 +107,24 @@ python3 samples.py
 real    0m1.602s
 user    0m1.582s
 sys     0m0.331s
+
+## Lua
+
+— make time-linux-simple
+Requires /bin/time, found on GNU/Linux systems
+
+/bin/time -f "Time: %es" lua samples.lua && echo
+0.88932198462254
+Time: 0.28s
+
+— make time-linux
+Requires /bin/time, found on GNU/Linux systems
+
+Running 100x and taking avg time of: lua samples.lua
+Time: 275.80ms
+
+— make time-linux
+Requires /bin/time, found on GNU/Linux systems
+
+Running 100x and taking avg time of: luajit samples.lua
+Time: 68.60ms
