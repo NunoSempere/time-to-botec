@@ -79,7 +79,7 @@ In fact, the C code ended up being so fast that I had to measure its time by run
 
 And still, there are some missing optimizations, like tweaking the code to take into account cache misses. I'm not exactly sure how that would go, though.
 
-Once the code was at 6.6ms, there was a 0.6ms gain possible by using OMP better, and a 1ms gain by using a xorshift algorithm instead of rand_r from stdlib.
+Once the code was at 6.6ms, there was a 0.6ms gain possible by using OMP better, and a 1ms gain by using a xorshift algorithm instead of rand_r from stdlib. I think there might be faster gains to be made by using OpenCL or CUDA, but I haven't gotten into how to do that instead.
 
 Although the above paragraphs were written in the first person, the C code was written together with Jorge Sierra, who translated the algorithmic improvements from nim to it and added the initial multithreading support.
 
@@ -137,7 +137,7 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 - [ ] sh/bash, lol?
 - [ ] OCaml
 - [ ] Haskell
-- [ ] CUDA
+- [ ] OpenCL/CUDA (e.g., as in <https://www.eriksmistad.no/getting-started-with-opencl-and-gpu-computing/>). Seems like it would be overkill, and also the code would be way more complex. But maybe worth trying?
 - [-] Stan => As far as I can tell, Stan is designed to generate samples from the posterior distribution given some data, not to create data by drawing samples from an arbitrary distribution.
   - [ ] Maybe still worth reversing the process?
 - ... and suggestions welcome
