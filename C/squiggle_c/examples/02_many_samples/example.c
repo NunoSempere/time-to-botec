@@ -1,7 +1,7 @@
-#include "../squiggle.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "../../squiggle.h"
 
 // Estimate functions
 float sample_0(uint32_t* seed)
@@ -37,9 +37,6 @@ int main(){
     float weights[] = { 1 - p_c, p_c / 2, p_c / 4, p_c / 4 };
     float (*samplers[])(uint32_t*) = { sample_0, sample_1, sample_few, sample_many };
 
-    float result_one = mixture(samplers, weights, n_dists, seed);
-		printf("result_one: %f\n", result_one);
-		
 		int n_samples = 1000000;
 		float* result_many = (float *) malloc(n_samples * sizeof(float));
 		for(int i=0; i<n_samples; i++){
