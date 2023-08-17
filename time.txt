@@ -128,3 +128,13 @@ Requires /bin/time, found on GNU/Linux systems
 
 Running 100x and taking avg time of: luajit samples.lua
 Time: 68.60ms
+
+
+## squiggle.c
+
+— make time-linux
+Requires /bin/time, found on GNU/Linux systems
+
+Running 100x and taking avg time example
+Time using 1 thread: 37.60ms
+

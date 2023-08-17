@@ -25,6 +25,7 @@ The title of this repository is a pun on two meanings of "time to": "how much ti
 | Language                    | Time      | Lines of code |
 |-----------------------------|-----------|---------------|
 | C (optimized, 16 threads)   | 5ms       | 249  |
+| squiggle.c                  | 37ms      | 54   | 
 | Nim                         | 38ms      | 84   |
 | Lua (LuaJIT)                | 68ms      | 82   |
 | Lua                         | 278ms     | 82   |
@@ -37,7 +38,7 @@ The title of this repository is a pun on two meanings of "time to": "how much ti
 
 Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples. But different implementations use different algorithms and, occasionally, different time measuring methodologies (for the C, Nim and Lua implementations, I run the program 100 times and take the mean). Their speed was also measured under different loads in my machine. So I think that these time estimates are accurate within maybe ~2x or so.
 
-Note that the number of lines is much shorter for Squiggle and SquigglePy because I'm just counting the lines needed to get Squiggle and SquigglePy to output a model, not the lines inside them.
+Note that the number of lines is much shorter for Squiggle, SquigglePy and squiggle.c because I'm just counting the lines needed to get these libraries to output a model, not the lines inside them.
 
 ## Notes
 
@@ -73,6 +74,10 @@ And still, there are some missing optimizations, like tweaking the code to take 
 Once the code was at 6.6ms, there was a 0.6ms gain possible by using OMP better, and a 1ms gain by using a xorshift algorithm instead of rand_r from stdlib. I think there might be faster gains to be made by using OpenCL or CUDA, but I haven't gotten into how to do that instead.
 
 Although the above paragraphs were written in the first person, the C code was written together with Jorge Sierra, who translated the algorithmic improvements from nim to it and added the initial multithreading support.
+
+### squiggle.c
+
+squiggle.c is a minimalistic version of squiggle focused on understandability and being self-contained. You can see the code [here](https://git.nunosempere.com/personal/squiggle.c), and the code for the specific example [here](https://git.nunosempere.com/personal/squiggle.c/src/branch/master/examples/02_many_samples_time_to_botec).
 
 ### NodeJS and Squiggle
 
