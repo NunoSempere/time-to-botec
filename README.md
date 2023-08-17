@@ -20,15 +20,6 @@ I don't particularly care about the speed of this particular example, but rather
 
 The title of this repository is a pun on two meanings of "time to": "how much time does it take to do x", and "let's do x". "BOTEC" stands for "back of the envelope calculation".
 
-## Current languages
-
-- [x] C
-- [x] Javascript (NodeJS)
-- [x] Squiggle 
-- [x] R
-- [x] Python
-- [x] Nim 
-
 ## Comparison table
 
 | Language                    | Time      | Lines of code |
