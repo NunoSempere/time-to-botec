@@ -16,9 +16,9 @@ result = mixture(dists, weights) # should be 1M samples
 mean(result)
 ```
 
-I don't particularly care about the speed of this particular example, but rather think that the speed in this simple example would be indicative of the speed when considering 100x or 1000x more complicated models. As of now, it may also be useful for checking the validity of simple estimations. 
+I don't particularly care about the speed of this particular example. However, I think that how fast some approach is on this simple example might be indicative of that approach's speed when considering 100x or 1000x more complicated models. Having many different approaches computing the same model may also be useful for checking the validity of simple estimations. 
 
-The title of this repository is a pun on two meanings of "time to": "how much time does it take to do x", and "let's do x". "BOTEC" stands for "back of the envelope calculation".
+The name of this repository is a pun on two meanings of "time to": "how much time does it take to do x", and "let's do x". "BOTEC" stands for "back of the envelope calculation".
 
 ## Comparison table
 
@@ -77,13 +77,13 @@ Although the above paragraphs were written in the first person, the C code was w
 
 ### squiggle.c
 
-squiggle.c is a minimalistic version of squiggle focused on understandability and being self-contained. You can see the code [here](https://git.nunosempere.com/personal/squiggle.c), and the code for the specific example [here](https://git.nunosempere.com/personal/squiggle.c/src/branch/master/examples/02_many_samples_time_to_botec).
+squiggle.c is a minimalistic library focused on understandability and being self-contained. It grew from the initial C code in this repository. You can see the code for the library [here](https://git.nunosempere.com/personal/squiggle.c), and the code for the example we are discussing [here](https://git.nunosempere.com/personal/squiggle.c/src/branch/master/examples/02_many_samples_time_to_botec).
 
 ### NodeJS and Squiggle
 
-Using [bun](https://bun.sh/) instead of node is actually a bit slower. Also, both the NodeJS and the Squiggle code use [stdlib](https://stdlib.io/) in their innards, which has a bunch of interleaved functions that make the code slower. It's possible that not using that external library could make the code faster, but at the same time, the js approach does seem to be to use external libraries whenever possible.
+Using [bun](https://bun.sh/) instead of node is actually a bit slower. Also, both the NodeJS and the Squiggle code use [stdlib](https://stdlib.io/) in their innards, which has a bunch of interleaved functions that make the code slower. It's possible that not using that external library could make the code faster. But at the same time, the js approach does seem to be to use external libraries whenever possible.
 
-I am not particularly sure that the Squiggle code is actually producing 1M samples, but also have no particular plan to debug this.
+I am not particularly sure that the Squiggle code is actually producing 1M samples, but I am also not in a rush to debug this.
 
 ### Python
 
@@ -91,7 +91,7 @@ For the Python code, it's possible that the lack of speed is more a function of 
 
 ### R
 
-R has a warm place in my heart from back in the day, and it has predefined functions to do everything. It was particularly fast to write for me, though not particularly fast to run :) However, I do recall that R does have some multithreading support; it wasn't used.
+R has a warm place in my heart from back in the day, and it has predefined functions to do everything. It was particularly fast to write for me, though not particularly fast to run :) R has some multithreading support, which I didn't use.
 
 ### Lua 
 
@@ -107,7 +107,7 @@ stack traceback:
 make: *** [makefile:14: run] Error 1
 ```
 
-I also appreciated the speedup when using the LuaJIT interpreter. You can install it with commands similar to 
+I also appreciated the speedup when using the LuaJIT interpreter. You can install LuaJIT with commands similar to:
 
 ```
 git clone https://luajit.org/git/luajit.git
@@ -124,30 +124,20 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 
 ## Languages I may add later
 
-- [ ] Julia (TuringML) 
+- [ ] Zig
 - [ ] Rust
+- [ ] OCaml
+- [ ] Forth
+- [ ] Julia (TuringML) 
 - [ ] Lisp
 - [ ] Go 
-- [ ] Zig
-- [ ] Forth
 - [ ] sh/bash, lol?
-- [ ] OCaml
+- [ ] Dagger (<https://usedagger.com/>)
 - [ ] Haskell
 - [ ] OpenCL/CUDA (e.g., as in <https://www.eriksmistad.no/getting-started-with-opencl-and-gpu-computing/>). Seems like it would be overkill, and also the code would be way more complex. But maybe worth trying?
-- [-] Stan => As far as I can tell, Stan is designed to generate samples from the posterior distribution given some data, not to create data by drawing samples from an arbitrary distribution.
+- ~~[ ] Stan => As far as I can tell, Stan is designed to generate samples from the posterior distribution given some data, not to create data by drawing samples from an arbitrary distribution.~~
   - [ ] Maybe still worth reversing the process?
 - ... and suggestions welcome
-
-## Languages added so far
-
-- [x] Squiggle
-- [x] Javascript (NodeJS)
-- [x] Python (CPython)
-- [x] R
-- [x] C
-- [x] Nim
-- [x] SquigglePy
-- [x] Lua
 
 ## Roadmap
 
