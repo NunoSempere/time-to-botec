@@ -128,7 +128,7 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 - [ ] Rust
 - [ ] OCaml
 - [ ] Forth
-- [ ] Julia (TuringML) 
+- [ ] Julia (TuringML, MCHammer) 
 - [ ] Lisp
 - [ ] Go 
 - [ ] sh/bash, lol?
