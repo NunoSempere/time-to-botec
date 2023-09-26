@@ -125,6 +125,7 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 ## Languages I may add later
 
 - [ ] PyMC
+- [ ] bc (the standard posix calculator)
 - [ ] Zig
 - [ ] Rust
 - [ ] OCaml
