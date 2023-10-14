@@ -4,7 +4,8 @@ let normal_95_ci_length = 1.6448536269514722
 
 (* Array manipulation helpers *)
 let sumFloats xs = List.fold_left(fun acc x -> acc +. x) 0.0 xs
-let normalizeXs xs = let sum_xs = sumFloats xs in 
+let normalizeXs xs = 
+  let sum_xs = sumFloats xs in 
   List.map(fun x -> x /. sum_xs) xs
 let cumsumXs xs = 
   let _, cum_sum = List.fold_left(fun (sum, ys) x -> 
@@ -31,7 +32,10 @@ let sampleTo low high =
 let mixture (samplers: (unit -> float) list) (weights: float list) = 
   match (List.length samplers == List.length weights) with
     | false -> None
-    | true -> let normalized_weights = cumsumXs (normalizeXs weights) in Some(1.0)
+    | true -> 
+        let normalized_weights = normalizeXs weights in
+        let cumsummed_normalized_weights = cumsumXs normalized_weights in
+        Some(1.0)
       
 
 let () =
