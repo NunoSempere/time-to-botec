@@ -36,12 +36,13 @@ let findIndex xs test =
 
 let rec unwind xs = 
   match xs with
+  | [] -> Some([])
+  | None :: ys -> None
   | Some(y) :: ys -> (
       match unwind ys with
       | Some(zs) -> Some(y :: zs)
       | None -> None
     )
-  | None :: ys -> None
 
 (* Basic samplers *)
 let sampleZeroToOne () : float = Random.float 1.0
