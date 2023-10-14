@@ -61,7 +61,7 @@ let sampleTo low high =
   let loglow = log(low) in
   let loghigh = log(high) in
   let logmean = (loglow +. loghigh) /. 2.0 in
-  let logstd = (loghigh -. loglow) /. (2.0 -. normal_95_ci_length ) in
+  let logstd = (loghigh -. loglow) /. (2.0 *. normal_95_ci_length ) in
   sampleLognormal logmean logstd
 
 let mixture (samplers: (unit -> float) list) (weights: float list): (float, string) result = 
@@ -92,11 +92,11 @@ let () =
   let p3 = p1 *. p2 in 
   let weights = [ 1. -. p3; p3 /. 2.; p3 /. 4.; p3/. 4. ] in
   let sampler () = mixture [ sample0; sample1; sampleFew; sampleMany ] weights in
-  let n = 1_000_000 in 
+  let n = 1_000 in 
   let samples = List.init n (fun _ -> sampler ()) in 
   match unwind samples with
     | Error err -> Printf.printf "Error %s\n" err
     | Ok(xs) -> (
         let mean = sumFloats xs /. float_of_int(n) in 
-        Printf.printf "Mean: %f" mean
+        Printf.printf "Mean: %f\n" mean
       )
