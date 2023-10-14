@@ -18,8 +18,8 @@ let cumsumXs xs =
 
 let rec nth xs (n: int) = 
   match xs with
-  | [] -> None
-  | y :: ys -> if n = 0 then Some(y) else nth ys (n-1)
+  | [] -> Error "nth function finds no match"
+  | y :: ys -> if n = 0 then Ok(y) else nth ys (n-1)
   (* 
      Note that this is O(n) access.
      That is the cost of using the nice match syntax,
@@ -29,19 +29,19 @@ let rec nth xs (n: int) =
 let findIndex xs test = 
   let rec recursiveHelper ys i = 
     match ys with
-      | [] -> None
-      | z :: zs -> if test z then Some i else recursiveHelper zs (i+1)
+      | [] -> Error "findIndex doesn't find an index"
+      | z :: zs -> if test z then Ok(i) else recursiveHelper zs (i+1)
     in
   recursiveHelper xs 0
 
 let rec unwind xs = 
   match xs with
-  | [] -> Some([])
-  | None :: ys -> None
-  | Some(y) :: ys -> (
+  | [] -> Ok([])
+  | Error e:: ys -> Error e
+  | Ok(y) :: ys -> (
       match unwind ys with
-      | Some(zs) -> Some(y :: zs)
-      | None -> None
+      | Ok(zs) -> Ok(y :: zs)
+      | Error e -> Error e
     )
 
 (* Basic samplers *)
@@ -64,21 +64,21 @@ let sampleTo low high =
   let logstd = (loghigh -. loglow) /. (2.0 -. normal_95_ci_length ) in
   sampleLognormal logmean logstd
 
-let mixture (samplers: (unit -> float) list) (weights: float list): float option = 
+let mixture (samplers: (unit -> float) list) (weights: float list): (float, string) result = 
    if (List.length samplers == List.length weights) 
-    then None
+    then Error "in mixture function, List.length samplers != List.length weights"
   else
     let normalized_weights = normalizeXs weights in
     let cumsummed_normalized_weights = cumsumXs normalized_weights in
     let p = sampleZeroToOne () in
     let chosenSamplerIndex = findIndex cumsummed_normalized_weights (fun x -> x < p) in
     let sampler = match chosenSamplerIndex with
-      | None -> None
-      | Some(i) -> nth samplers i
+      | Error e -> Error e
+      | Ok(i) -> nth samplers i
     in
     let sample = match sampler with
-      | None -> None
-      | Some(f) -> Some(f ())
+      | Error e -> Error e
+      | Ok(f) -> Ok(f ())
     in 
     sample
 
@@ -95,8 +95,8 @@ let () =
   let n = 1_000_000 in 
   let samples = List.init n (fun _ -> sampler ()) in 
   match unwind samples with
-    | None -> Printf.printf "error"
-    | Some(xs) -> (
+    | Error err -> Printf.printf "Error %s\n" err
+    | Ok(xs) -> (
         let mean = sumFloats xs /. float_of_int(n) in 
         Printf.printf "Mean: %f" mean
       )
