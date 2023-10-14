@@ -13,6 +13,13 @@ let cumsumXs xs =
     new_sum, ys @ [new_sum]
   ) (0.0, []) xs in
   cum_sum
+let findIndex xs test = 
+  let rec recursiveHelper ys i = 
+    match ys with
+      | [] -> None
+      | z :: zs -> if test z then Some i else recursiveHelper zs (i+1)
+    in
+  recursiveHelper xs 0
 
 (* Basic samplers *)
 let sampleZeroToOne () : float = Random.float 1.0
@@ -40,8 +47,13 @@ let mixture (samplers: (unit -> float) array) (weights: float array) =
     | true -> 
         let normalized_weights = normalizeXs weights in
         let cumsummed_normalized_weights = cumsumXs normalized_weights in
-        let answer = 1.1 in
-        Some(1.0)
+        let p = sampleZeroToOne () in
+        let chosenSamplerIndex = findIndex cumsummed_normalized_weights (fun x -> x < p) in
+        let sample = match chosenSamplerIndex with
+          | None -> None
+          | Some(i) -> Some(1.0) (* (samplers.(i) ()) |> Some *)
+        in
+        sample
 
 let () =
   Random.init 1;
