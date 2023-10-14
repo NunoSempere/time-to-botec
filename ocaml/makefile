@@ -7,4 +7,8 @@ CC=ocamlopt
 SRC=samples.ml
 
 build: $(SRC)
-	$(CC) $(SRC)
+	$(CC) $(SRC) -o out/samples
+	mv samples.cmi samples.cmx samples.o ./out/
+
+run:
+	./out/samples
