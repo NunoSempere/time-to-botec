@@ -56,6 +56,16 @@ let mixture (samplers: (unit -> float) array) (weights: float array): float opti
     sample
 
 let () =
-  Random.init 1;
-  Printf.printf "%f\n" (sampleZeroToOne());
-  Printf.printf "%f\n" (sampleZeroToOne());
+  let sample0 () = 0. in 
+  let sample1 () = 1. in
+  let sampleFew () = sampleTo 1. 3. in
+  let sampleMany () = sampleTo 2. 10. in 
+  let p1 = 0.8 in 
+  let p2 = 0.5 in 
+  let p3 = p1 *. p2 in 
+  let weights = [| 1. -. p3; p3 /. 2.; p3 /. 4.; p3/. 4. |] in
+  let sampler () = mixture [| sample0; sample1; sampleFew; sampleMany |] weights in
+  let n = 1_000_000 in 
+  let samples = Array.init n (fun _ -> sampler ()) in 
+  (* let mean = sumFloats samples /. n in *)
+  Printf.printf "Hello world\n"
