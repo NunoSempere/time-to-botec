@@ -4,15 +4,18 @@ let normal_95_ci_length = 1.6448536269514722
 
 (* List manipulation helpers *)
 let sumFloats xs = List.fold_left(fun acc x -> acc +. x) 0.0 xs
+
 let normalizeXs xs = 
   let sum_xs = sumFloats xs in 
   List.map(fun x -> x /. sum_xs) xs
+
 let cumsumXs xs = 
   let _, cum_sum = List.fold_left(fun (sum, ys) x -> 
     let new_sum = sum +. x in
     new_sum, ys @ [new_sum]
   ) (0.0, []) xs in
   cum_sum
+
 let rec nth xs (n: int) = 
   match xs with
   | [] -> None
@@ -30,6 +33,15 @@ let findIndex xs test =
       | z :: zs -> if test z then Some i else recursiveHelper zs (i+1)
     in
   recursiveHelper xs 0
+
+let rec unwind xs = 
+  match xs with
+  | Some(y) :: ys -> (
+      match unwind ys with
+      | Some(zs) -> Some(y :: zs)
+      | None -> None
+    )
+  | None :: ys -> None
 
 (* Basic samplers *)
 let sampleZeroToOne () : float = Random.float 1.0
@@ -81,5 +93,9 @@ let () =
   let sampler () = mixture [ sample0; sample1; sampleFew; sampleMany ] weights in
   let n = 1_000_000 in 
   let samples = List.init n (fun _ -> sampler ()) in 
-  (* let mean = sumFloats samples /. n in *)
-  Printf.printf "Hello world\n"
+  match unwind samples with
+    | None -> Printf.printf "error"
+    | Some(xs) -> (
+        let mean = sumFloats xs /. float_of_int(n) in 
+        Printf.printf "Mean: %f" mean
+      )
