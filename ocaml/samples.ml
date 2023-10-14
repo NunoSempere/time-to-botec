@@ -65,13 +65,13 @@ let sampleTo low high =
   sampleLognormal logmean logstd
 
 let mixture (samplers: (unit -> float) list) (weights: float list): (float, string) result = 
-   if (List.length samplers == List.length weights) 
+   if (List.length samplers <> List.length weights) 
     then Error "in mixture function, List.length samplers != List.length weights"
   else
     let normalized_weights = normalizeXs weights in
     let cumsummed_normalized_weights = cumsumXs normalized_weights in
     let p = sampleZeroToOne () in
-    let chosenSamplerIndex = findIndex cumsummed_normalized_weights (fun x -> x < p) in
+    let chosenSamplerIndex = findIndex cumsummed_normalized_weights (fun x -> p < x) in
     let sampler = match chosenSamplerIndex with
       | Error e -> Error e
       | Ok(i) -> nth samplers i
