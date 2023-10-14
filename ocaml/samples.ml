@@ -51,7 +51,7 @@ let mixture (samplers: (unit -> float) array) (weights: float array) =
         let chosenSamplerIndex = findIndex cumsummed_normalized_weights (fun x -> x < p) in
         let sample = match chosenSamplerIndex with
           | None -> None
-          | Some(i) -> Some(1.0) (* (samplers.(i) ()) |> Some *)
+          | Some(i) -> Some((samplers.(i) ())) (* (samplers.(i) ()) |> Some *)
         in
         sample
 
