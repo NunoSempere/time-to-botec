@@ -41,20 +41,19 @@ let sampleTo low high =
   let logstd = (loghigh -. loglow) /. (2.0 -. normal_95_ci_length ) in
   sampleLognormal logmean logstd
 
-let (|>) x f = f x
 let mixture (samplers: (unit -> float) array) (weights: float array): float option = 
-  match (Array.length samplers == Array.length weights) with
-    | false -> None
-    | true -> 
-        let normalized_weights = normalizeXs weights in
-        let cumsummed_normalized_weights = cumsumXs normalized_weights in
-        let p = sampleZeroToOne () in
-        let chosenSamplerIndex = findIndex cumsummed_normalized_weights (fun x -> x < p) in
-        let sample = match chosenSamplerIndex with
-          | None -> None
-          | Some(i) -> Some(samplers.(i) ())
-        in
-        sample
+   if (Array.length samplers == Array.length weights) 
+    then None
+  else
+    let normalized_weights = normalizeXs weights in
+    let cumsummed_normalized_weights = cumsumXs normalized_weights in
+    let p = sampleZeroToOne () in
+    let chosenSamplerIndex = findIndex cumsummed_normalized_weights (fun x -> x < p) in
+    let sample = match chosenSamplerIndex with
+      | None -> None
+      | Some(i) -> Some (samplers.(i) ())
+    in
+    sample
 
 let () =
   Random.init 1;
