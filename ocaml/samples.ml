@@ -54,6 +54,15 @@ let unwind xs =
     )
   *)
 
+let unwindSum xs = 
+  let rec tailRecursiveHelper ys sum =
+    match ys with
+    | [] -> Ok(sum)
+    | Error e :: _ -> Error e
+    | Ok(y) :: ys -> tailRecursiveHelper ys (y +. sum) 
+  in 
+  tailRecursiveHelper xs 0.0
+
 (* Basic samplers *)
 let sampleZeroToOne () : float = Random.float 1.0
 
@@ -104,9 +113,9 @@ let () =
   let sampler () = mixture [ sample0; sample1; sampleFew; sampleMany ] weights in
   let n = 1_000_000 in 
   let samples = List.init n (fun _ -> sampler ()) in 
-  match unwind samples with
+  match unwindSum samples with
     | Error err -> Printf.printf "Error %s\n" err
-    | Ok(xs) -> (
-        let mean = sumFloats xs /. float_of_int(n) in 
+    | Ok(sum) -> (
+        let mean = sum /. float_of_int(n) in 
         Printf.printf "Mean: %f\n" mean
       )
