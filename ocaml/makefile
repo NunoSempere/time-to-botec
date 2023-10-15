@@ -5,10 +5,14 @@ CC=ocamlopt
 
 # Main file
 SRC=samples.ml
+OUT=./out/samples
 
 build: $(SRC)
-	$(CC) $(SRC) -o out/samples
+	$(CC) $(SRC) -o $(OUT)
 	mv samples.cmi samples.cmx samples.o ./out/
 
 run:
-	./out/samples
+	$(OUT)
+
+time:
+	bash -c "time $(OUT)"

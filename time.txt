@@ -138,3 +138,16 @@ Requires /bin/time, found on GNU/Linux systems
 Running 100x and taking avg time example
 Time using 1 thread: 37.60ms
 
+## squiggle.ml
+
+— make build && make time
+ocamlopt samples.ml -o ./out/samples
+mv samples.cmi samples.cmx samples.o ./out/
+bash -c "time ./out/samples"
+Mean: 0.884629
+
+real    0m0.425s
+user    0m0.393s
+sys     0m0.032s
+ 
+42ms

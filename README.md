@@ -27,6 +27,7 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | C (optimized, 16 threads)   | 5ms       | 249  |
 | squiggle.c                  | 37ms      | 54   | 
 | Nim                         | 38ms      | 84   |
+| OCaml                       | 42ms      | 112  |
 | Lua (LuaJIT)                | 68ms      | 82   |
 | Lua                         | 278ms     | 82   |
 | C (naïve implementation)    | 292ms     | 149  |
@@ -128,7 +129,7 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 - [ ] bc (the standard posix calculator)
 - [ ] Zig
 - [ ] Rust
-- [ ] OCaml
+- [x] OCaml
 - [ ] Forth
 - [ ] Julia (TuringML, MCHammer) 
 - [ ] Lisp
