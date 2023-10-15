@@ -123,6 +123,8 @@ Overall I'm thinking that a combination of lua at least for scripting and ¿nim/
 
 OCaml was like meeting an old and forgotten friend. I found its syntax a bit clunky, but could get accustomed to it. Its list matching is nice, O(n) list element accessing, not so much. Honestly, I wanted to really like it, but I'm not sure yet. And it's *slow* compared to C.
 
+I restricted myself to using the standard library, but it's likely that using Jane Street's Base or Core would have produced less clunky code.
+
 ### Overall thoughts
 
 Overall I don't think that this is a fair comparison of the languages intrinsically, because I'm just differentially good at them, because I've chosen to put more effort in ones than in others. But it is still useful to me personally, and perhaps mildly informative to others. 

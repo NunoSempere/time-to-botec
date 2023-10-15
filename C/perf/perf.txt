@@ -1,0 +1,25 @@
+Samples: 806  of event 'cycles', Event count (approx.): 576095767
+Overhead  Command  Shared Object      Symbol
+  36.75%  samples  samples            [.] xorshift32
+  13.69%  samples  libgomp.so.1.0.0   [.] 0x000000000001d3ca
+  12.84%  samples  samples            [.] mixture._omp_fn.0
+  10.70%  samples  libgomp.so.1.0.0   [.] 0x000000000001d212
+   5.02%  samples  samples            [.] rand_0_to_1
+   4.05%  samples  libm-2.31.so       [.] __sin_fma
+   3.11%  samples  libm-2.31.so       [.] __logf_fma
+   2.79%  samples  samples            [.] split_array_sum._omp_fn.0
+   1.91%  samples  samples            [.] random_to
+   1.74%  samples  samples            [.] random_uniform
+   0.87%  samples  libm-2.31.so       [.] __ieee754_log_fma
+   0.81%  samples  samples            [.] ur_normal
+   0.74%  samples  libm-2.31.so       [.] __expf_fma
+   0.55%  samples  libgomp.so.1.0.0   [.] 0x000000000001d3d1
+   0.53%  samples  libgomp.so.1.0.0   [.] 0x000000000001d21d
+   0.35%  samples  samples            [.] random_normal
+   0.30%  samples  libm-2.31.so       [.] __sqrtf
+   0.28%  samples  samples            [.] random_lognormal
+   0.25%  samples  samples            [.] sample_0
+   0.24%  samples  [kernel.kallsyms]  [k] 0xffffffffae72e205
+   0.22%  samples  libgomp.so.1.0.0   [.] 0x000000000001d219
+   0.18%  samples  [kernel.kallsyms]  [k] 0xffffffffae2c2b83
+   0.18%  samples  [kernel.kallsyms]  [k] 0xffffffffae4f4da7
