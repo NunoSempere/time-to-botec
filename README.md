@@ -27,8 +27,8 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | C (optimized, 16 threads)   | 5ms       | 249  |
 | squiggle.c                  | 37ms      | 54   | 
 | Nim                         | 38ms      | 84   |
-| OCaml                       | 42ms      | 112  |
 | Lua (LuaJIT)                | 68ms      | 82   |
+| OCaml (flambda mode)        | 245ms     | 112  |
 | Lua                         | 278ms     | 82   |
 | C (naïve implementation)    | 292ms     | 149  |
 | Javascript (NodeJS)         | 732ms     | 69   |
