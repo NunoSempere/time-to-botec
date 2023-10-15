@@ -34,7 +34,16 @@ let findIndex xs test =
     in
   recursiveHelper xs 0
 
-let rec unwind xs = 
+let unwind xs = 
+  let rec tailRecursiveHelper ys acc =
+    match ys with
+    | [] -> Ok(acc)
+    | Error e :: _ -> Error e
+    | Ok(y) :: ys -> tailRecursiveHelper ys (y :: acc) 
+  in 
+  tailRecursiveHelper xs []
+  
+  (* previous version, which wasn't tail-recursive
   match xs with
   | [] -> Ok([])
   | Error e:: ys -> Error e
@@ -43,6 +52,7 @@ let rec unwind xs =
       | Ok(zs) -> Ok(y :: zs)
       | Error e -> Error e
     )
+  *)
 
 (* Basic samplers *)
 let sampleZeroToOne () : float = Random.float 1.0
