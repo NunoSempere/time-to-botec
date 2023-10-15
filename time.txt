@@ -140,12 +140,12 @@ Time using 1 thread: 37.60ms
 
 ## squiggle.ml
 
-— make fast && make time
+— make fast && time make run
 ocamlopt -O3 -unsafe  samples.ml -o ./out/samples
 mv samples.cmi samples.cmx samples.o ./out/
-bash -c "time ./out/samples"
-Mean: 0.886498
+./out/samples
+Mean: 0.884629
 
-real    0m0.245s
-user    0m0.232s
-sys     0m0.012s
+real    0m0.164s
+user    0m0.159s
+sys     0m0.004s

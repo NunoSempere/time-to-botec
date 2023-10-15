@@ -25,10 +25,10 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | Language                    | Time      | Lines of code |
 |-----------------------------|-----------|---------------|
 | C (optimized, 16 threads)   | 5ms       | 249  |
-| squiggle.c                  | 37ms      | 54   | 
+| squiggle.c                  | 37ms      | 54*  | 
 | Nim                         | 38ms      | 84   |
 | Lua (LuaJIT)                | 68ms      | 82   |
-| OCaml (flambda mode)        | 245ms     | 112  |
+| OCaml (flambda)             | 164ms     | 123  |
 | Lua                         | 278ms     | 82   |
 | C (naïve implementation)    | 292ms     | 149  |
 | Javascript (NodeJS)         | 732ms     | 69   |
@@ -118,6 +118,10 @@ sudo ln -sf luajit-2.1.0-beta3 /usr/local/bin/luajit
 ```
 
 Overall I'm thinking that a combination of lua at least for scripting and ¿nim/C/tbd? for more serious programs could be quite powerful.
+
+### OCaml
+
+OCaml was like meeting an old and forgotten friend. I found its syntax a bit clunky, but could get accustomed to it. Its list matching is nice, O(n) list element accessing, not so much. Honestly, I wanted to really like it, but I'm not sure yet. And it's *slow* compared to C.
 
 ### Overall thoughts
 
