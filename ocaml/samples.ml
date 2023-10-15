@@ -56,10 +56,10 @@ let unwindSum xs =
 let unwindSumArray xs = 
   Array.fold_left(fun acc x -> 
     (
-      match (acc, x) with
-      | (Error e, _) -> Error e
-      | (_, Error e) -> Error e
-      | (Ok(sum), Ok(y)) -> Ok(sum +. y)
+      match acc, x with
+      | Error e, _ -> Error e
+      | _, Error e -> Error e
+      | Ok(sum), Ok(y) -> Ok(sum +. y)
     )
   ) (Ok 0.0) xs
 
