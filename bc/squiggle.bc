@@ -13,7 +13,7 @@ define sample_unit_uniform(){
 define sample_unit_normal(){
   u1=sample_unit_uniform()
   u2=sample_unit_uniform()
-  z = sqrt(-2 * log(u1, 2)) * sin(2 * pi * u2)
+  z = sqrt(-2 * l(u1)) * sin(2 * pi * u2)
   return z
 }
 
@@ -66,7 +66,7 @@ define sample_to(low, high){
   we need but get a normal with 90% confidence interval [log(a), log(b)].
   Then see code for sample_normal_from_90_confidence_interval
   */
-  loglow = log(low, 2)
-  loghigh = log(high, 2)
+  loglow = l(low)
+  loghigh = l(high)
   return e(sample_normal_from_90_confidence_interval(loglow, loghigh))
 }
