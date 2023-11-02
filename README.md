@@ -35,6 +35,7 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | Squiggle                    | 1,536s    | 14*  |
 | SquigglePy                  | 1.602s    | 18*  |
 | R                           | 7,000s    | 49   |
+| Gavin Howard's bc           | 15.9s     | 59   |
 | Python (CPython)            | 16,641s   | 56   |
 
 Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples. But different implementations use different algorithms and, occasionally, different time measuring methodologies (for the C, Nim and Lua implementations, I run the program 100 times and take the mean). Their speed was also measured under different loads in my machine. So I think that these time estimates are accurate within maybe ~2x or so.
@@ -125,17 +126,26 @@ OCaml was like meeting an old and forgotten friend. I found its syntax a bit clu
 
 I restricted myself to using the standard library, but it's likely that using Jane Street's Base or Core would have produced less clunky code.
 
+### bc
+
+The beautiful thing about bc is that it's an arbitrary precision calculator:
+
+- it's not going to get floating point overflows, unlike practically everything else. Try `1000000001.0 ** 1000000.0` in OCaml, and you will get infinity, try p(1000000000.0, 1000000.0) and you will get a large power of 10 in bc.
+- you can always trade get more precision (at the cost of longer running times). Could be useful if you were working with tricky long tails.
+
+I decided to go with [Gavin Howard's bc](https://git.gavinhoward.com/gavin/bc), because I've been following the guy some time, and I respect him. It also had some crucial extensions, like a random number generator and 
+
 ### Overall thoughts
 
 Overall I don't think that this is a fair comparison of the languages intrinsically, because I'm just differentially good at them, because I've chosen to put more effort in ones than in others. But it is still useful to me personally, and perhaps mildly informative to others. 
 
 ## Languages I may add later
 
+- [x] bc (the standard posix calculator)
+- [x] OCaml
 - [ ] PyMC
-- [ ] bc (the standard posix calculator)
 - [ ] Zig
 - [ ] Rust
-- [x] OCaml
 - [ ] Forth
 - [ ] Julia (TuringML, MCHammer) 
 - [ ] Lisp
