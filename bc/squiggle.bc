@@ -1,0 +1,124 @@
+scale = 32
+/* seed = 12345678910 */
+pi = 4 * atan(1)
+normal90confidence=1.6448536269514727148638489079916
+
+/* Distribution & sampling functions */
+/* Unit distributions */
+
+define sample_unit_uniform(){
+  return rand()/maxrand()
+}
+
+define sample_unit_normal(){
+  u1=sample_unit_uniform()
+  u2=sample_unit_uniform()
+  z = sqrt(-2 * log(u1, 2)) * sin(2 * pi * u2)
+  return z
+}
+
+/* Composite distributions */
+
+define sample_uniform(min, max){
+  return (min + sample_unit_uniform()*(max-min))
+}
+
+define sample_normal(mean, sigma){
+  return (mean + sigma * sample_unit_normal())
+}
+
+define sample_lognormal(logmean, logstd){
+  return e(sample_normal(logmean, logstd))
+}
+
+define sample_normal_from_90_confidence_interval(low, high){
+  /*
+  Explanation of key idea:
+  1. We know that the 90% confidence interval of the unit normal is
+  [-1.6448536269514722, 1.6448536269514722]
+  see e.g.: https://stackoverflow.com/questions/20626994/how-to-calculate-the-inverse-of-the-normal-cumulative-distribution-function-in-p
+  or https://www.wolframalpha.com/input?i=N%5BInverseCDF%28normal%280%2C1%29%2C+0.05%29%2C%7B%E2%88%9E%2C100%7D%5D
+  2. So if we take a unit normal and multiply it by
+  L / 1.6448536269514722, its new 90% confidence interval will be
+  [-L, L], i.e., length 2 * L
+  3. Instead, if we want to get a confidence interval of length L,
+  we should multiply the unit normal by
+  L / (2 * 1.6448536269514722)
+  Meaning that its standard deviation should be multiplied by that amount
+  see: https://en.wikipedia.org/wiki/Normal_distribution?lang=en#Operations_on_a_single_normal_variable
+  4. So we have learnt that Normal(0, L / (2 * 1.6448536269514722))
+  has a 90% confidence interval of length L
+  5. If we want a 90% confidence interval from high to low,
+  we can set mean = (high + low)/2; the midpoint, and L = high-low,
+  Normal([high + low]/2, [high - low]/(2 * 1.6448536269514722))
+  */
+  mean = (high + low) / 2.0
+  std = (high - low) / (2.0 * normal90confidence)
+  return sample_normal(mean, std)
+}
+
+define sample_to(low, high){
+
+  /*
+  Given a (positive) 90% confidence interval,
+  returns a sample from a lognorma with a matching 90% c.i.
+  Key idea: If we want a lognormal with 90% confidence interval [a, b]
+  we need but get a normal with 90% confidence interval [log(a), log(b)].
+  Then see code for sample_normal_from_90_confidence_interval
+  */
+  loglow = log(low, 2)
+  loghigh = log(high, 2)
+  return e(sample_normal_from_90_confidence_interval(loglow, loghigh))
+}
+
+define sample_gamma(alpha){
+  /*
+  A Simple Method for Generating Gamma Variables, Marsaglia and Wan Tsang, 2001
+  https://dl.acm.org/doi/pdf/10.1145/358407.358414
+  see also the references/ folder
+  Note that the Wikipedia page for the gamma distribution includes a scaling parameter
+  k or beta
+  https://en.wikipedia.org/wiki/Gamma_distribution
+  such that gamma_k(alpha, k) = k * gamma(alpha)
+  or gamma_beta(alpha, beta) = gamma(alpha) / beta
+  So far I have not needed to use this, and thus the second parameter is by default 1.
+  */
+
+  if (alpha >= 1) {
+    d = alpha - (1/3);
+    c = 1.0 / sqrt(9.0 * d);
+    while (1) {
+      v=-1
+      while(v<=0) {
+        x = sample_unit_normal();
+        v = 1 + c * x;
+      }
+      v = v * v * v;
+      u = sample_unit_uniform();
+      if (u < (1 - (0.0331 * (x * x * x * x)))) { /* Condition 1 */
+        /* 
+        the 0.0331 doesn't inspire much confidence
+        however, this isn't the whole story
+        by knowing that Condition 1 implies condition 2
+        we realize that this is just a way of making the algorithm faster
+        i.e., of not using the logarithms
+        */
+        return d * v;
+      }
+      if (log(u, 2) < ((0.5 * (x * x)) + (d * (1 - v + log(v, 2))))) { /* Condition 2 */
+        return d * v;
+      }
+    }
+  } else {
+    return sample_gamma(1 + alpha) * p(sample_unit_uniform(), 1 / alpha);
+    /* see note in p. 371 of https://dl.acm.org/doi/pdf/10.1145/358407.358414 */
+  }
+}
+
+define sample_beta(a, b)
+{
+    /* See: https://en.wikipedia.org/wiki/Gamma_distribution#Related_distributions */
+    gamma_a = sample_gamma(a);
+    gamma_b = sample_gamma(b);
+    return gamma_a / (gamma_a + gamma_b);
+}
