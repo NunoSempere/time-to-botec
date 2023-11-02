@@ -6,7 +6,7 @@ https://pubs.opengroup.org/onlinepubs/9699919799.2018edition/utilities/bc.html
 ## gh-bc
 
 To build
-./configure
+./configure.sh -O3
 make
 sudo cp bin/bc /usr/bin/ghbc
 
