@@ -1,0 +1,32 @@
+scale = 16
+pi = 4 * atan(1)
+normal90confidence=1.64485362695
+define sample_unit_uniform(){
+  return rand()/maxrand()
+}
+define sample_unit_normal(){
+  u1=sample_unit_uniform()
+  u2=sample_unit_uniform()
+  z = sqrt(-2 * l(u1)) * sin(2 * pi * u2)
+  return z
+}
+define sample_uniform(min, max){
+  return (min + sample_unit_uniform()*(max-min))
+}
+define sample_normal(mean, sigma){
+  return (mean + sigma * sample_unit_normal())
+}
+define sample_lognormal(logmean, logstd){
+  return e(sample_normal(logmean, logstd))
+}
+define sample_normal_from_90_confidence_interval(low, high){
+  mean = (high + low) / 2
+  std = (high - low) / (2 * normal90confidence)
+  return sample_normal(mean, std)
+}
+define sample_to(low, high){
+  loglow = l(low)
+  loghigh = l(high)
+  return e(sample_normal_from_90_confidence_interval(loglow, loghigh))
+}
+
