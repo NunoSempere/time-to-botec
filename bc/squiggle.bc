@@ -1,15 +1,14 @@
-scale = 8
+scale = 16
 /* seed = 12345678910 */
 pi = 4 * atan(1)
-normal90confidence=1.6448536269514727148638489079916
+normal90confidence=1.64485362695
+/* 1.6448536269514727148638489079916 */
 
 /* Distribution & sampling functions */
 /* Unit distributions */
-
 define sample_unit_uniform(){
   return rand()/maxrand()
 }
-
 define sample_unit_normal(){
   u1=sample_unit_uniform()
   u2=sample_unit_uniform()
@@ -18,19 +17,15 @@ define sample_unit_normal(){
 }
 
 /* Composite distributions */
-
 define sample_uniform(min, max){
   return (min + sample_unit_uniform()*(max-min))
 }
-
 define sample_normal(mean, sigma){
   return (mean + sigma * sample_unit_normal())
 }
-
 define sample_lognormal(logmean, logstd){
   return e(sample_normal(logmean, logstd))
 }
-
 define sample_normal_from_90_confidence_interval(low, high){
   /*
   Explanation of key idea:
@@ -52,11 +47,10 @@ define sample_normal_from_90_confidence_interval(low, high){
   we can set mean = (high + low)/2; the midpoint, and L = high-low,
   Normal([high + low]/2, [high - low]/(2 * 1.6448536269514722))
   */
-  mean = (high + low) / 2.0
-  std = (high - low) / (2.0 * normal90confidence)
+  mean = (high + low) / 2
+  std = (high - low) / (2 * normal90confidence)
   return sample_normal(mean, std)
 }
-
 define sample_to(low, high){
 
   /*
@@ -70,3 +64,4 @@ define sample_to(low, high){
   loghigh = l(high)
   return e(sample_normal_from_90_confidence_interval(loglow, loghigh))
 }
+
