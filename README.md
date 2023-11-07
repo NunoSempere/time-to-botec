@@ -133,7 +133,7 @@ The beautiful thing about bc is that it's an arbitrary precision calculator:
 - it's not going to get floating point overflows, unlike practically everything else. Try `1000000001.0 ** 1000000.0` in OCaml, and you will get infinity, try p(1000000000.0, 1000000.0) and you will get a large power of 10 in bc.
 - you can always trade get more precision (at the cost of longer running times). Could be useful if you were working with tricky long tails.
 
-I decided to go with [Gavin Howard's bc](https://git.gavinhoward.com/gavin/bc), because I've been following the guy some time, and I respect him. It also had some crucial extensions, like a random number generator and 
+I decided to go with [Gavin Howard's bc](https://git.gavinhoward.com/gavin/bc), because I've been following the guy some time, and I respect him. It also had some crucial extensions, like a random number generator and allowing specifying functions and variables with names longer than one letter.
 
 ### Overall thoughts
 
