@@ -6,10 +6,9 @@
 
 const float PI = 3.14159265358979323846;
 
-#define N_SAMPLES 1024 * 1000
+#define N_SAMPLES (1024 * 1000 * 1000)
 
 //Array helpers
-
 void array_print(float* array, int length)
 {
     for (int i = 0; i < length; i++) {
@@ -33,48 +32,6 @@ void array_cumsum(float* array_to_sum, float* array_cumsummed, int length)
     for (int i = 1; i < length; i++) {
         array_cumsummed[i] = array_cumsummed[i - 1] + array_to_sum[i];
     }
-}
-
-// Split array helpers
-int split_array_get_length(int index, int total_length, int n_threads)
-{
-    return (total_length % n_threads > index ? total_length / n_threads + 1 : total_length / n_threads);
-}
-
-void split_array_allocate(float** meta_array, int length, int divide_into)
-{
-    int split_array_length;
-
-    for (int i = 0; i < divide_into; i++) {
-        split_array_length = split_array_get_length(i, length, divide_into);
-        meta_array[i] = malloc(split_array_length * sizeof(float));
-    }
-}
-
-void split_array_free(float** meta_array, int divided_into)
-{
-    for (int i = 0; i < divided_into; i++) {
-        free(meta_array[i]);
-    }
-    free(meta_array);
-}
-
-float split_array_sum(float** meta_array, int length, int divided_into)
-{
-    int i;
-    float output = 0;
-
-#pragma omp parallel for reduction(+ \
-                                   : output)
-    for (int i = 0; i < divided_into; i++) {
-        float own_partial_sum = 0;
-        int split_array_length = split_array_get_length(i, length, divided_into);
-        for (int j = 0; j < split_array_length; j++) {
-            own_partial_sum += meta_array[i][j];
-        }
-        output += own_partial_sum;
-    }
-    return output;
 }
 
 // Pseudo Random number generator
@@ -196,7 +153,6 @@ void paralellize(float (*sampler)(uint32_t* seed), float* results, int n_threads
     {
         #pragma omp for
         for (i = 0; i < n_threads; i++) {
-            // split_array_length = split_array_get_length(i, N_SAMPLES, n_threads);
             int lower_bound = i * (n_samples / n_threads);
             int upper_bound = ((i+1) * (n_samples / n_threads)) - 1;
             // printf("Lower bound: %d, upper bound: %d\n", lower_bound, upper_bound);
