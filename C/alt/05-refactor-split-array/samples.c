@@ -192,7 +192,7 @@ void paralellize(float (*sampler)(uint32_t* seed), float* results, int n_threads
         *seeds[i] = i + 1; // xorshift can't start with 0
     }
 
-    #pragma omp parallelz private(i, sample_index, split_array_length)
+    #pragma omp parallel private(i, sample_index, split_array_length)
     {
         #pragma omp for
         for (i = 0; i < n_threads; i++) {
