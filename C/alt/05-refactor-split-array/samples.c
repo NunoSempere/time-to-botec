@@ -6,7 +6,7 @@
 
 const float PI = 3.14159265358979323846;
 
-#define N 1000000
+#define N_SAMPLES 1024 * 1000
 
 //Array helpers
 
@@ -81,7 +81,7 @@ float split_array_sum(float** meta_array, int length, int divided_into)
 
 uint32_t xorshift32(uint32_t* seed)
 {
-    // Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs"
+    // Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RN_SAMPLESGs"
     // See <https://stackoverflow.com/questions/53886131/how-does-xorshift32-works>
     // https://en.wikipedia.org/wiki/Xorshift
     // Also some drama: <https://www.pcg-random.org/posts/on-vignas-pcg-critique.html>, <https://prng.di.unimi.it/>
@@ -103,10 +103,10 @@ float rand_0_to_1(uint32_t* seed)
 	x ^= x << 13;
 	x ^= x >> 17;
 	x ^= x << 5;
-	return ((float)(*seed = x))/((float) UINT32_MAX);
+	return ((float)(*seed = x))/((float) UIN_SAMPLEST32_MAX);
 	*/
     // previously:
-    // ((float)rand_r(seed) / (float)RAND_MAX)
+    // ((float)rand_r(seed) / (float)RAN_SAMPLESD_MAX)
     // and before that: rand, but it wasn't thread-safe.
     // See: <https://stackoverflow.com/questions/43151361/how-to-create-thread-safe-random-number-generator-in-c-using-rand-r> for why to use rand_r:
     // rand() is not thread-safe, as it relies on (shared) hidden seed.
@@ -142,11 +142,11 @@ float random_lognormal(float logmean, float logsigma, uint32_t* seed)
 
 float random_to(float low, float high, uint32_t* seed)
 {
-    const float NORMAL95CONFIDENCE = 1.6448536269514722;
+    const float N_SAMPLESORMAL95CON_SAMPLESFIDEN_SAMPLESCE = 1.6448536269514722;
     float loglow = logf(low);
     float loghigh = logf(high);
     float logmean = (loglow + loghigh) / 2;
-    float logsigma = (loghigh - loglow) / (2.0 * NORMAL95CONFIDENCE);
+    float logsigma = (loghigh - loglow) / (2.0 * N_SAMPLESORMAL95CON_SAMPLESFIDEN_SAMPLESCE);
     return random_lognormal(logmean, logsigma, seed);
 }
 
@@ -179,8 +179,12 @@ float mixture(float (*samplers[])(uint32_t*), float* weights, int n_dists, uint3
 }
 
 // Parallization function
-void paralellize(float (*sampler)(uint32_t* seed), float** results, int n_threads){
-
+void paralellize(float (*sampler)(uint32_t* seed), float* results, int n_threads, int n_samples){
+    if((N_SAMPLES % n_threads) != 0){
+        fprintf(stderr, "Number of samples isn't divisible by number of threads, aborting\n");
+        exit(1);
+    }
+    // int n_samples_per_thread = N_SAMPLES / n_thread;
     int sample_index, i, split_array_length;
     uint32_t** seeds = malloc(n_threads * sizeof(uint32_t*));
     for (uint32_t i = 0; i < n_threads; i++) {
@@ -188,13 +192,16 @@ void paralellize(float (*sampler)(uint32_t* seed), float** results, int n_thread
         *seeds[i] = i + 1; // xorshift can't start with 0
     }
 
-    #pragma omp parallel private(i, sample_index, split_array_length)
+    #pragma omp parallelz private(i, sample_index, split_array_length)
     {
         #pragma omp for
         for (i = 0; i < n_threads; i++) {
-            split_array_length = split_array_get_length(i, N, n_threads);
-            for (int j = 0; j < split_array_length; j++) {
-                results[i][j] = sampler(seeds[i]);
+            // split_array_length = split_array_get_length(i, N_SAMPLES, n_threads);
+            int lower_bound = i * (n_samples / n_threads);
+            int upper_bound = ((i+1) * (n_samples / n_threads)) - 1;
+            // printf("Lower bound: %d, upper bound: %d\n", lower_bound, upper_bound);
+            for (int j = lower_bound; j < upper_bound; j++) {
+                results[j] = sampler(seeds[i]);
             }
         }
     }
@@ -247,14 +254,11 @@ float sample_mixture(uint32_t* seed){
 int main()
 {
     int n_threads = omp_get_max_threads();
-    // printf("Max threads: %d\n", n_threads);
-    // omp_set_num_threads(n_threads);
-    float** split_array_results = malloc(n_threads * sizeof(float*));
-    split_array_allocate(split_array_results, N, n_threads);
+    float* split_array_results = malloc(N_SAMPLES * sizeof(float));
 
-    paralellize(sample_mixture, split_array_results, n_threads);
-    printf("Sum(split_array_results, N)/N = %f\n", split_array_sum(split_array_results, N, n_threads) / N);
+    paralellize(sample_mixture, split_array_results, n_threads, N_SAMPLES);
+    printf("Sum(split_array_results, N_SAMPLES)/N_SAMPLES = %f\n", array_sum(split_array_results, N_SAMPLES) / N_SAMPLES);
 
-    split_array_free(split_array_results, n_threads);
+    free(split_array_results);
     return 0;
 }
