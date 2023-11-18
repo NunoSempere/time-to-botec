@@ -1,0 +1,17 @@
+Requires /bin/time, found on GNU/Linux systems
+
+Running 100x and taking avg time: OMP_NUM_THREADS=1 out/samples
+Time using 1 thread: 32.30ms
+
+Running 100x and taking avg time: OMP_NUM_THREADS=2 out/samples
+Time using 2 threads: 30.80ms
+
+Running 100x and taking avg time: OMP_NUM_THREADS=4 out/samples
+Time for 4 threads: 30.50ms
+
+Running 100x and taking avg time: OMP_NUM_THREADS=8 out/samples
+Time using 8 threads: 12.90ms
+
+Running 100x and taking avg time: OMP_NUM_THREADS=16 out/samples
+Time using 16 threads: 9.10ms
+

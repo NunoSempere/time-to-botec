@@ -6,6 +6,7 @@
 
 # Compiler
 CC=gcc
+# CC=clang
 # CC=tcc # <= faster compilation
 
 # Main file
