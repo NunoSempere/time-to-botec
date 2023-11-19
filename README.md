@@ -29,7 +29,7 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | Nim                         | 40.8ms    | 84   |
 | Lua (LuaJIT)                | 69.9ms    | 82   |
 | OCaml (flambda)             | 187.9ms   | 123  |
-| Squiggle (bun)              | 0.386s    | 14*  |
+| Squiggle (bun)              | 0.538s    | 14*  |
 | Javascript (node)           | 0.445s    | 69   |
 | SquigglePy (v0.27)          | 1.507s    | 18*  |
 | R (3.6.1)                   | 4.508s    | 49   |
@@ -85,9 +85,9 @@ I like the [operator](http://duskos.org/#operator) section of [Dusk OS](http://d
 
 ### NodeJS and Squiggle
 
-Using [bun](https://bun.sh/) instead of node is actually a bit slower. Also, both the NodeJS and the Squiggle code use [stdlib](https://stdlib.io/) in their innards, which has a bunch of interleaved functions that make the code slower. It's possible that not using that external library could make the code faster. But at the same time, the js approach does seem to be to use external libraries whenever possible. 
+Using [bun](https://bun.sh/) instead of node is actually a bit slower for the raw js code. Also, both the NodeJS and the Squiggle code use [stdlib](https://stdlib.io/) in their innards, which has a bunch of interleaved functions that make the code slower. It's possible that not using that external library could make the code faster. But at the same time, the js approach does seem to be to use external libraries whenever possible. 
 
-I wasn't particularly sure that the Squiggle code was actually producing 1M samples, so I applied a [monkey patch](https://git.nunosempere.com/personal/time-to-botec/src/branch/master/squiggle/makefile#L14) to ensure this. In general, Squiggle tries to present a simple interface to the user, leading to "hiding the magic" and having a bunch of [bugs](https://github.com/quantified-uncertainty/squiggle/labels/Bug), whereas I think the right tradeoff for me is to have some simple interface that I can operate skillfully (i.e., squiggle.c). 
+In general, Squiggle tries to present a simple interface to the user, leading to "hiding the magic" and having a bunch of [bugs](https://github.com/quantified-uncertainty/squiggle/labels/Bug), whereas I think the right tradeoff for me is to have some simple interface that I can operate skillfully (i.e., squiggle.c). 
 
 ### Python and Squigglepy
 
