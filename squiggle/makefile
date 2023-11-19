@@ -11,9 +11,6 @@ time-bun:
 run-bun:
 	bun src/samples.js
 
-patch:
-	sed -i 's/defaultSampleCount: 1000/defaultSampleCount: 1000000/g' src/node_modules/@quri/squiggle-lang/src/magicNumbers.ts src/node_modules/@quri/squiggle-lang/dist/magicNumbers.js
-
 run-node:
 	node src/samples.js
 

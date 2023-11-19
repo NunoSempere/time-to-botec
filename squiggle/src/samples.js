@@ -19,9 +19,11 @@ mean(result)
 
 async function main(){
   let output = await run(squiggle_code, {
-    defaultXYPointLength: 1000000,
-    defaultSampleCount: 1000000,
-    sparklineLength: 20,
+    environment: {
+      xyPointLength: 1000000,
+      sampleCount: 1000000,
+      sparkLine: 20,
+    }
   })
   console.log(output.value.result.value)
 }
