@@ -77,17 +77,23 @@ Although the above paragraphs were written in the first person, the C code was w
 
 ### squiggle.c
 
-squiggle.c is a minimalistic library focused on understandability and being self-contained. It grew from the initial C code in this repository. You can see the code for the library [here](https://git.nunosempere.com/personal/squiggle.c), and the code for the example we are discussing [here](https://git.nunosempere.com/personal/squiggle.c/src/branch/master/examples/02_many_samples_time_to_botec).
+squiggle.c is a minimalistic library focused on understandability and being self-contained. I've put a bunch of thought into how to design this in a way which is clean and fast. It grew from the initial C code in this repository. You can see the code for the library [here](https://git.nunosempere.com/personal/squiggle.c), which contains a thoughful README which I recommend people doing Monte Carlo estimation stuff read. 
+
+I like the [operator](http://duskos.org/#operator) section of [Dusk OS](http://duskos.org/):
+
+> Dusk OS doesn't have users, but operators. What's the difference? Control. You use a phone, you use a coffee machine, hell you even use a car these days. But you operate a bulldozer, you operate a crane, you operate a plane.
 
 ### NodeJS and Squiggle
 
-Using [bun](https://bun.sh/) instead of node is actually a bit slower. Also, both the NodeJS and the Squiggle code use [stdlib](https://stdlib.io/) in their innards, which has a bunch of interleaved functions that make the code slower. It's possible that not using that external library could make the code faster. But at the same time, the js approach does seem to be to use external libraries whenever possible.
+Using [bun](https://bun.sh/) instead of node is actually a bit slower. Also, both the NodeJS and the Squiggle code use [stdlib](https://stdlib.io/) in their innards, which has a bunch of interleaved functions that make the code slower. It's possible that not using that external library could make the code faster. But at the same time, the js approach does seem to be to use external libraries whenever possible. 
 
-I am not particularly sure that the Squiggle code is actually producing 1M samples, but I am also not in a rush to debug this.
+I wasn't particularly sure that the Squiggle code was actually producing 1M samples, so I applied a [monkey patch](https://git.nunosempere.com/personal/time-to-botec/src/branch/master/squiggle/makefile#L14) to ensure this. In general, Squiggle tries to present a simple interface to the user, leading to "hiding the magic" and having a bunch of [bugs](https://github.com/quantified-uncertainty/squiggle/labels/Bug), whereas I think the right tradeoff for me is to have some simple interface that I can operate skillfully (i.e., squiggle.c). 
 
-### Python
+### Python and Squigglepy
 
-For the Python code, it's possible that the lack of speed is more a function of me not being as familiar with Python. It's also very possible that the code would run faster with [PyPy](https://doc.pypy.org).
+For the Python code, it's possible that the lack of speed is more a function of me not being as familiar with Python. It's also very possible that the code would run faster with [PyPy](https://doc.pypy.org). 
+
+In terms of complexity, SquigglePy seems to be between squiggle.c and the original squiggle. Like the original suqiggle, it also hides its stuff behind semi-magic wrappers, leading to e.g. ambiguities like around [correlated samples](https://git.nunosempere.com/personal/squiggle.c#correlated-samples) and generally having moving pieces that I don't understand. On the other hand, the code *is* short enough so that one person could read it in a few afternoons and roughly understand it. In terms of speed, SquigglePy seems slow.
 
 ### R
 
