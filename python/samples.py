@@ -32,7 +32,7 @@ def mixture(samples_list, weights_array, n=DEFAULT_N):
         helper_list = [j for j in range(
             len(cummulative_sums)) if cummulative_sums[j] > helper_probs[i]]
         if len(helper_list) == 0:
-            helper_loc = 0 # continue
+            helper_loc = 0  # continue
             print("This should never happen")
         else:
             helper_loc = helper_list[0]

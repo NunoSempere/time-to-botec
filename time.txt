@@ -1,161 +1,96 @@
-# Optimized C
+# bc
+time ghbc -l squiggle.bc estimate.bc
+.8907201178102747
 
+real	0m15.960s
+user	0m15.948s
+sys	0m0.000s
 
-$ make && make time-linux
-gcc -O3   samples.c -fopenmp -lm -o out/samples
-Requires /bin/time, found on GNU/Linux systems
-
-Running 100x and taking avg time: OMP_NUM_THREADS=1 out/samples
-Time using 1 thread: 20.20ms
-
-Running 100x and taking avg time: OMP_NUM_THREADS=2 out/samples
-Time using 2 threads: 17.50ms
-
-Running 100x and taking avg time: OMP_NUM_THREADS=4 out/samples
-Time for 4 threads: 17.00ms
-
-Running 100x and taking avg time: OMP_NUM_THREADS=8 out/samples
-Time using 8 threads: 8.40ms
-
-Running 100x and taking avg time: OMP_NUM_THREADS=16 out/samples
-Time using 16 threads: 5.00ms
 
 # C
-
-## normal compilation
-0.888458
-
-real    0m0,442s
-user    0m0,378s
-sys     0m0,064s
-
-## -Ofast
-0.888458
-
-real    0m0.292s
-user    0m0.266s
-sys     0m0.026s
-
-# Squiggle
-
-real    0m1,536s
-user    0m1,564s
-sys     0m0,240s
-
-# NodeJS
-
-0.8849940532403973
-
-real    0m0,732s
-user    0m0,769s
-sys     0m0,131s
+Running 100x and taking avg time: OMP_NUM_THREADS=16 out/samples
+Time using 16 threads: 5.60ms
 
 
-## Python
 
-0.8887373869178242
+# js (bun)
+0.8867426270252042
 
-real    0m16,641s
-user    0m16,693s
-sys     0m0,517s
-
-## R
-[1] 0.885141
-
-real    0m7,000s
-user    0m6,944s
-sys     0m0,052s
-
-## Nim
-
-nim c --verbosity:0 samples.nim && time ./samples --verbosity:0 && echo
-0.8860780498240779
-
-real    0m0.234s
-user    0m0.214s
-sys     0m0.020s
-
-nim c --verbosity:0 -d:release samples.nim && time ./samples --verbosity:0 && echo
-0.884035098700204
-
-real    0m0.074s
-user    0m0.043s
-sys     0m0.031s
-
-nim c --verbosity:0 -d:danger samples.nim && time ./samples --verbosity:0
-0.8892827195895541
-
-real    0m0.068s
-user    0m0.048s
-sys     0m0.020s
-
-— make time-linux
-Requires /bin/time, found on GNU/Linux systems
-
-Running 100x and taking avg time of:
-Time: 38.90ms
-
-## Squigglepy
+real	0m0.551s
+user	0m0.527s
+sys	0m0.055s
 
 
-— time make run
-python3 samples.py
-100%|█████████████████████████████████████████████████████████████████████████████████████| 4/4 [00:00<00:00, 20.68it/s]
-100%|████████████████████████████████████████████████████████████████████| 1000000/1000000 [00:00<00:00, 1298266.78it/s]
-0.8854926010232937
+# js (node)
+0.8878977218582866
 
-real    0m1.602s
-user    0m1.582s
-sys     0m0.331s
+real	0m0.445s
+user	0m0.523s
+sys	0m0.060s
 
-## Lua
 
-— make time-linux-simple
-Requires /bin/time, found on GNU/Linux systems
-
-/bin/time -f "Time: %es" lua samples.lua && echo
-0.88932198462254
-Time: 0.28s
-
-— make time-linux
-Requires /bin/time, found on GNU/Linux systems
-
-Running 100x and taking avg time of: lua samples.lua
-Time: 275.80ms
-
-— make time-linux
+# lua (luajit)
 Requires /bin/time, found on GNU/Linux systems
 
 Running 100x and taking avg time of: luajit samples.lua
-Time: 68.60ms
+Time: 69.90ms
 
 
-## squiggle.c
 
-— make time-linux
+# nim
 Requires /bin/time, found on GNU/Linux systems
 
-Running 100x and taking avg time example
-Time using 1 thread: 37.60ms
+Running 100x and taking avg time of: 
+Time: 40.80ms
 
-## squiggle.ml
 
-— make fast && time make run
-ocamlopt -O3 -unsafe  samples.ml -o ./out/samples
-mv samples.cmi samples.cmx samples.o ./out/
-./out/samples
-Mean: 0.884629
 
-real    0m0.164s
-user    0m0.159s
-sys     0m0.004s
+# ocaml
+Requires /bin/time, found on GNU/Linux systems
 
-## squiggle.bc
+Running 100x and taking avg time of: 
+Time: 187.90ms
 
-make time
-time ghbc -l squiggle.bc estimate.bc
-.8882048395568279
 
-real    0m15.906s
-user    0m15.900s
-sys     0m0.000s
+
+# Python (3.9)
+0.8887373869178242
+
+real	0m11.879s
+user	0m12.129s
+sys	0m1.055s
+
+
+# R (3.6.1)
+[1] 0.8899922
+
+real	0m4.508s
+user	0m4.476s
+sys	0m0.028s
+
+
+# Squiggle (0.8.6)
+Requires /bin/time, found on GNU/Linux systems
+
+Running 100x and taking avg time of: 
+Time: 386.80ms
+
+
+
+# SquigglePy (0.27)
+time python3.9 samples.py
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.07it/s]100%|██████████| 4/4 [00:00<00:00, 23.38it/s]
+  0%|          | 0/1000000 [00:00<?, ?it/s] 10%|█         | 104035/1000000 [00:00<00:00, 1040346.03it/s] 24%|██▍       | 238684/1000000 [00:00<00:00, 1220429.41it/s] 38%|███▊      | 376402/1000000 [00:00<00:00, 1292004.08it/s] 51%|█████▏    | 514235/1000000 [00:00<00:00, 1326083.80it/s] 65%|██████▌   | 654235/1000000 [00:00<00:00, 1352735.46it/s] 80%|███████▉  | 795746/1000000 [00:00<00:00, 1373942.14it/s] 93%|█████████▎| 934912/1000000 [00:00<00:00, 1379731.72it/s]100%|██████████| 1000000/1000000 [00:00<00:00, 1329428.38it/s]
+0.8879525229675179
+
+real	0m1.507s
+user	0m1.969s
+sys	0m2.201s
+
+
+# squiggle.c
+Running 100x and taking avg time: OMP_NUM_THREADS=16 ./samples
+Time using 16 threads: 12.70ms
+
+
+

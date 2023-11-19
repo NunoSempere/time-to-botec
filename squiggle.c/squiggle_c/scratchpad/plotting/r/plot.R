@@ -1,0 +1,7 @@
+library(ggplot2)
+
+data <- read.csv("samples.txt", header = FALSE)
+data <- as.data.frame(data)
+
+ggplot(data = data, aes(x = V1)) +
+  geom_freqpoly()

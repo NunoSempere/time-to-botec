@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@quri/squiggle-lang": "^0.5.1"
-  },
-  "type": "module"
-}
