@@ -1,3 +1,4 @@
+SHELL := /bin/bash ## <= required to use time
 # Interface: 
 #   make
 #   make build
@@ -42,6 +43,9 @@ format: $(SRC)
 
 run: $(SRC) $(OUTPUT)
 	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo
+
+run-16: $(SRC) $(OUTPUT)
+	OMP_NUM_THREADS=16 ./$(OUTPUT) && echo
 
 multi:
 	OMP_NUM_THREADS=1 ./$(OUTPUT) && echo

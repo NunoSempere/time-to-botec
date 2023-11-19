@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-compute:
+run:
 	ghbc -l squiggle.bc estimate.bc
 
 time:

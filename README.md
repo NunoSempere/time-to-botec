@@ -24,19 +24,17 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 
 | Language                    | Time      | Lines of code |
 |-----------------------------|-----------|---------------|
-| C (optimized, 16 threads)   | 5ms       | 249  |
-| squiggle.c                  | 37ms      | 54*  | 
-| Nim                         | 38ms      | 84   |
-| Lua (LuaJIT)                | 68ms      | 82   |
-| OCaml (flambda)             | 164ms     | 123  |
-| Lua                         | 278ms     | 82   |
-| C (naïve implementation)    | 292ms     | 149  |
-| Javascript (NodeJS)         | 732ms     | 69   |
-| Squiggle                    | 1,536s    | 14*  |
-| SquigglePy                  | 1.602s    | 18*  |
-| R                           | 7,000s    | 49   |
-| Gavin Howard's bc           | 15.9s     | 59   |
-| Python (CPython)            | 16,641s   | 56   |
+| C                           | 5.6ms     | 252  |
+| squiggle.c                  | 12.7ms    | 29*  | 
+| Nim                         | 40.8ms    | 84   |
+| Lua (LuaJIT)                | 69.9ms    | 82   |
+| OCaml (flambda)             | 187.9ms   | 123  |
+| Squiggle (bun)              | 0.386s    | 14*  |
+| Javascript (node)           | 0.445s    | 69   |
+| SquigglePy (v0.27)          | 1.507s    | 18*  |
+| R (3.6.1)                   | 4.508s    | 49   |
+| Python 3.9                  | 11.879s   | 56   |
+| Gavin Howard's bc           | 15.960s   | 101  |
 
 Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples. But different implementations use different algorithms and, occasionally, different time measuring methodologies (for the C, Nim and Lua implementations, I run the program 100 times and take the mean). Their speed was also measured under different loads in my machine. So I think that these time estimates are accurate within maybe ~2x or so.
 

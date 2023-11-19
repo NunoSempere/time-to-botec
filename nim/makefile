@@ -1,6 +1,9 @@
 SHELL := /bin/bash ## <= required to use time
 VERBOSE=--verbosity:0
 
+fast: samples.nim
+	nim c $(VERBOSE) -d:danger samples.nim
+
 build: samples.nim
 	nim c $(VERBOSE) samples.nim
 

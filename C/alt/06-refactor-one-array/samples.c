@@ -6,7 +6,7 @@
 
 const float PI = 3.14159265358979323846;
 
-#define N_SAMPLES (1024 * 1000 * 1000)
+#define N_SAMPLES (1024 * 1000)
 
 //Array helpers
 void array_print(float* array, int length)
@@ -142,14 +142,14 @@ void paralellize(float (*sampler)(uint32_t* seed), float* results, int n_threads
         exit(1);
     }
     // int n_samples_per_thread = N_SAMPLES / n_thread;
-    int sample_index, i, split_array_length;
     uint32_t** seeds = malloc(n_threads * sizeof(uint32_t*));
     for (uint32_t i = 0; i < n_threads; i++) {
         seeds[i] = malloc(sizeof(uint32_t));
         *seeds[i] = i + 1; // xorshift can't start with 0
     }
 
-    #pragma omp parallel private(i, sample_index, split_array_length)
+    int i;
+    #pragma omp parallel private(i)
     {
         #pragma omp for
         for (i = 0; i < n_threads; i++) {

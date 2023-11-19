@@ -22,6 +22,11 @@ fast:
 time:
 	bash -c "time $(OUT)"
 
+time-linux:
+	@echo "Requires /bin/time, found on GNU/Linux systems" && echo
+	@echo "Running 100x and taking avg time of: $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do ./out/samples; done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time: |" | sed 's|$$|ms|' && echo
+
 profile:
 	$(OC) $(PERF) $(SRC) -o $(OUT)
 	mv samples.cmi samples.cmx samples.o ./out/
