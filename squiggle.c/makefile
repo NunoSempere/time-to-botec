@@ -1,5 +1,8 @@
 OUTPUT=./samples
 
+build:
+	gcc -O3 samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
+
 install:
 	rm -r squiggle_c
 	git clone https://git.nunosempere.com/personal/squiggle.c
@@ -7,9 +10,6 @@ install:
 	sudo rm -r squiggle_c/.git
 	cp -r squiggle_c/examples/more/12_time_to_botec_parallel/example.c samples.c
 	sed -i 's|../../..|squiggle_c|' samples.c
-
-build:
-	gcc -O3 samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
 
 time-linux: 
 	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=16 $(OUTPUT)"
