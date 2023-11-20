@@ -248,18 +248,18 @@ make tidy
 
 It emits one warning about something I already took care of, so by default I've suppressed it. I think this is good news in terms of making me more confident that this simple library is correct :).
 
-### Division between core functions and extraneous expansions
+### Division between core functions and squiggle_moreneous expansions
 
-This library differentiates between core functions, which are pretty tightly scoped, and expansions and convenience functions, which are more meandering. Expansions are in `extra.c` and `extra.h`. To use them, take care to link them:
+This library differentiates between core functions, which are pretty tightly scoped, and expansions and convenience functions, which are more meandering. Expansions are in `squiggle_more.c` and `squiggle_more.h`. To use them, take care to link them:
 
 ```
 // In your C source file
-#include "extra.h"
+#include "squiggle_more.h"
 ```
 
 ```
 # When compiling:
-gcc -std=c99 -Wall -O3 example.c squiggle.c extra.c -lm -o ./example
+gcc -std=c99 -Wall -O3 example.c squiggle.c squiggle_more.c -lm -o ./example
 
 ```
 
@@ -290,6 +290,13 @@ Behaviour on error can be toggled by the `EXIT_ON_ERROR` variable. This library 
 
 Overall, I'd describe the error handling capabilities of this library as pretty rudimentary. For example, this program might fail in surprising ways if you ask for a lognormal with negative standard deviation, because I haven't added error checking for that case yet.
 
+## Extra: confidence intervals
+
+// to do
+
+## Extra paralellism
+
+// to do
 
 ## Related projects
 

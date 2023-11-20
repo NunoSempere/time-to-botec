@@ -29,7 +29,7 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | Nim                         | 40.8ms    | 84   |
 | Lua (LuaJIT)                | 69.9ms    | 82   |
 | OCaml (flambda)             | 187.9ms   | 123  |
-| Squiggle (bun)              | 0.538s    | 14*  |
+| Squiggle (bun)              | 0.387s    | 14*  |
 | Javascript (node)           | 0.445s    | 69   |
 | SquigglePy (v0.27)          | 1.507s    | 18*  |
 | R (3.6.1)                   | 4.508s    | 49   |
