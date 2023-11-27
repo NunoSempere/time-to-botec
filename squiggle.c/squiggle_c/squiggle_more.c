@@ -306,10 +306,25 @@ ci convert_lognormal_params_to_ci(lognormal_params y)
 
 /* Parallel sampler */
 void parallel_sampler(double (*sampler)(uint64_t* seed), double* results, int n_threads, int n_samples){
-    if((n_samples % n_threads) != 0){
-        fprintf(stderr, "Number of samples isn't divisible by number of threads, aborting\n");
-        exit(1);
-    }
+    
+    // Division terminology:
+    // a =  b * quotient + reminder
+    // a = (a/b)*b + (a%b)
+    // dividend: a
+    // divisor: b
+    // quotient = a / b
+    // reminder = a % b
+    // "divisor's multiple" := (a/b)*b
+
+    // now, we have n_samples and n_threads
+    // to make our life easy, each thread will have a number of samples of: a/b (quotient)
+    // and we'll compute the remainder of samples separately
+    // to possibly do by Jorge: improve so that the remainder is included in the threads
+
+    int quotient = n_samples / n_threads;
+    int remainder = n_samples % n_threads;
+    int divisor_multiple = quotient * n_threads; 
+
     uint64_t** seeds = malloc(n_threads * sizeof(uint64_t*));
     for (uint64_t i = 0; i < n_threads; i++) {
         seeds[i] = malloc(sizeof(uint64_t));
@@ -321,13 +336,17 @@ void parallel_sampler(double (*sampler)(uint64_t* seed), double* results, int n_
     {
         #pragma omp for
         for (i = 0; i < n_threads; i++) {
-            int lower_bound = i * (n_samples / n_threads);
-            int upper_bound = ((i+1) * (n_samples / n_threads)) - 1;
+            int lower_bound_inclusive = i * quotient;
+            int upper_bound_not_inclusive = ((i+1) * quotient); // note the < in the for loop below, 
             // printf("Lower bound: %d, upper bound: %d\n", lower_bound, upper_bound);
-            for (int j = lower_bound; j < upper_bound; j++) {
+            for (int j = lower_bound_inclusive; j < upper_bound_not_inclusive; j++) {
                 results[j] = sampler(seeds[i]);
             }
         }
+    }
+    for(int j=divisor_multiple; j<n_samples; j++){
+        results[j] = sampler(seeds[0]);
+        // we can just reuse a seed, this isn't problematic because we are not doing multithreading
     }
 
     for (uint64_t i = 0; i < n_threads; i++) {
