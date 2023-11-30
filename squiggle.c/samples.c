@@ -22,7 +22,7 @@ int main()
         return sample_mixture(samplers, weights, n_dists, seed);
     }
 
-    int n_samples = 1000 * 1000, n_threads = 16;
+    int n_samples = 1000000, n_threads = 16;
     double* results = malloc(n_samples * sizeof(double));
     sampler_parallel(sampler_result, results, n_threads, n_samples);
     printf("Avg: %f\n", array_sum(results, n_samples) / n_samples);
