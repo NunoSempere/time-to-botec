@@ -8,7 +8,7 @@
 #define NORMAL90CONFIDENCE 1.6448536269514727
 
 // Pseudo Random number generator
-uint64_t xorshift32(uint32_t* seed)
+static uint64_t xorshift32(uint32_t* seed)
 {
     // Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs"
     // See:
@@ -24,7 +24,7 @@ uint64_t xorshift32(uint32_t* seed)
     return *seed = x;
 }
 
-uint64_t xorshift64(uint64_t* seed)
+static uint64_t xorshift64(uint64_t* seed)
 {
     // same as above, but for generating doubles instead of floats
     uint64_t x = *seed;
