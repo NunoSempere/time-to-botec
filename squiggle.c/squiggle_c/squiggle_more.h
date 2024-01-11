@@ -32,23 +32,23 @@ lognormal_params convert_ci_to_lognormal_params(ci x);
 ci convert_lognormal_params_to_ci(lognormal_params y);
 
 /* Error handling */
-struct box {
+typedef struct box_t {
     int empty;
     double content;
     char* error_msg;
-};
+} box;
 #define MAX_ERROR_LENGTH 500
 #define EXIT_ON_ERROR 0
 #define PROCESS_ERROR(error_msg) process_error(error_msg, EXIT_ON_ERROR, __FILE__, __LINE__)
-struct box process_error(const char* error_msg, int should_exit, char* file, int line);
+box process_error(const char* error_msg, int should_exit, char* file, int line);
 void array_print(double* array, int length);
 
 /* Inverse cdf */
-struct box inverse_cdf_double(double cdf(double), double p);
-struct box inverse_cdf_box(struct box cdf_box(double), double p);
+box inverse_cdf_double(double cdf(double), double p);
+box inverse_cdf_box(box cdf_box(double), double p);
 
 /* Samplers from cdf */
-struct box sampler_cdf_double(double cdf(double), uint64_t* seed);
-struct box sampler_cdf_box(struct box cdf(double), uint64_t* seed);
+box sampler_cdf_double(double cdf(double), uint64_t* seed);
+box sampler_cdf_box(box cdf(double), uint64_t* seed);
 
 #endif

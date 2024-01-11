@@ -25,7 +25,7 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | Language                    | Time      | Lines of code |
 |-----------------------------|-----------|---------------|
 | C                           | 5.6ms     | 252  |
-| squiggle.c                  | 12.7ms    | 29*  | 
+| squiggle.c                  | 10.5ms    | 29*  | 
 | Nim                         | 40.8ms    | 84   |
 | Lua (LuaJIT)                | 69.9ms    | 82   |
 | OCaml (flambda)             | 187.9ms   | 123  |

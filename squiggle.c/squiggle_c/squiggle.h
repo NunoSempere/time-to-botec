@@ -15,6 +15,7 @@ double sample_unit_normal(uint64_t* seed);
 double sample_uniform(double start, double end, uint64_t* seed);
 double sample_normal(double mean, double sigma, uint64_t* seed);
 double sample_lognormal(double logmean, double logsigma, uint64_t* seed);
+double sample_normal_from_90_ci(double low, double high, uint64_t* seed);
 double sample_to(double low, double high, uint64_t* seed);
 
 double sample_gamma(double alpha, uint64_t* seed);
@@ -29,5 +30,8 @@ double array_std(double* array, int length);
 
 // Mixture function
 double sample_mixture(double (*samplers[])(uint64_t*), double* weights, int n_dists, uint64_t* seed);
+
+// Macro to mute "unused variable" warning when -Wall -Wextra is enabled. Useful for nested functions
+#define UNUSED(x) (void)(x)
 
 #endif
