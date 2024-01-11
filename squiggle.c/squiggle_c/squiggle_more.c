@@ -6,19 +6,27 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> // memcpy
 
 /* Parallel sampler */
+#define CACHE_LINE_SIZE 64
+typedef struct seed_cache_box_t {
+    uint64_t* seed;
+    char padding[CACHE_LINE_SIZE - sizeof(uint64_t*)];
+} seed_cache_box;
+// This avoid false sharing. Dealing with this shaves ~2ms.
+
 void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_threads, int n_samples)
 {
 
-    // Division terminology:
-    // a =  b * quotient + reminder
-    // a = (a/b)*b + (a%b)
+    // Terms of the division:
+    // a = b * quotient + reminder
+    // a = b * (a/b)    + (a%b)
     // dividend: a
     // divisor: b
-    // quotient = a / b
-    // reminder = a % b
-    // "divisor's multiple" := (a/b)*b
+    // quotient = a/b
+    // reminder = a%b
+    // "divisor's multiple" := b*(a/b)
 
     // now, we have n_samples and n_threads
     // to make our life easy, each thread will have a number of samples of: a/b (quotient)
@@ -26,18 +34,17 @@ void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_
     // to possibly do by Jorge: improve so that the remainder is included in the threads
 
     int quotient = n_samples / n_threads;
-    /* int remainder = n_samples % n_threads; // not used, comment to avoid lint warning */
     int divisor_multiple = quotient * n_threads;
 
-    uint64_t** seeds = malloc(n_threads * sizeof(uint64_t*));
-    // printf("UINT64_MAX: %lu\n", UINT64_MAX);
+    // uint64_t** seeds = malloc((size_t)n_threads * sizeof(uint64_t*));
+    seed_cache_box* cache_box = (seed_cache_box*) malloc(sizeof(seed_cache_box) * (size_t)n_threads);
     srand(1);
-    for (uint64_t i = 0; i < n_threads; i++) {
-        seeds[i] = malloc(sizeof(uint64_t));
+    for (int i = 0; i < n_threads; i++) {
+        cache_box[i].seed = malloc(sizeof(uint64_t*));
         // Constraints:
         // - xorshift can't start with 0
         // - the seeds should be reasonably separated and not correlated
-        *seeds[i] = (uint64_t)rand() * (UINT64_MAX / RAND_MAX);
+        *(cache_box[i].seed) = (uint64_t)rand() * (UINT64_MAX / RAND_MAX);
         // printf("#%ld: %lu\n",i, *seeds[i]);
 
         // Other initializations tried:
@@ -47,33 +54,29 @@ void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_
     }
 
     int i;
-#pragma omp parallel private(i)
+#pragma omp parallel private(i, quotient)
     {
 #pragma omp for
         for (i = 0; i < n_threads; i++) {
             int lower_bound_inclusive = i * quotient;
             int upper_bound_not_inclusive = ((i + 1) * quotient); // note the < in the for loop below,
-            // printf("Lower bound: %d, upper bound: %d\n", lower_bound, upper_bound);
             for (int j = lower_bound_inclusive; j < upper_bound_not_inclusive; j++) {
-                results[j] = sampler(seeds[i]);
+                results[j] = sampler(cache_box[i].seed);
             }
         }
     }
     for (int j = divisor_multiple; j < n_samples; j++) {
-        results[j] = sampler(seeds[0]);
+        results[j] = sampler(cache_box[0].seed);
         // we can just reuse a seed, this isn't problematic because we are not doing multithreading
     }
 
-    for (uint64_t i = 0; i < n_threads; i++) {
-        free(seeds[i]);
+    for (int i = 0; i < n_threads; i++) {
+        free(cache_box[i].seed);
     }
-    free(seeds);
+    free(cache_box);
 }
 
 /* Get confidence intervals, given a sampler */
-// Not in core yet because I'm not sure how much I like the struct
-// and the built-in 100k samples
-// to do: add n to function parameters and document
 
 typedef struct ci_t {
     double low;
@@ -89,10 +92,12 @@ static void swp(int i, int j, double xs[])
 
 static int partition(int low, int high, double xs[], int length)
 {
-    // To understand this function:
-    // - see the note after gt variable definition
-    // - go to commit 578bfa27 and the scratchpad/ folder in it, which has printfs sprinkled throughout
-    int pivot = low + floor((high - low) / 2);
+    if (low > high || high >= length) {
+        printf("Invariant violated for function partition in %s (%d)", __FILE__, __LINE__);
+        exit(1);
+    }
+    // Note: the scratchpad/ folder in commit 578bfa27 has printfs sprinkled throughout
+    int pivot = low + (int)floor((high - low) / 2);
     double pivot_value = xs[pivot];
     swp(pivot, high, xs);
     int gt = low; /* This pointer will iterate until finding an element which is greater than the pivot. Then it will move elements that are smaller before it--more specifically, it will move elements to its position and then increment. As a result all elements between gt and i will be greater than the pivot. */
@@ -109,15 +114,24 @@ static int partition(int low, int high, double xs[], int length)
 static double quickselect(int k, double xs[], int n)
 {
     // https://en.wikipedia.org/wiki/Quickselect
+
+    double *ys = malloc((size_t)n * sizeof(double));
+    memcpy(ys, xs, (size_t)n * sizeof(double));
+    // ^: don't rearrange item order in the original array
+
     int low = 0;
     int high = n - 1;
     for (;;) {
         if (low == high) {
-            return xs[low];
+            double result = ys[low];
+            free(ys);
+            return result;
         }
-        int pivot = partition(low, high, xs, n);
+        int pivot = partition(low, high, ys, n);
         if (pivot == k) {
-            return xs[pivot];
+            double result = ys[pivot];
+            free(ys);
+            return result;
         } else if (k < pivot) {
             high = pivot - 1;
         } else {
@@ -129,8 +143,8 @@ static double quickselect(int k, double xs[], int n)
 ci array_get_ci(ci interval, double* xs, int n)
 {
 
-    int low_k = floor(interval.low * n);
-    int high_k = ceil(interval.high * n);
+    int low_k = (int)floor(interval.low * n);
+    int high_k = (int)ceil(interval.high * n);
     ci result = {
         .low = quickselect(low_k, xs, n),
         .high = quickselect(high_k, xs, n),
@@ -144,10 +158,8 @@ ci array_get_90_ci(double xs[], int n)
 
 ci sampler_get_ci(ci interval, double (*sampler)(uint64_t*), int n, uint64_t* seed)
 {
-    double* xs = malloc(n * sizeof(double));
-    /*for (int i = 0; i < n; i++) {
-        xs[i] = sampler(seed);
-    }*/
+    UNUSED(seed); // don't want to use it right now, but want to preserve ability to do so (e.g., remove parallelism from internals). Also nicer for consistency.
+    double* xs = malloc((size_t)n * sizeof(double));
     sampler_parallel(sampler, xs, 16, n);
     ci result = array_get_ci(interval, xs, n);
     free(xs);
@@ -159,9 +171,6 @@ ci sampler_get_90_ci(double (*sampler)(uint64_t*), int n, uint64_t* seed)
 }
 
 /* Algebra manipulations */
-// here I discover named structs,
-// which mean that I don't have to be typing
-// struct blah all the time.
 
 #define NORMAL90CONFIDENCE 1.6448536269514727
 
@@ -195,8 +204,8 @@ lognormal_params algebra_product_lognormals(lognormal_params a, lognormal_params
 
 lognormal_params convert_ci_to_lognormal_params(ci x)
 {
-    double loghigh = logf(x.high);
-    double loglow = logf(x.low);
+    double loghigh = log(x.high);
+    double loglow = log(x.low);
     double logmean = (loghigh + loglow) / 2.0;
     double logstd = (loghigh - loglow) / (2.0 * NORMAL90CONFIDENCE);
     lognormal_params result = { .logmean = logmean, .logstd = logstd };
@@ -221,21 +230,21 @@ ci convert_lognormal_params_to_ci(lognormal_params y)
 #define EXIT_ON_ERROR 0
 #define PROCESS_ERROR(error_msg) process_error(error_msg, EXIT_ON_ERROR, __FILE__, __LINE__)
 
-struct box {
+typedef struct box_t {
     int empty;
     double content;
     char* error_msg;
-};
+} box;
 
-struct box process_error(const char* error_msg, int should_exit, char* file, int line)
+box process_error(const char* error_msg, int should_exit, char* file, int line)
 {
     if (should_exit) {
-        printf("@, in %s (%d)", file, line);
+        printf("%s, @, in %s (%d)", error_msg, file, line);
         exit(1);
     } else {
         char error_msg[MAX_ERROR_LENGTH];
         snprintf(error_msg, MAX_ERROR_LENGTH, "@, in %s (%d)", file, line); // NOLINT: We are being carefull here by considering MAX_ERROR_LENGTH explicitly.
-        struct box error = { .empty = 1, .error_msg = error_msg };
+        box error = { .empty = 1, .error_msg = error_msg };
         return error;
     }
 }
@@ -244,7 +253,7 @@ struct box process_error(const char* error_msg, int should_exit, char* file, int
 // Version #1:
 // - input: (cdf: double => double, p)
 // - output: Box(number|error)
-struct box inverse_cdf_double(double cdf(double), double p)
+box inverse_cdf_double(double cdf(double), double p)
 {
     // given a cdf: [-Inf, Inf] => [0,1]
     // returns a box with either
@@ -257,8 +266,9 @@ struct box inverse_cdf_double(double cdf(double), double p)
 
     // 1. Make sure that cdf(low) < p < cdf(high)
     int interval_found = 0;
-    while ((!interval_found) && (low > -FLT_MAX / 4) && (high < FLT_MAX / 4)) {
-        // ^ Using FLT_MIN and FLT_MAX is overkill
+    while ((!interval_found) && (low > -DBL_MAX / 4) && (high < DBL_MAX / 4)) {
+        // for floats, use FLT_MAX instead
+        // Note that this approach is overkill
         // but it's also the *correct* thing to do.
 
         int low_condition = (cdf(low) < p);
@@ -299,7 +309,7 @@ struct box inverse_cdf_double(double cdf(double), double p)
         }
 
         if (convergence_condition) {
-            struct box result = { .empty = 0, .content = low };
+            box result = { .empty = 0, .content = low };
             return result;
         } else {
             return PROCESS_ERROR("Search process did not converge, in function inverse_cdf");
@@ -310,7 +320,7 @@ struct box inverse_cdf_double(double cdf(double), double p)
 // Version #2:
 // - input: (cdf: double => Box(number|error), p)
 // - output: Box(number|error)
-struct box inverse_cdf_box(struct box cdf_box(double), double p)
+box inverse_cdf_box(box cdf_box(double), double p)
 {
     // given a cdf: [-Inf, Inf] => Box([0,1])
     // returns a box with either
@@ -323,15 +333,16 @@ struct box inverse_cdf_box(struct box cdf_box(double), double p)
 
     // 1. Make sure that cdf(low) < p < cdf(high)
     int interval_found = 0;
-    while ((!interval_found) && (low > -FLT_MAX / 4) && (high < FLT_MAX / 4)) {
-        // ^ Using FLT_MIN and FLT_MAX is overkill
+    while ((!interval_found) && (low > -DBL_MAX / 4) && (high < DBL_MAX / 4)) {
+        // for floats, use FLT_MAX instead
+        // Note that this approach is overkill
         // but it's also the *correct* thing to do.
-        struct box cdf_low = cdf_box(low);
+        box cdf_low = cdf_box(low);
         if (cdf_low.empty) {
             return PROCESS_ERROR(cdf_low.error_msg);
         }
 
-        struct box cdf_high = cdf_box(high);
+        box cdf_high = cdf_box(high);
         if (cdf_high.empty) {
             return PROCESS_ERROR(cdf_low.error_msg);
         }
@@ -361,7 +372,7 @@ struct box inverse_cdf_box(struct box cdf_box(double), double p)
                 // if ((width < 1e-8) || mid_not_new){
                 convergence_condition = 1;
             } else {
-                struct box cdf_mid = cdf_box(mid);
+                box cdf_mid = cdf_box(mid);
                 if (cdf_mid.empty) {
                     return PROCESS_ERROR(cdf_mid.error_msg);
                 }
@@ -378,7 +389,7 @@ struct box inverse_cdf_box(struct box cdf_box(double), double p)
         }
 
         if (convergence_condition) {
-            struct box result = { .empty = 0, .content = low };
+            box result = { .empty = 0, .content = low };
             return result;
         } else {
             return PROCESS_ERROR("Search process did not converge, in function inverse_cdf");
@@ -389,22 +400,22 @@ struct box inverse_cdf_box(struct box cdf_box(double), double p)
 /* Sample from an arbitrary cdf */
 // Before: invert an arbitrary cdf at a point
 // Now: from an arbitrary cdf, get a sample
-struct box sampler_cdf_box(struct box cdf(double), uint64_t* seed)
+box sampler_cdf_box(box cdf(double), uint64_t* seed)
 {
     double p = sample_unit_uniform(seed);
-    struct box result = inverse_cdf_box(cdf, p);
+    box result = inverse_cdf_box(cdf, p);
     return result;
 }
-struct box sampler_cdf_double(double cdf(double), uint64_t* seed)
+box sampler_cdf_double(double cdf(double), uint64_t* seed)
 {
     double p = sample_unit_uniform(seed);
-    struct box result = inverse_cdf_double(cdf, p);
+    box result = inverse_cdf_double(cdf, p);
     return result;
 }
-double sampler_cdf_danger(struct box cdf(double), uint64_t* seed)
+double sampler_cdf_danger(box cdf(double), uint64_t* seed)
 {
     double p = sample_unit_uniform(seed);
-    struct box result = inverse_cdf_box(cdf, p);
+    box result = inverse_cdf_box(cdf, p);
     if (result.empty) {
         exit(1);
     } else {
@@ -413,7 +424,6 @@ double sampler_cdf_danger(struct box cdf(double), uint64_t* seed)
 }
 
 /* array print: potentially useful for debugging */
-
 void array_print(double xs[], int n)
 {
     printf("[");

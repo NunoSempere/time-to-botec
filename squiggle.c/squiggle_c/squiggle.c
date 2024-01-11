@@ -3,12 +3,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-// math constants
+// Defs
 #define PI 3.14159265358979323846 // M_PI in gcc gnu99
 #define NORMAL90CONFIDENCE 1.6448536269514727
+#define UNUSED(x) (void)(x)
+// ^ https://stackoverflow.com/questions/3599160/how-can-i-suppress-unused-parameter-warnings-in-c
 
-// Pseudo Random number generator
-static uint64_t xorshift32(uint32_t* seed)
+// Pseudo Random number generators
+static uint64_t xorshift64(uint64_t* seed)
 {
     // Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs"
     // See:
@@ -19,19 +21,20 @@ static uint64_t xorshift32(uint32_t* seed)
     //   <https://prng.di.unimi.it/>
     uint64_t x = *seed;
     x ^= x << 13;
-    x ^= x >> 17;
-    x ^= x << 5;
-    return *seed = x;
-}
-
-static uint64_t xorshift64(uint64_t* seed)
-{
-    // same as above, but for generating doubles instead of floats
-    uint64_t x = *seed;
-    x ^= x << 13;
     x ^= x >> 7;
     x ^= x << 17;
     return *seed = x;
+
+    /* 
+    // if one wanted to generate 32 bit ints, 
+    // from which to generate floats,
+    // one could do the following: 
+    uint32_t x = *seed;
+    x ^= x << 13;
+    x ^= x >> 17;
+    x ^= x << 5;
+    return *seed = x;
+    */
 }
 
 // Distribution & sampling functions
@@ -47,7 +50,7 @@ double sample_unit_normal(uint64_t* seed)
     // // See: <https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform>
     double u1 = sample_unit_uniform(seed);
     double u2 = sample_unit_uniform(seed);
-    double z = sqrtf(-2.0 * log(u1)) * sin(2 * PI * u2);
+    double z = sqrt(-2.0 * log(u1)) * sin(2 * PI * u2);
     return z;
 }
 
@@ -67,7 +70,7 @@ double sample_lognormal(double logmean, double logstd, uint64_t* seed)
     return exp(sample_normal(logmean, logstd, seed));
 }
 
-inline double sample_normal_from_90_confidence_interval(double low, double high, uint64_t* seed)
+double sample_normal_from_90_ci(double low, double high, uint64_t* seed)
 {
     // Explanation of key idea:
     // 1. We know that the 90% confidence interval of the unit normal is
@@ -98,10 +101,10 @@ double sample_to(double low, double high, uint64_t* seed)
     // returns a sample from a lognorma with a matching 90% c.i.
     // Key idea: If we want a lognormal with 90% confidence interval [a, b]
     // we need but get a normal with 90% confidence interval [log(a), log(b)].
-    // Then see code for sample_normal_from_90_confidence_interval
-    double loglow = logf(low);
-    double loghigh = logf(high);
-    return exp(sample_normal_from_90_confidence_interval(loglow, loghigh, seed));
+    // Then see code for sample_normal_from_90_ci
+    double loglow = log(low);
+    double loghigh = log(high);
+    return exp(sample_normal_from_90_ci(loglow, loghigh, seed));
 }
 
 double sample_gamma(double alpha, uint64_t* seed)
@@ -201,7 +204,7 @@ double sample_mixture(double (*samplers[])(uint64_t*), double* weights, int n_di
 {
     // Sample from samples with frequency proportional to their weights.
     double sum_weights = array_sum(weights, n_dists);
-    double* cumsummed_normalized_weights = (double*)malloc(n_dists * sizeof(double));
+    double* cumsummed_normalized_weights = (double*)malloc((size_t)n_dists * sizeof(double));
     cumsummed_normalized_weights[0] = weights[0] / sum_weights;
     for (int i = 1; i < n_dists; i++) {
         cumsummed_normalized_weights[i] = cumsummed_normalized_weights[i - 1] + weights[i] / sum_weights;
