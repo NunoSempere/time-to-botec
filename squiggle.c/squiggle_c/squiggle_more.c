@@ -11,10 +11,13 @@
 /* Parallel sampler */
 #define CACHE_LINE_SIZE 64
 typedef struct seed_cache_box_t {
-    uint64_t* seed;
+    uint64_t seed;
     char padding[CACHE_LINE_SIZE - sizeof(uint64_t*)];
 } seed_cache_box;
-// This avoid false sharing. Dealing with this shaves ~2ms.
+// This avoids "false sharing", i.e., different threads competing for the same cache line
+// It's possible dealing with this shaves ~2ms
+// However, it's possible it doesn't, since pointers aren't changed, just their contents (and the location of their contents doesn't necessarily have to be close, since they are malloc'ed sepately)
+// Still, I thought it was interesting
 
 void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_threads, int n_samples)
 {
@@ -40,11 +43,10 @@ void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_
     seed_cache_box* cache_box = (seed_cache_box*) malloc(sizeof(seed_cache_box) * (size_t)n_threads);
     srand(1);
     for (int i = 0; i < n_threads; i++) {
-        cache_box[i].seed = malloc(sizeof(uint64_t*));
         // Constraints:
         // - xorshift can't start with 0
         // - the seeds should be reasonably separated and not correlated
-        *(cache_box[i].seed) = (uint64_t)rand() * (UINT64_MAX / RAND_MAX);
+        cache_box[i].seed = (uint64_t)rand() * (UINT64_MAX / RAND_MAX);
         // printf("#%ld: %lu\n",i, *seeds[i]);
 
         // Other initializations tried:
@@ -58,21 +60,24 @@ void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_
     {
 #pragma omp for
         for (i = 0; i < n_threads; i++) {
+            int quotient = n_samples / n_threads;
             int lower_bound_inclusive = i * quotient;
             int upper_bound_not_inclusive = ((i + 1) * quotient); // note the < in the for loop below,
             for (int j = lower_bound_inclusive; j < upper_bound_not_inclusive; j++) {
-                results[j] = sampler(cache_box[i].seed);
+                results[j] = sampler(&(cache_box[i].seed));
+                // Could also result in inefficient cache stuff, but hopefully not too often
             }
         }
     }
     for (int j = divisor_multiple; j < n_samples; j++) {
-        results[j] = sampler(cache_box[0].seed);
+        results[j] = sampler(&(cache_box[0].seed));
         // we can just reuse a seed, this isn't problematic because we are not doing multithreading
     }
-
+    /*
     for (int i = 0; i < n_threads; i++) {
         free(cache_box[i].seed);
     }
+    */
     free(cache_box);
 }
 
