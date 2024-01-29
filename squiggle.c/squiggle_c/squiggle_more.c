@@ -8,17 +8,20 @@
 #include <stdlib.h>
 #include <string.h> // memcpy
 
-/* Parallel sampler */
+/* Cache optimizations */
 #define CACHE_LINE_SIZE 64
+// getconf LEVEL1_DCACHE_LINESIZE
+// <https://stackoverflow.com/questions/794632/programmatically-get-the-cache-line-size>
 typedef struct seed_cache_box_t {
     uint64_t seed;
-    char padding[CACHE_LINE_SIZE - sizeof(uint64_t*)];
+    char padding[CACHE_LINE_SIZE - sizeof(uint64_t)];
+    // Cache line size is 64 *bytes*, uint64_t is 64 *bits* (8 bytes). Different units!
 } seed_cache_box;
 // This avoids "false sharing", i.e., different threads competing for the same cache line
-// It's possible dealing with this shaves ~2ms
-// However, it's possible it doesn't, since pointers aren't changed, just their contents (and the location of their contents doesn't necessarily have to be close, since they are malloc'ed sepately)
-// Still, I thought it was interesting
+// Dealing with this shaves 4ms from a 12ms process, or a third of runtime
+// <http://www.nic.uoregon.edu/~khuck/ts/acumem-report/manual_html/ch06s07.html>
 
+/* Parallel sampler */
 void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_threads, int n_samples)
 {
 
@@ -41,6 +44,7 @@ void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_
 
     // uint64_t** seeds = malloc((size_t)n_threads * sizeof(uint64_t*));
     seed_cache_box* cache_box = (seed_cache_box*) malloc(sizeof(seed_cache_box) * (size_t)n_threads);
+    // seed_cache_box cache_box[n_threads];
     srand(1);
     for (int i = 0; i < n_threads; i++) {
         // Constraints:
@@ -73,11 +77,7 @@ void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_
         results[j] = sampler(&(cache_box[0].seed));
         // we can just reuse a seed, this isn't problematic because we are not doing multithreading
     }
-    /*
-    for (int i = 0; i < n_threads; i++) {
-        free(cache_box[i].seed);
-    }
-    */
+
     free(cache_box);
 }
 
