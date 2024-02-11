@@ -1,7 +1,8 @@
 OUTPUT=./samples
+CC=gcc
 
 build:
-	gcc -O3 -march=native samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
+	$(CC) -O3 -march=native samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
 
 install: 
 	rm -r squiggle_c
