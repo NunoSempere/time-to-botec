@@ -25,6 +25,7 @@ DEBUG= #'-g'
 STANDARD=-std=c99
 WARNINGS=-Wall
 OPTIMIZED=-O3 #-O3 actually gives better performance than -Ofast, at least for this version
+LOCAL=-march=native 
 OPENMP=-fopenmp
 
 ## Formatter
@@ -33,10 +34,10 @@ FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
 
 ## make build
 build: $(SRC)
-	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
+	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(LOCAL) $(OPENMP) $(MATH) -o $(OUTPUT)
 
 static:
-	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(OPENMP) $(MATH) -o $(OUTPUT)
+	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(LOCAL) $(OPENMP) $(MATH) -o $(OUTPUT)
 
 format: $(SRC)
 	$(FORMATTER) $(SRC)
