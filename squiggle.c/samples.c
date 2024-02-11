@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main()
+double sampler_result(uint64_t * seed)
 {
     double p_a = 0.8;
     double p_b = 0.5;
@@ -17,10 +17,11 @@ int main()
     int n_dists = 4;
     double weights[] = { 1 - p_c, p_c / 2, p_c / 4, p_c / 4 };
     double (*samplers[])(uint64_t*) = { sample_0, sample_1, sample_few, sample_many };
-    double sampler_result(uint64_t * seed)
-    {
-        return sample_mixture(samplers, weights, n_dists, seed);
-    }
+    return sample_mixture(samplers, weights, n_dists, seed);
+}
+
+int main()
+{
 
     int n_samples = 1000 * 1000, n_threads = 16;
     double* results = malloc((size_t)n_samples * sizeof(double));

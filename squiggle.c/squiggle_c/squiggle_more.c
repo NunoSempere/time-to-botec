@@ -43,15 +43,14 @@ void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_
     int divisor_multiple = quotient * n_threads;
 
     // uint64_t** seeds = malloc((size_t)n_threads * sizeof(uint64_t*));
-    seed_cache_box* cache_box = (seed_cache_box*) malloc(sizeof(seed_cache_box) * (size_t)n_threads);
-    // seed_cache_box cache_box[n_threads];
+    seed_cache_box* cache_box = (seed_cache_box*)malloc(sizeof(seed_cache_box) * (size_t)n_threads);
+    // seed_cache_box cache_box[n_threads]; // we could use the C stack. On normal linux machines, it's 8MB ($ ulimit -s). However, it doesn't quite feel right.
     srand(1);
     for (int i = 0; i < n_threads; i++) {
         // Constraints:
         // - xorshift can't start with 0
         // - the seeds should be reasonably separated and not correlated
         cache_box[i].seed = (uint64_t)rand() * (UINT64_MAX / RAND_MAX);
-        // printf("#%ld: %lu\n",i, *seeds[i]);
 
         // Other initializations tried:
         // *seeds[i] = 1 + i;
@@ -60,22 +59,51 @@ void sampler_parallel(double (*sampler)(uint64_t* seed), double* results, int n_
     }
 
     int i;
-#pragma omp parallel private(i, quotient)
+#pragma omp parallel private(i)
     {
 #pragma omp for
         for (i = 0; i < n_threads; i++) {
-            int quotient = n_samples / n_threads;
+            // It's possible I don't need the for, and could instead call omp
+            // in some different way and get  the thread number with omp_get_thread_num()
             int lower_bound_inclusive = i * quotient;
             int upper_bound_not_inclusive = ((i + 1) * quotient); // note the < in the for loop below,
+
             for (int j = lower_bound_inclusive; j < upper_bound_not_inclusive; j++) {
                 results[j] = sampler(&(cache_box[i].seed));
-                // Could also result in inefficient cache stuff, but hopefully not too often
+                /* 
+                t starts at 0 and ends at T
+                at t=0, 
+                  thread i accesses: results[i*quotient +0], 
+                  thread i+1 acccesses: results[(i+1)*quotient +0]
+                at t=T
+                  thread i accesses: results[(i+1)*quotient -1]
+                  thread i+1 acccesses: results[(i+2)*quotient -1]
+                The results[j] that are directly adjacent are 
+                  results[(i+1)*quotient -1] (accessed by thread i at time T)
+                  results[(i+1)*quotient +0] (accessed by thread i+1 at time 0)
+                and these are themselves adjacent to
+                  results[(i+1)*quotient -2] (accessed by thread i at time T-1)
+                  results[(i+1)*quotient +1] (accessed by thread i+1 at time 2)
+                If T is large enough, which it is, two threads won't access the same
+                cache line at the same time.
+                Pictorially:
+                at t=0 ....i.........I.........
+                at t=T .............i.........I
+                and the two never overlap
+                Note that results[j] is a double, a double has 8 bytes (64 bits)
+                8 doubles fill a cache line of 64 bytes.
+                So we specifically won't get problems as long as n_samples/n_threads > 8
+                n_threads is normally 16, so n_samples > 128 
+                Note also that this is only a problem in terms of speed, if n_samples<128
+                the results are still computed, it'll just be slower
+                */
             }
         }
     }
     for (int j = divisor_multiple; j < n_samples; j++) {
         results[j] = sampler(&(cache_box[0].seed));
-        // we can just reuse a seed, this isn't problematic because we are not doing multithreading
+        // we can just reuse a seed,
+        // this isn't problematic because we;ve now stopped doing multithreading
     }
 
     free(cache_box);
@@ -88,7 +116,7 @@ typedef struct ci_t {
     double high;
 } ci;
 
-static void swp(int i, int j, double xs[])
+inline static void swp(int i, int j, double xs[])
 {
     double tmp = xs[i];
     xs[i] = xs[j];
@@ -120,7 +148,7 @@ static double quickselect(int k, double xs[], int n)
 {
     // https://en.wikipedia.org/wiki/Quickselect
 
-    double *ys = malloc((size_t)n * sizeof(double));
+    double* ys = malloc((size_t)n * sizeof(double));
     memcpy(ys, xs, (size_t)n * sizeof(double));
     // ^: don't rearrange item order in the original array
 
@@ -161,18 +189,222 @@ ci array_get_90_ci(double xs[], int n)
     return array_get_ci((ci) { .low = 0.05, .high = 0.95 }, xs, n);
 }
 
-ci sampler_get_ci(ci interval, double (*sampler)(uint64_t*), int n, uint64_t* seed)
+double array_get_median(double xs[], int n)
 {
-    UNUSED(seed); // don't want to use it right now, but want to preserve ability to do so (e.g., remove parallelism from internals). Also nicer for consistency.
-    double* xs = malloc((size_t)n * sizeof(double));
-    sampler_parallel(sampler, xs, 16, n);
-    ci result = array_get_ci(interval, xs, n);
-    free(xs);
-    return result;
+    int median_k = (int)floor(0.5 * n);
+    return quickselect(median_k, xs, n);
 }
-ci sampler_get_90_ci(double (*sampler)(uint64_t*), int n, uint64_t* seed)
+
+/* array print: potentially useful for debugging */
+void array_print(double xs[], int n)
 {
-    return sampler_get_ci((ci) { .low = 0.05, .high = 0.95 }, sampler, n, seed);
+    printf("[");
+    for (int i = 0; i < n - 1; i++) {
+        printf("%f, ", xs[i]);
+    }
+    printf("%f", xs[n - 1]);
+    printf("]\n");
+}
+
+void array_print_stats(double xs[], int n)
+{
+    ci ci_90 = array_get_ci((ci) { .low = 0.05, .high = 0.95 }, xs, n);
+    ci ci_80 = array_get_ci((ci) { .low = 0.1, .high = 0.9 }, xs, n);
+    ci ci_50 = array_get_ci((ci) { .low = 0.25, .high = 0.75 }, xs, n);
+    double median = array_get_median(xs, n);
+    double mean = array_mean(xs, n);
+    double std = array_std(xs, n);
+    printf("| Statistic | Value |\n"
+           "| --- | --- |\n"
+           "| Mean   | %lf |\n"
+           "| Median | %lf |\n"
+           "| Std    | %lf |\n"
+           "| 90%% confidence interval | %lf to %lf |\n"
+           "| 80%% confidence interval | %lf to %lf |\n"
+           "| 50%% confidence interval | %lf to %lf |\n",
+           mean, median, std, ci_90.low, ci_90.high, ci_80.low, ci_80.high, ci_50.low, ci_50.high);
+}
+
+void array_print_histogram(double* xs, int n_samples, int n_bins)
+{
+    // Interface inspired by <https://github.com/red-data-tools/YouPlot>
+    if (n_bins <= 1) {
+        fprintf(stderr, "Number of bins must be greater than 1.\n");
+        return;
+    } else if (n_samples <= 1) {
+        fprintf(stderr, "Number of samples must be higher than 1.\n");
+        return;
+    }
+
+    int* bins = (int*)calloc((size_t)n_bins, sizeof(int));
+    if (bins == NULL) {
+        fprintf(stderr, "Memory allocation for bins failed.\n");
+        return;
+    }
+
+    // Find the minimum and maximum values from the samples
+    double min_value = xs[0], max_value = xs[0];
+    for (int i = 0; i < n_samples; i++) {
+        if (xs[i] < min_value) {
+            min_value = xs[i];
+        }
+        if (xs[i] > max_value) {
+            max_value = xs[i];
+        }
+    }
+
+    // Avoid division by zero for a single unique value
+    if (min_value == max_value) {
+        max_value++;
+    }
+
+    // Calculate bin width
+    double bin_width = (max_value - min_value) / n_bins;
+
+    // Fill the bins with sample counts
+    for (int i = 0; i < n_samples; i++) {
+        int bin_index = (int)((xs[i] - min_value) / bin_width);
+        if (bin_index == n_bins) {
+            bin_index--; // Last bin includes max_value
+        }
+        bins[bin_index]++;
+    }
+
+    // Calculate the scaling factor based on the maximum bin count
+    int max_bin_count = 0;
+    for (int i = 0; i < n_bins; i++) {
+        if (bins[i] > max_bin_count) {
+            max_bin_count = bins[i];
+        }
+    }
+    const int MAX_WIDTH = 50; // Adjust this to your terminal width
+    double scale = max_bin_count > MAX_WIDTH ? (double)MAX_WIDTH / max_bin_count : 1.0;
+
+    // Print the histogram
+    for (int i = 0; i < n_bins; i++) {
+        double bin_start = min_value + i * bin_width;
+        double bin_end = bin_start + bin_width;
+
+        int decimalPlaces = 1;
+        if ((0 < bin_width) && (bin_width < 1)) {
+            int magnitude = (int)floor(log10(bin_width));
+            decimalPlaces = -magnitude;
+            decimalPlaces = decimalPlaces > 10 ? 10 : decimalPlaces;
+        }
+        printf("[%*.*f, %*.*f", 4 + decimalPlaces, decimalPlaces, bin_start, 4 + decimalPlaces, decimalPlaces, bin_end);
+        char interval_delimiter = ')';
+        if (i == (n_bins - 1)) {
+            interval_delimiter = ']'; // last bucket is inclusive
+        }
+        printf("%c: ", interval_delimiter);
+
+        int marks = (int)(bins[i] * scale);
+        for (int j = 0; j < marks; j++) {
+            printf("█");
+        }
+        printf(" %d\n", bins[i]);
+    }
+
+    // Free the allocated memory for bins
+    free(bins);
+}
+
+void array_print_90_ci_histogram(double* xs, int n_samples, int n_bins)
+{
+    // Code duplicated from previous function
+    // I'll consider simplifying it at some future point
+    // Possible ideas:
+    // - having only one function that takes any confidence interval?
+    // - having a utility function that is called by both functions?
+    ci ci_90 = array_get_90_ci(xs, n_samples);
+
+    if (n_bins <= 1) {
+        fprintf(stderr, "Number of bins must be greater than 1.\n");
+        return;
+    } else if (n_samples <= 10) {
+        fprintf(stderr, "Number of samples must be higher than 10.\n");
+        return;
+    }
+
+    int* bins = (int*)calloc((size_t)n_bins, sizeof(int));
+    if (bins == NULL) {
+        fprintf(stderr, "Memory allocation for bins failed.\n");
+        return;
+    }
+
+    double min_value = ci_90.low, max_value = ci_90.high;
+
+    // Avoid division by zero for a single unique value
+    if (min_value == max_value) {
+        max_value++;
+    }
+    double bin_width = (max_value - min_value) / n_bins;
+
+    // Fill the bins with sample counts
+    int below_min = 0, above_max = 0;
+    for (int i = 0; i < n_samples; i++) {
+        if (xs[i] < min_value) {
+            below_min++;
+        } else if (xs[i] > max_value) {
+            above_max++;
+        } else {
+            int bin_index = (int)((xs[i] - min_value) / bin_width);
+            if (bin_index == n_bins) {
+                bin_index--; // Last bin includes max_value
+            }
+            bins[bin_index]++;
+        }
+    }
+
+    // Calculate the scaling factor based on the maximum bin count
+    int max_bin_count = 0;
+    for (int i = 0; i < n_bins; i++) {
+        if (bins[i] > max_bin_count) {
+            max_bin_count = bins[i];
+        }
+    }
+    const int MAX_WIDTH = 40; // Adjust this to your terminal width
+    double scale = max_bin_count > MAX_WIDTH ? (double)MAX_WIDTH / max_bin_count : 1.0;
+
+    // Print the histogram
+    int decimalPlaces = 1;
+    if ((0 < bin_width) && (bin_width < 1)) {
+        int magnitude = (int)floor(log10(bin_width));
+        decimalPlaces = -magnitude;
+        decimalPlaces = decimalPlaces > 10 ? 10 : decimalPlaces;
+    }
+    printf("(%*s, %*.*f): ", 6 + decimalPlaces, "-∞", 4 + decimalPlaces, decimalPlaces, min_value);
+    int marks_below_min = (int)(below_min * scale);
+    for (int j = 0; j < marks_below_min; j++) {
+        printf("█");
+    }
+    printf(" %d\n", below_min);
+    for (int i = 0; i < n_bins; i++) {
+        double bin_start = min_value + i * bin_width;
+        double bin_end = bin_start + bin_width;
+
+        printf("[%*.*f, %*.*f", 4 + decimalPlaces, decimalPlaces, bin_start, 4 + decimalPlaces, decimalPlaces, bin_end);
+        char interval_delimiter = ')';
+        if (i == (n_bins - 1)) {
+            interval_delimiter = ']'; // last bucket is inclusive
+        }
+        printf("%c: ", interval_delimiter);
+
+        int marks = (int)(bins[i] * scale);
+        for (int j = 0; j < marks; j++) {
+            printf("█");
+        }
+        printf(" %d\n", bins[i]);
+    }
+    printf("(%*.*f, %*s): ", 4 + decimalPlaces, decimalPlaces, max_value, 6 + decimalPlaces, "+∞");
+    int marks_above_max = (int)(above_max * scale);
+    for (int j = 0; j < marks_above_max; j++) {
+        printf("█");
+    }
+    printf(" %d\n", above_max);
+
+    // Free the allocated memory for bins
+    free(bins);
 }
 
 /* Algebra manipulations */
@@ -224,217 +456,4 @@ ci convert_lognormal_params_to_ci(lognormal_params y)
     double loglow = y.logmean - h;
     ci result = { .low = exp(loglow), .high = exp(loghigh) };
     return result;
-}
-
-/* Scaffolding to handle errors */
-// We will sample from an arbitrary cdf
-// and that operation might fail
-// so we build some scaffolding here
-
-#define MAX_ERROR_LENGTH 500
-#define EXIT_ON_ERROR 0
-#define PROCESS_ERROR(error_msg) process_error(error_msg, EXIT_ON_ERROR, __FILE__, __LINE__)
-
-typedef struct box_t {
-    int empty;
-    double content;
-    char* error_msg;
-} box;
-
-box process_error(const char* error_msg, int should_exit, char* file, int line)
-{
-    if (should_exit) {
-        printf("%s, @, in %s (%d)", error_msg, file, line);
-        exit(1);
-    } else {
-        char error_msg[MAX_ERROR_LENGTH];
-        snprintf(error_msg, MAX_ERROR_LENGTH, "@, in %s (%d)", file, line); // NOLINT: We are being carefull here by considering MAX_ERROR_LENGTH explicitly.
-        box error = { .empty = 1, .error_msg = error_msg };
-        return error;
-    }
-}
-
-/* Invert an arbitrary cdf at a point */
-// Version #1:
-// - input: (cdf: double => double, p)
-// - output: Box(number|error)
-box inverse_cdf_double(double cdf(double), double p)
-{
-    // given a cdf: [-Inf, Inf] => [0,1]
-    // returns a box with either
-    // x such that cdf(x) = p
-    // or an error
-    // if EXIT_ON_ERROR is set to 1, it exits instead of providing an error
-
-    double low = -1.0;
-    double high = 1.0;
-
-    // 1. Make sure that cdf(low) < p < cdf(high)
-    int interval_found = 0;
-    while ((!interval_found) && (low > -DBL_MAX / 4) && (high < DBL_MAX / 4)) {
-        // for floats, use FLT_MAX instead
-        // Note that this approach is overkill
-        // but it's also the *correct* thing to do.
-
-        int low_condition = (cdf(low) < p);
-        int high_condition = (p < cdf(high));
-        if (low_condition && high_condition) {
-            interval_found = 1;
-        } else if (!low_condition) {
-            low = low * 2;
-        } else if (!high_condition) {
-            high = high * 2;
-        }
-    }
-
-    if (!interval_found) {
-        return PROCESS_ERROR("Interval containing the target value not found, in function inverse_cdf");
-    } else {
-
-        int convergence_condition = 0;
-        int count = 0;
-        while (!convergence_condition && (count < (INT_MAX / 2))) {
-            double mid = (high + low) / 2;
-            int mid_not_new = (mid == low) || (mid == high);
-            // double width = high - low;
-            // if ((width < 1e-8) || mid_not_new){
-            if (mid_not_new) {
-                convergence_condition = 1;
-            } else {
-                double mid_sign = cdf(mid) - p;
-                if (mid_sign < 0) {
-                    low = mid;
-                } else if (mid_sign > 0) {
-                    high = mid;
-                } else if (mid_sign == 0) {
-                    low = mid;
-                    high = mid;
-                }
-            }
-        }
-
-        if (convergence_condition) {
-            box result = { .empty = 0, .content = low };
-            return result;
-        } else {
-            return PROCESS_ERROR("Search process did not converge, in function inverse_cdf");
-        }
-    }
-}
-
-// Version #2:
-// - input: (cdf: double => Box(number|error), p)
-// - output: Box(number|error)
-box inverse_cdf_box(box cdf_box(double), double p)
-{
-    // given a cdf: [-Inf, Inf] => Box([0,1])
-    // returns a box with either
-    // x such that cdf(x) = p
-    // or an error
-    // if EXIT_ON_ERROR is set to 1, it exits instead of providing an error
-
-    double low = -1.0;
-    double high = 1.0;
-
-    // 1. Make sure that cdf(low) < p < cdf(high)
-    int interval_found = 0;
-    while ((!interval_found) && (low > -DBL_MAX / 4) && (high < DBL_MAX / 4)) {
-        // for floats, use FLT_MAX instead
-        // Note that this approach is overkill
-        // but it's also the *correct* thing to do.
-        box cdf_low = cdf_box(low);
-        if (cdf_low.empty) {
-            return PROCESS_ERROR(cdf_low.error_msg);
-        }
-
-        box cdf_high = cdf_box(high);
-        if (cdf_high.empty) {
-            return PROCESS_ERROR(cdf_low.error_msg);
-        }
-
-        int low_condition = (cdf_low.content < p);
-        int high_condition = (p < cdf_high.content);
-        if (low_condition && high_condition) {
-            interval_found = 1;
-        } else if (!low_condition) {
-            low = low * 2;
-        } else if (!high_condition) {
-            high = high * 2;
-        }
-    }
-
-    if (!interval_found) {
-        return PROCESS_ERROR("Interval containing the target value not found, in function inverse_cdf");
-    } else {
-
-        int convergence_condition = 0;
-        int count = 0;
-        while (!convergence_condition && (count < (INT_MAX / 2))) {
-            double mid = (high + low) / 2;
-            int mid_not_new = (mid == low) || (mid == high);
-            // double width = high - low;
-            if (mid_not_new) {
-                // if ((width < 1e-8) || mid_not_new){
-                convergence_condition = 1;
-            } else {
-                box cdf_mid = cdf_box(mid);
-                if (cdf_mid.empty) {
-                    return PROCESS_ERROR(cdf_mid.error_msg);
-                }
-                double mid_sign = cdf_mid.content - p;
-                if (mid_sign < 0) {
-                    low = mid;
-                } else if (mid_sign > 0) {
-                    high = mid;
-                } else if (mid_sign == 0) {
-                    low = mid;
-                    high = mid;
-                }
-            }
-        }
-
-        if (convergence_condition) {
-            box result = { .empty = 0, .content = low };
-            return result;
-        } else {
-            return PROCESS_ERROR("Search process did not converge, in function inverse_cdf");
-        }
-    }
-}
-
-/* Sample from an arbitrary cdf */
-// Before: invert an arbitrary cdf at a point
-// Now: from an arbitrary cdf, get a sample
-box sampler_cdf_box(box cdf(double), uint64_t* seed)
-{
-    double p = sample_unit_uniform(seed);
-    box result = inverse_cdf_box(cdf, p);
-    return result;
-}
-box sampler_cdf_double(double cdf(double), uint64_t* seed)
-{
-    double p = sample_unit_uniform(seed);
-    box result = inverse_cdf_double(cdf, p);
-    return result;
-}
-double sampler_cdf_danger(box cdf(double), uint64_t* seed)
-{
-    double p = sample_unit_uniform(seed);
-    box result = inverse_cdf_box(cdf, p);
-    if (result.empty) {
-        exit(1);
-    } else {
-        return result.content;
-    }
-}
-
-/* array print: potentially useful for debugging */
-void array_print(double xs[], int n)
-{
-    printf("[");
-    for (int i = 0; i < n - 1; i++) {
-        printf("%f, ", xs[i]);
-    }
-    printf("%f", xs[n - 1]);
-    printf("]\n");
 }
