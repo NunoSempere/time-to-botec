@@ -34,6 +34,17 @@ func sample_normal_from_90_ci(low float64, high float64) float64 {
 
 }
 
+func sample_to(low float64, high float64) float64 {
+	// Given a (positive) 90% confidence interval,
+	// returns a sample from a lognorma with a matching 90% c.i.
+	// Key idea: If we want a lognormal with 90% confidence interval [a, b]
+	// we need but get a normal with 90% confidence interval [log(a), log(b)].
+	// Then see code for sample_normal_from_90_ci
+	var loglow float64 = math.Log(low)
+	var loghigh float64 = math.Log(high)
+	return math.Exp(sample_normal_from_90_ci(loglow, loghigh))
+}
+
 func main() {
 	fmt.Println("Hello world!")
 	fmt.Printf("%v\n", r.Float64())
