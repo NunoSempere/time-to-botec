@@ -1,4 +1,5 @@
 - [x] Hello world program
 - [x] Look into randomness sources in go
   - rand/v2 api: <https://pkg.go.dev/math/rand/v2>
-- [ ] 
+- [ ] Test with a million samples of a simple lognormal, just to get a sense of speed
+- [ ] Add mixture distribution

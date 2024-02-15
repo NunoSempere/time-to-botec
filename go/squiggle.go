@@ -6,6 +6,8 @@ import rand "math/rand/v2"
 
 var r = rand.New(rand.NewPCG(1, 2))
 
+// https://pkg.go.dev/math/rand/v2
+
 func sample_unit_uniform() float64 {
 	return r.Float64()
 }
@@ -46,7 +48,13 @@ func sample_to(low float64, high float64) float64 {
 }
 
 func main() {
-	fmt.Println("Hello world!")
-	fmt.Printf("%v\n", r.Float64())
-	fmt.Printf("%v\n", r.NormFloat64())
+	var n_samples int = 1000000
+	// var array_samples [n_samples]float64
+	var avg float64 = 0
+	for i := 0; i < n_samples; i++ {
+		avg += sample_to(1, 10)
+	}
+	avg = avg / float64(n_samples)
+	fmt.Printf("%v\n", avg)
+
 }
