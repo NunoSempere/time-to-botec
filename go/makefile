@@ -1,2 +1,2 @@
 run:
-	go run hello.go
+	go run squiggle.go
