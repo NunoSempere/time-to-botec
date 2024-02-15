@@ -1,0 +1,3 @@
+- [ ] Hello world program
+- [ ] Look into randomness sources in go
+- [ ] 
