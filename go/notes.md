@@ -1,3 +1,4 @@
-- [ ] Hello world program
-- [ ] Look into randomness sources in go
+- [x] Hello world program
+- [x] Look into randomness sources in go
+  - rand/v2 api: <https://pkg.go.dev/math/rand/v2>
 - [ ] 
