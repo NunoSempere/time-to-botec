@@ -54,7 +54,31 @@ func sample_mixture(fs []func64, weights []float64) float64 {
 	for _, weight := range weights {
 		sum_weights += weight
 	}
-	return sum_weights
+
+	var total float64 = 0
+	for i, weight := range weights {
+		total += weight / sum_weights
+		weights[i] = total
+	}
+
+	var result float64
+	var flag int = 0
+	var p float64 = r.Float64()
+
+	for i, weight := range weights {
+		if p < weight {
+			result = fs[i]()
+			flag = 1
+			break
+		}
+	}
+
+	if flag == 0 {
+		result = fs[len(fs)-1]()
+	}
+	return result
+	// return weights[0]
+
 }
 
 func main() {
