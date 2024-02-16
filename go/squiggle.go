@@ -5,7 +5,10 @@ import "math"
 import "sync"
 import rand "math/rand/v2"
 
-var r = rand.New(rand.NewPCG(1, 2))
+type func64 = func() float64
+type source = *rand.Rand
+
+var r source = rand.New(rand.NewPCG(1, 2))
 
 // https://pkg.go.dev/math/rand/v2
 
@@ -47,8 +50,6 @@ func sample_to(low float64, high float64) float64 {
 	var loghigh float64 = math.Log(high)
 	return math.Exp(sample_normal_from_90_ci(loglow, loghigh))
 }
-
-type func64 func() float64
 
 func sample_mixture(fs []func64, weights []float64) float64 {
 
@@ -92,6 +93,9 @@ func slice_fill(xs []float64, fs func64) {
 }
 
 func main() {
+
+	fmt.Printf("Type of r: %T\n", r)
+
 	var p_a float64 = 0.8
 	var p_b float64 = 0.5
 	var p_c float64 = p_a * p_b
