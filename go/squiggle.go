@@ -5,42 +5,40 @@ import "math"
 import "sync"
 import rand "math/rand/v2"
 
-type func64 = func() float64
 type source = *rand.Rand
-
-var r source = rand.New(rand.NewPCG(1, 2))
+type func64 = func(source) float64
 
 // https://pkg.go.dev/math/rand/v2
 
-func sample_unit_uniform() float64 {
+func sample_unit_uniform(r source) float64 {
 	return r.Float64()
 }
 
-func sample_unit_normal() float64 {
+func sample_unit_normal(r source) float64 {
 	return r.NormFloat64()
 }
 
-func sample_uniform(start float64, end float64) float64 {
-	return sample_unit_uniform()*(end-start) + start
+func sample_uniform(start float64, end float64, r source) float64 {
+	return sample_unit_uniform(r)*(end-start) + start
 }
 
-func sample_normal(mean float64, sigma float64) float64 {
-	return mean + sample_unit_normal()*sigma
+func sample_normal(mean float64, sigma float64, r source) float64 {
+	return mean + sample_unit_normal(r)*sigma
 }
 
-func sample_lognormal(logmean float64, logstd float64) float64 {
-	return (math.Exp(sample_normal(logmean, logstd)))
+func sample_lognormal(logmean float64, logstd float64, r source) float64 {
+	return (math.Exp(sample_normal(logmean, logstd, r)))
 }
 
-func sample_normal_from_90_ci(low float64, high float64) float64 {
+func sample_normal_from_90_ci(low float64, high float64, r source) float64 {
 	var normal90 float64 = 1.6448536269514727
 	var mean float64 = (high + low) / 2.0
 	var std float64 = (high - low) / (2.0 * normal90)
-	return sample_normal(mean, std)
+	return sample_normal(mean, std, r)
 
 }
 
-func sample_to(low float64, high float64) float64 {
+func sample_to(low float64, high float64, r source) float64 {
 	// Given a (positive) 90% confidence interval,
 	// returns a sample from a lognorma with a matching 90% c.i.
 	// Key idea: If we want a lognormal with 90% confidence interval [a, b]
@@ -48,10 +46,10 @@ func sample_to(low float64, high float64) float64 {
 	// Then see code for sample_normal_from_90_ci
 	var loglow float64 = math.Log(low)
 	var loghigh float64 = math.Log(high)
-	return math.Exp(sample_normal_from_90_ci(loglow, loghigh))
+	return math.Exp(sample_normal_from_90_ci(loglow, loghigh, r))
 }
 
-func sample_mixture(fs []func64, weights []float64) float64 {
+func sample_mixture(fs []func64, weights []float64, r source) float64 {
 
 	// fmt.Println("weights initially: ", weights)
 	var sum_weights float64 = 0
@@ -72,7 +70,7 @@ func sample_mixture(fs []func64, weights []float64) float64 {
 
 	for i, cnw := range cumsummed_normalized_weights {
 		if p < cnw {
-			result = fs[i]()
+			result = fs[i](r)
 			flag = 1
 			break
 		}
@@ -80,31 +78,29 @@ func sample_mixture(fs []func64, weights []float64) float64 {
 	// fmt.Println(cumsummed_normalized_weights)
 
 	if flag == 0 {
-		result = fs[len(fs)-1]()
+		result = fs[len(fs)-1](r)
 	}
 	return result
 
 }
 
-func slice_fill(xs []float64, fs func64) {
+func slice_fill(xs []float64, fs func64, r source) {
 	for i := range xs {
-		xs[i] = fs()
+		xs[i] = fs(r)
 	}
 }
 
 func main() {
-
-	fmt.Printf("Type of r: %T\n", r)
 
 	var p_a float64 = 0.8
 	var p_b float64 = 0.5
 	var p_c float64 = p_a * p_b
 	ws := [4](float64){1 - p_c, p_c / 2, p_c / 4, p_c / 4}
 
-	sample_0 := func() float64 { return 0 }
-	sample_1 := func() float64 { return 1 }
-	sample_few := func() float64 { return sample_to(1, 3) }
-	sample_many := func() float64 { return sample_to(2, 10) }
+	sample_0 := func(r source) float64 { return 0 }
+	sample_1 := func(r source) float64 { return 1 }
+	sample_few := func(r source) float64 { return sample_to(1, 3, r) }
+	sample_many := func(r source) float64 { return sample_to(2, 10, r) }
 	fs := [4](func64){sample_0, sample_1, sample_few, sample_many}
 
 	var n_samples int = 1_000_000
@@ -115,27 +111,32 @@ func main() {
 	var xs2 = xs[500_000:750_000]
 	var xs3 = xs[750_000:1_000_000]
 
-	model := func() float64 { return sample_mixture(fs[0:], ws[0:]) }
+	model := func(r source) float64 { return sample_mixture(fs[0:], ws[0:], r) }
 
 	var wg sync.WaitGroup
 
 	wg.Add(4)
 	// Note: these should have different randomness functions!!
+
 	go func() {
 		defer wg.Done()
-		slice_fill(xs0, model)
+		var r = rand.New(rand.NewPCG(1, 2))
+		slice_fill(xs0, model, r)
 	}()
 	go func() {
 		defer wg.Done()
-		slice_fill(xs1, model)
+		var r = rand.New(rand.NewPCG(2, 3))
+		slice_fill(xs1, model, r)
 	}()
 	go func() {
 		defer wg.Done()
-		slice_fill(xs2, model)
+		var r = rand.New(rand.NewPCG(3, 4))
+		slice_fill(xs2, model, r)
 	}()
 	go func() {
 		defer wg.Done()
-		slice_fill(xs3, model)
+		var r = rand.New(rand.NewPCG(4, 5))
+		slice_fill(xs3, model, r)
 	}()
 
 	wg.Wait()
