@@ -102,42 +102,22 @@ func main() {
 	sample_few := func(r source) float64 { return sample_to(1, 3, r) }
 	sample_many := func(r source) float64 { return sample_to(2, 10, r) }
 	fs := [4](func64){sample_0, sample_1, sample_few, sample_many}
+	model := func(r source) float64 { return sample_mixture(fs[0:], ws[0:], r) }
 
 	var n_samples int = 1_000_000
 	var xs = make([]float64, n_samples)
 
-	var xs0 = xs[0:250_000]
-	var xs1 = xs[250_000:500_000]
-	var xs2 = xs[500_000:750_000]
-	var xs3 = xs[750_000:1_000_000]
-
-	model := func(r source) float64 { return sample_mixture(fs[0:], ws[0:], r) }
-
 	var wg sync.WaitGroup
-
-	wg.Add(4)
-	// Note: these should have different randomness functions!!
-
-	go func() {
-		defer wg.Done()
-		var r = rand.New(rand.NewPCG(1, 2))
-		slice_fill(xs0, model, r)
-	}()
-	go func() {
-		defer wg.Done()
-		var r = rand.New(rand.NewPCG(2, 3))
-		slice_fill(xs1, model, r)
-	}()
-	go func() {
-		defer wg.Done()
-		var r = rand.New(rand.NewPCG(3, 4))
-		slice_fill(xs2, model, r)
-	}()
-	go func() {
-		defer wg.Done()
-		var r = rand.New(rand.NewPCG(4, 5))
-		slice_fill(xs3, model, r)
-	}()
+	var h = n_samples / 16
+	wg.Add(16)
+	for i := range 16 {
+		var xs_i = xs[i*h : (i+1)*h]
+		go func() {
+			defer wg.Done()
+			var r = rand.New(rand.NewPCG(uint64(i), uint64(i+1)))
+			slice_fill(xs_i, model, r)
+		}()
+	}
 
 	wg.Wait()
 	var avg float64 = 0
