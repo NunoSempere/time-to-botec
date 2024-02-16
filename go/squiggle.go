@@ -49,8 +49,12 @@ func sample_to(low float64, high float64) float64 {
 
 type func64 func() float64
 
-func sample_mixture(fs [](func(float64) float64), ps []float64) float64 {
-	return 1.0
+func sample_mixture(fs []func64, weights []float64) float64 {
+	var sum_weights float64 = 0
+	for i_, weight := range weights {
+		sum_weights += weight
+	}
+	return sum_weights
 }
 
 func main() {
@@ -67,6 +71,12 @@ func main() {
 		return sample_to(1, 10)
 	}
 
-	fs := [3](func64){f1, f1, f1}
-	// x := sample_mixture()
+	f2 := func() float64 {
+		return sample_to(100, 1000)
+	}
+
+	fs := [2](func64){f1, f2}
+	ws := [2](float64){0.4, 0.1}
+	x := sample_mixture(fs[0:], ws[0:])
+	fmt.Printf("%v\n", x)
 }
