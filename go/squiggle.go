@@ -47,6 +47,12 @@ func sample_to(low float64, high float64) float64 {
 	return math.Exp(sample_normal_from_90_ci(loglow, loghigh))
 }
 
+type func64 func() float64
+
+func sample_mixture(fs [](func(float64) float64), ps []float64) float64 {
+	return 1.0
+}
+
 func main() {
 	var n_samples int = 1000000
 	// var array_samples [n_samples]float64
@@ -57,4 +63,10 @@ func main() {
 	avg = avg / float64(n_samples)
 	fmt.Printf("%v\n", avg)
 
+	f1 := func() float64 {
+		return sample_to(1, 10)
+	}
+
+	fs := [3](func64){f1, f1, f1}
+	// x := sample_mixture()
 }
