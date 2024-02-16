@@ -51,7 +51,7 @@ type func64 func() float64
 
 func sample_mixture(fs []func64, weights []float64) float64 {
 	var sum_weights float64 = 0
-	for i_, weight := range weights {
+	for _, weight := range weights {
 		sum_weights += weight
 	}
 	return sum_weights
