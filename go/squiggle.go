@@ -84,6 +84,12 @@ func sample_mixture(fs []func64, weights []float64) float64 {
 
 }
 
+func slice_fill(xs []float64, fs func64) {
+	for i := range xs {
+		xs[i] = fs()
+	}
+}
+
 func main() {
 	var p_a float64 = 0.8
 	var p_b float64 = 0.5
@@ -97,11 +103,33 @@ func main() {
 	fs := [4](func64){sample_0, sample_1, sample_few, sample_many}
 
 	var n_samples int = 1_000_000
+	var xs = make([]float64, n_samples)
+
+	var xs0 = xs[0:250_000]
+	var xs1 = xs[250_000:500_000]
+	var xs2 = xs[500_000:750_000]
+	var xs3 = xs[750_000:1_000_000]
+
+	model := func() float64 { return sample_mixture(fs[0:], ws[0:]) }
+	slice_fill(xs0, model)
+	slice_fill(xs1, model)
+	slice_fill(xs2, model)
+	slice_fill(xs3, model)
+
 	var avg float64 = 0
-	for i := 0; i < n_samples; i++ {
-		avg += sample_mixture(fs[0:], ws[0:])
+	for _, x := range xs {
+		avg += x
 	}
 	avg = avg / float64(n_samples)
 	fmt.Printf("Average: %v\n", avg)
+	/*
 
+		var avg float64 = 0
+		for i := 0; i < n_samples; i++ {
+			avg += sample_mixture(fs[0:], ws[0:])
+		}
+		avg = avg / float64(n_samples)
+		fmt.Printf("Average: %v\n", avg)
+
+	*/
 }
