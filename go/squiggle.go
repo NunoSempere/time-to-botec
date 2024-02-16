@@ -2,6 +2,7 @@ package main
 
 import "fmt"
 import "math"
+import "sync"
 import rand "math/rand/v2"
 
 var r = rand.New(rand.NewPCG(1, 2))
@@ -111,17 +112,36 @@ func main() {
 	var xs3 = xs[750_000:1_000_000]
 
 	model := func() float64 { return sample_mixture(fs[0:], ws[0:]) }
-	slice_fill(xs0, model)
-	slice_fill(xs1, model)
-	slice_fill(xs2, model)
-	slice_fill(xs3, model)
 
+	var wg sync.WaitGroup
+
+	wg.Add(4)
+	// Note: these should have different randomness functions!!
+	go func() {
+		defer wg.Done()
+		slice_fill(xs0, model)
+	}()
+	go func() {
+		defer wg.Done()
+		slice_fill(xs1, model)
+	}()
+	go func() {
+		defer wg.Done()
+		slice_fill(xs2, model)
+	}()
+	go func() {
+		defer wg.Done()
+		slice_fill(xs3, model)
+	}()
+
+	wg.Wait()
 	var avg float64 = 0
 	for _, x := range xs {
 		avg += x
 	}
 	avg = avg / float64(n_samples)
 	fmt.Printf("Average: %v\n", avg)
+
 	/*
 
 		var avg float64 = 0
