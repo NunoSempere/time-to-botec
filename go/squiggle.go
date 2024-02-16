@@ -50,6 +50,8 @@ func sample_to(low float64, high float64) float64 {
 type func64 func() float64
 
 func sample_mixture(fs []func64, weights []float64) float64 {
+
+	fmt.Println("weights initially: ", weights)
 	var sum_weights float64 = 0
 	for _, weight := range weights {
 		sum_weights += weight
@@ -72,6 +74,7 @@ func sample_mixture(fs []func64, weights []float64) float64 {
 			break
 		}
 	}
+	fmt.Println(weights)
 
 	if flag == 0 {
 		result = fs[len(fs)-1]()
@@ -83,17 +86,26 @@ func sample_mixture(fs []func64, weights []float64) float64 {
 
 func main() {
 
-	f1 := func() float64 { return sample_to(1, 10) }
-	f2 := func() float64 { return sample_to(100, 1000) }
-	fs := [2](func64){f1, f2}
-	ws := [2](float64){0.4, 0.1}
+	sample_0 := func() float64 { return 0 }
+	sample_1 := func() float64 { return 1 }
+	sample_few := func() float64 { return sample_to(1, 3) }
+	sample_many := func() float64 { return sample_to(2, 10) }
+	fs := [4](func64){sample_0, sample_1, sample_few, sample_many}
 
-	var n_samples int = 1000000
+	var p_a float64 = 0.8
+	var p_b float64 = 0.5
+	var p_c float64 = p_a * p_b
+	ws := [4](float64){1 - p_c, p_c / 2, p_c / 4, p_c / 4}
+	fmt.Println("weights #1", ws)
+
+	var n_samples int = 20
 	var avg float64 = 0
 	for i := 0; i < n_samples; i++ {
-		avg += sample_mixture(fs[0:], ws[0:])
+		x := sample_mixture(fs[0:], ws[0:])
+		fmt.Printf("%v\n", x)
+		avg += x
 	}
 	avg = avg / float64(n_samples)
-	fmt.Printf("%v\n", avg)
+	fmt.Printf("Average: %v\n", avg)
 
 }
