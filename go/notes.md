@@ -2,6 +2,7 @@
 - [x] Look into randomness sources in go
   - rand/v2 api: <https://pkg.go.dev/math/rand/v2>
 - [x] Test with a million samples of a simple lognormal, just to get a sense of speed
-- [ ] Add mixture distribution
+- [x] Add mixture distribution
+- [x] Anonymous functions for nested: https://stackoverflow.com/questions/74523441/nested-functions-in-o
 - [ ] Look into go routines for filling up an array.
-- [ ] Anonymous functions for nested: https://stackoverflow.com/questions/74523441/nested-functions-in-o
+  - Mhh, it's different from threads.
