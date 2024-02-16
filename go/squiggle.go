@@ -82,25 +82,18 @@ func sample_mixture(fs []func64, weights []float64) float64 {
 }
 
 func main() {
+
+	f1 := func() float64 { return sample_to(1, 10) }
+	f2 := func() float64 { return sample_to(100, 1000) }
+	fs := [2](func64){f1, f2}
+	ws := [2](float64){0.4, 0.1}
+
 	var n_samples int = 1000000
-	// var array_samples [n_samples]float64
 	var avg float64 = 0
 	for i := 0; i < n_samples; i++ {
-		avg += sample_to(1, 10)
+		avg += sample_mixture(fs[0:], ws[0:])
 	}
 	avg = avg / float64(n_samples)
 	fmt.Printf("%v\n", avg)
 
-	f1 := func() float64 {
-		return sample_to(1, 10)
-	}
-
-	f2 := func() float64 {
-		return sample_to(100, 1000)
-	}
-
-	fs := [2](func64){f1, f2}
-	ws := [2](float64){0.4, 0.1}
-	x := sample_mixture(fs[0:], ws[0:])
-	fmt.Printf("%v\n", x)
 }
