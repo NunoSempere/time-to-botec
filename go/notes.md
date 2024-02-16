@@ -1,5 +1,7 @@
 - [x] Hello world program
 - [x] Look into randomness sources in go
   - rand/v2 api: <https://pkg.go.dev/math/rand/v2>
-- [ ] Test with a million samples of a simple lognormal, just to get a sense of speed
+- [x] Test with a million samples of a simple lognormal, just to get a sense of speed
 - [ ] Add mixture distribution
+- [ ] Look into go routines for filling up an array.
+- [ ] Anonymous functions for nested: https://stackoverflow.com/questions/74523441/nested-functions-in-go
