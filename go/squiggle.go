@@ -90,6 +90,26 @@ func slice_fill(xs []float64, fs func64, r source) {
 	}
 }
 
+func sample_parallel(f func64, n_samples int) []float64 {
+
+	var xs = make([]float64, n_samples)
+	var wg sync.WaitGroup
+	var h = n_samples / 16
+	wg.Add(16)
+	for i := range 16 {
+		var xs_i = xs[i*h : (i+1)*h]
+		go func() {
+			defer wg.Done()
+			var r = rand.New(rand.NewPCG(uint64(i), uint64(i+1)))
+			slice_fill(xs_i, f, r)
+		}()
+	}
+
+	wg.Wait()
+	return xs
+
+}
+
 func main() {
 
 	var p_a float64 = 0.8
@@ -102,24 +122,11 @@ func main() {
 	sample_few := func(r source) float64 { return sample_to(1, 3, r) }
 	sample_many := func(r source) float64 { return sample_to(2, 10, r) }
 	fs := [4](func64){sample_0, sample_1, sample_few, sample_many}
+
 	model := func(r source) float64 { return sample_mixture(fs[0:], ws[0:], r) }
-
 	var n_samples int = 1_000_000
-	var xs = make([]float64, n_samples)
+	xs := sample_parallel(model, n_samples)
 
-	var wg sync.WaitGroup
-	var h = n_samples / 16
-	wg.Add(16)
-	for i := range 16 {
-		var xs_i = xs[i*h : (i+1)*h]
-		go func() {
-			defer wg.Done()
-			var r = rand.New(rand.NewPCG(uint64(i), uint64(i+1)))
-			slice_fill(xs_i, model, r)
-		}()
-	}
-
-	wg.Wait()
 	var avg float64 = 0
 	for _, x := range xs {
 		avg += x
