@@ -20,6 +20,9 @@ time-all:
 	@echo "# Squiggle (0.8.6)" && cd squiggle && make time-linux && echo && echo
 	@echo "# SquigglePy (0.27)" && cd squigglepy && make time && echo && echo
 	@echo "# squiggle.c" && cd squiggle.c && make time-linux && echo && echo
+	@echo "# squiggle.go" && cd go && make time-linux && echo && echo
+
+
 
 record:
 	make time-all > time.txt 2>&1

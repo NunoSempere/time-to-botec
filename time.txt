@@ -92,4 +92,8 @@ sys     0m2.226s
 Running 100x and taking avg time: OMP_NUM_THREADS=16 ./samples
 Time using 16 threads: 7.20ms
 
+# go
 
+make time-linux
+Running 100x and taking avg time: ./squiggle
+Time using 16 threads: 32.70ms

@@ -24,7 +24,7 @@ MATH=-lm
 DEBUG= #'-g'
 STANDARD=-std=c99
 WARNINGS=-Wall
-OPTIMIZED=-O3 #-O3 actually gives better performance than -Ofast, at least for this version
+OPTIMIZED=-O3 #-O3 actually gives better performance than -Ofast, at least for this version. Could also add -march=native 
 LOCAL=-march=native 
 OPENMP=-fopenmp
 

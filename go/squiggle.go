@@ -5,10 +5,10 @@ import "math"
 import "sync"
 import rand "math/rand/v2"
 
+// https://pkg.go.dev/math/rand/v2
+
 type src = *rand.Rand
 type func64 = func(src) float64
-
-// https://pkg.go.dev/math/rand/v2
 
 func sample_unit_uniform(r src) float64 {
 	return r.Float64()
@@ -75,19 +75,12 @@ func sample_mixture(fs []func64, weights []float64, r src) float64 {
 			break
 		}
 	}
-	// fmt.Println(cumsummed_normalized_weights)
 
 	if flag == 0 {
 		result = fs[len(fs)-1](r)
 	}
 	return result
 
-}
-
-func slice_fill(xs []float64, fs func64, r src) {
-	for i := range xs {
-		xs[i] = fs(r)
-	}
 }
 
 func sample_parallel(f func64, n_samples int) []float64 {
@@ -135,6 +128,7 @@ func main() {
 	avg = avg / float64(n_samples)
 	fmt.Printf("Average: %v\n", avg)
 	/*
+	  // Without concurrency:
 		n_samples := 1_000_000
 		var r = rand.New(rand.NewPCG(uint64(1), uint64(2)))
 		var avg float64 = 0

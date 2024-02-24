@@ -1,8 +1,18 @@
 OUTPUT=./samples
 CC=gcc
+OPTIMIZATIONS=-funit-at-a-time -march=native -fno-math-errno -ffast-math -std=gnu99 -fno-unroll-loops -flto
 
 build:
-	$(CC) -O3 -march=native samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
+	$(CC) -O3 samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
+
+experimental:
+	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+	rm -f *.gcda
+	$(CC) -Ofast -fprofile-generate $(OPTIMIZATIONS) samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
+	./$(OUTPUT)
+	$(CC) -Ofast -fprofile-use  $(OPTIMIZATIONS) samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
+	rm *.gcda
+	# Using -Ofast increases speed a bit, but I don't trust it. <https://stackoverflow.com/questions/61232427/gcc-differences-between-o3-vs-ofast-optimizations>
 
 install: 
 	rm -r squiggle_c
@@ -25,8 +35,8 @@ install-git:
 	sed -i 's|../../..|squiggle_c|' samples.c
 
 time-linux: 
-	@echo "Running 100x and taking avg time: OMP_NUM_THREADS=16 $(OUTPUT)"
-	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..100}; do OMP_NUM_THREADS=16 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 100" | bc | sed "s|^|Time using 16 threads: |" | sed 's|$$|ms|' && echo
+	@echo "Running 1000x and taking avg time: OMP_NUM_THREADS=16 $(OUTPUT)"
+	@t=$$(/usr/bin/time -f "%e" -p bash -c 'for i in {1..1001}; do OMP_NUM_THREADS=16 $(OUTPUT); done' 2>&1 >/dev/null | grep real | awk '{print $$2}' ); echo "scale=2; 1000 * $$t / 1000" | bc | sed "s|^|Time using 16 threads: |" | sed 's|$$|ms|' && echo
 
 install-small:
 	rm -r squiggle_c
