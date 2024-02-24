@@ -97,3 +97,12 @@ Time using 16 threads: 7.20ms
 make time-linux
 Running 100x and taking avg time: ./squiggle
 Time using 16 threads: 32.70ms
+
+# Python (serialized numpy)
+
+time python3 samples-fast.py
+Mean result: 0.8848672124030412
+
+real    0m0.117s
+user    0m0.146s
+sys     0m0.298s

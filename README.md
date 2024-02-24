@@ -29,8 +29,9 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | go                          | 32.70ms  | 150  | 
 | Nim                         | 41.10ms  | 84   |
 | Lua (LuaJIT)                | 68.80ms  | 82   |
-| OCaml (flambda)             | 185.50ms | 123  |
-| Squiggle (bun)              | 384.00ms | 14*  |
+| Python (well-tuned numpy)   | 118ms    | 123  |
+| OCaml (flambda)             | 185ms    | 123  |
+| Squiggle (bun)              | 384ms    | 14*  |
 | Javascript (node)           | 0.423s   | 69   |
 | SquigglePy (v0.27)          | 1.542s   | 18*  |
 | R (3.6.1)                   | 4.494s   | 49   |
@@ -96,7 +97,7 @@ In general, Squiggle tries to present a simple interface to the user, leading to
 
 ### Python and Squigglepy
 
-For the Python code, it's possible that the lack of speed is more a function of me not being as familiar with Python. It's also very possible that the code would run faster with [PyPy](https://doc.pypy.org). 
+For the Python code, it's possible that the lack of speed is more a function of me not being as familiar with Python. It's also very possible that the code would run faster with [PyPy](https://doc.pypy.org). Update Feb/2024: Yeah, some well-tuned numpy code contributed by Jonathan Mann runs much faster.
 
 In terms of complexity, SquigglePy seems to be between squiggle.c and the original squiggle. Like the original suqiggle, it also hides its stuff behind semi-magic wrappers, leading to e.g. ambiguities like around [correlated samples](https://git.nunosempere.com/personal/squiggle.c#correlated-samples) and generally having moving pieces that I don't understand. On the other hand, the code *is* short enough so that one person could read it in a few afternoons and roughly understand it. In terms of speed, SquigglePy seems slow.
 
