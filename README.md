@@ -26,6 +26,7 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 |-----------------------------|-----------|---------------|
 | C                           | 6.20ms   | 252  |
 | squiggle.c                  | 7.20ms   | 29*  | 
+| go                          | 32.70ms  | 150  | 
 | Nim                         | 41.10ms  | 84   |
 | Lua (LuaJIT)                | 68.80ms  | 82   |
 | OCaml (flambda)             | 185.50ms | 123  |
@@ -82,6 +83,10 @@ squiggle.c is a minimalistic library focused on understandability and being self
 I like the [operator](http://duskos.org/#operator) section of [Dusk OS](http://duskos.org/):
 
 > Dusk OS doesn't have users, but operators. What's the difference? Control. You use a phone, you use a coffee machine, hell you even use a car these days. But you operate a bulldozer, you operate a crane, you operate a plane.
+
+### Go
+
+Go is reasonably fast, though not as fast as C. Partly this is because it uses a different, slightly more robust random number generator. I have high hopes for go, hopefully it will fit the role for me of a C with fewer warts.
 
 ### NodeJS and Squiggle
 

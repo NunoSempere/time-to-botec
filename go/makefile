@@ -8,6 +8,11 @@ build-complex:
 	go build -ldflags="-s -w" squiggle.go  
 	# https://stackoverflow.com/questions/45003259/passing-an-optimization-flag-to-a-go-compiler
 
+build-show:
+	go build -gcflags="-m" squiggle.go 
+	# https://pkg.go.dev/cmd/compile
+	# consider pgo: <https://go.dev/doc/pgo>
+
 run:
 	./squiggle
 
