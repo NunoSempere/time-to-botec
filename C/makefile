@@ -25,6 +25,7 @@ DEBUG= #'-g'
 STANDARD=-std=c99
 WARNINGS=-Wall
 OPTIMIZED=-O3 #-O3 actually gives better performance than -Ofast, at least for this version. Could also add -march=native 
+MORE_OPTIMIZATIONS=-Ofast -funit-at-a-time -march=native -fno-math-errno -ffast-math -std=gnu99 -fno-unroll-loops -flto
 LOCAL=-march=native 
 OPENMP=-fopenmp
 
@@ -32,9 +33,19 @@ OPENMP=-fopenmp
 STYLE_BLUEPRINT=webkit
 FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
 
+
 ## make build
 build: $(SRC)
 	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(LOCAL) $(OPENMP) $(MATH) -o $(OUTPUT)
+
+build-experimental:
+	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+	rm -f *.gcda
+	$(CC) -fprofile-generate $(OPTIMIZATIONS) samples.c $(OPENMP) $(MATH) -o $(OUTPUT)
+	./$(OUTPUT)
+	$(CC) -fprofile-use  $(OPTIMIZATIONS) samples.c $(OPENMP) $(MATH) -o $(OUTPUT)
+	rm *.gcda
+	# Using -Ofast increases speed a bit, but I don't trust it. <https://stackoverflow.com/questions/61232427/gcc-differences-between-o3-vs-ofast-optimizations>
 
 static:
 	$(CC) $(OPTIMIZED) $(DEBUG) $(SRC) $(LOCAL) $(OPENMP) $(MATH) -o $(OUTPUT)

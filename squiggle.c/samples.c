@@ -3,21 +3,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+double cumsum_p0 = 0.6;
+double cumsum_p1 = 0.8;
+double cumsum_p2 = 0.9;
+double cumsum_p3 = 1.0;
+
 double sampler_result(uint64_t * seed)
 {
-    double p_a = 0.8;
-    double p_b = 0.5;
-    double p_c = p_a * p_b;
 
-    double sample_0(uint64_t * seed) { UNUSED(seed); return 0; }
-    double sample_1(uint64_t * seed) { UNUSED(seed); return 1; }
-    double sample_few(uint64_t * seed) { return sample_to(1, 3, seed); }
-    double sample_many(uint64_t * seed) { return sample_to(2, 10, seed); }
-
-    int n_dists = 4;
-    double weights[] = { 1 - p_c, p_c / 2, p_c / 4, p_c / 4 };
-    double (*samplers[])(uint64_t*) = { sample_0, sample_1, sample_few, sample_many };
-    return sample_mixture(samplers, weights, n_dists, seed);
+    double p = sample_unit_uniform(seed);
+    if(p< cumsum_p0){
+        return 0;
+    } else if (p < cumsum_p1){
+        return 1;
+    } else if (p < cumsum_p2){
+        return sample_to(1,3, seed);
+    } else {
+        return sample_to(2, 10, seed);
+    } 
 }
 
 int main()
