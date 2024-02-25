@@ -41,9 +41,9 @@ build: $(SRC)
 build-experimental:
 	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	rm -f *.gcda
-	$(CC) -fprofile-generate $(OPTIMIZATIONS) samples.c $(OPENMP) $(MATH) -o $(OUTPUT)
+	$(CC) -fprofile-generate $(OPTIMIZATIONS) $(LOCAL) samples.c $(OPENMP) $(MATH) -o $(OUTPUT)
 	./$(OUTPUT)
-	$(CC) -fprofile-use  $(OPTIMIZATIONS) samples.c $(OPENMP) $(MATH) -o $(OUTPUT)
+	$(CC) -fprofile-use  $(OPTIMIZATIONS) $(LOCAL) samples.c $(OPENMP) $(MATH) -o $(OUTPUT)
 	rm *.gcda
 	# Using -Ofast increases speed a bit, but I don't trust it. <https://stackoverflow.com/questions/61232427/gcc-differences-between-o3-vs-ofast-optimizations>
 
