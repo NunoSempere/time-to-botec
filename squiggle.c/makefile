@@ -5,7 +5,7 @@ OPTIMIZATIONS=-funit-at-a-time -march=native -fno-math-errno -ffast-math -std=gn
 build:
 	$(CC) -O3 samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
 
-experimental:
+build-experimental:
 	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	rm -f *.gcda
 	$(CC) -Ofast -fprofile-generate $(OPTIMIZATIONS) samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
@@ -24,6 +24,18 @@ install:
 	mv squiggle* temp
 	mv temp squiggle_c
 	wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/examples/more/12_time_to_botec_parallel/example.c -O samples.c
+	sed -i 's|../../..|squiggle_c|' samples.c
+
+install-custom: 
+	rm -r squiggle_c
+	wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.c
+	wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.h
+	wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.c
+	wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.h
+	mkdir temp
+	mv squiggle* temp
+	mv temp squiggle_c
+	wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/examples/more/15_time_to_botec_custom_mixture/example.c -O samples.c
 	sed -i 's|../../..|squiggle_c|' samples.c
 
 install-git:

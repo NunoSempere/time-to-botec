@@ -24,6 +24,7 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 
 | Language                    | Time      | Lines of code |
 |-----------------------------|-----------|---------------|
+| squiggle.c (danger mode)    | 7.20ms   | 29*  | 
 | C                           | 6.20ms   | 252  |
 | squiggle.c                  | 7.20ms   | 29*  | 
 | go                          | 32.70ms  | 150  | 
