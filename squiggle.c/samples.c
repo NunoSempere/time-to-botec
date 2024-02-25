@@ -11,7 +11,7 @@ double cumsum_p3 = 1.0;
 double sampler_result(uint64_t * seed)
 {
 
-    double p = sample_unit_uniform(seed);
+    double p = sample_uniform(0, 1, seed);
     if(p< cumsum_p0){
         return 0;
     } else if (p < cumsum_p1){
