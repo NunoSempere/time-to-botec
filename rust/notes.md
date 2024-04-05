@@ -17,3 +17,12 @@ An underlying normal distribution algorithm that might be better than the Bo-Mul
 
 A book produced as documentation (! <3%): https://rust-random.github.io/book/intro.html
 
+----
+
+Rust feels like pulling my teeth here, partly because I'm developing this on a server rather than on my own computer.
+
+Some more ressources:
+https://prng.di.unimi.it/#remarks
+https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf
+https://web.archive.org/web/20160801142711/http://random.mat.sbg.ac.at/results/peter/A19final.pdf
+
