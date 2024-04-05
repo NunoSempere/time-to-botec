@@ -107,6 +107,7 @@ name = "srust"
 version = "0.1.0"
 dependencies = [
  "rand",
+ "rand_core",
  "rand_distr",
  "rand_pcg",
 ]
