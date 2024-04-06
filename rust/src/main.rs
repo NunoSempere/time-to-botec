@@ -1,9 +1,28 @@
 use rand_core::SeedableRng;
-use rand_distr::{Distribution, Normal, Uniform};
+use rand_distr::{Distribution, Normal, LogNormal, Uniform};
 use rand_pcg::Pcg64Mcg;
 
 // use rand::thread_rng;
 // use rand::prelude::*
+
+fn sample_to(low: f64, high: f64, mut rng: &mut Pcg64Mcg) -> f64 {
+    let normal90 = 1.6448536269514727; // change to global const later
+    let loglow = low.ln();
+    let loghigh = high.ln();
+    let normal_mean = (loghigh + loglow)/2.0;
+    let normal_std = (loghigh - loglow) / (2.0 * normal90);
+
+    /*
+    let lognormal = LogNormal::new(normal_mean, normal_std).unwrap(); 
+    let x = lognormal.sample(&mut rng);
+    // https://docs.rs/rand_distr/latest/src/rand_distr/normal.rs.html#232-236
+    */
+    let normal = Normal::new(normal_mean, normal_std).unwrap(); 
+    let x = normal.sample(&mut rng);
+    let y = x.exp();
+
+    return y;
+}
 
 fn model(mut rng: &mut Pcg64Mcg) -> f64 {
     let p_a = 0.8;
@@ -12,18 +31,20 @@ fn model(mut rng: &mut Pcg64Mcg) -> f64 {
 
     let ws = [1.0 - p_c, p_c / 2.0, p_c / 4.0, p_c / 4.0];
 
-    let uniform = Uniform::new(0.0, 1.0);
-    let p = uniform.sample(&mut rng);
+    let uniform = Uniform::new(0.0, 1.0); /* I don't understand why this doesn't need to be unwrapped, unlike normal below */
+    let p: f64  = uniform.sample(&mut rng);
     if p < ws[0] {
         return 0.0;
     } else if p < (ws[0] + ws[1]) {
         return 1.0;
     } else if p < (ws[0] + ws[1] + ws[2]) {
-        let normal = Normal::new(2.0, 3.0).unwrap();
-        let v = normal.sample(&mut rng);
-        return v;
+        // let normal = Normal::new(2.0, 3.0).unwrap();
+        // let v = normal.sample(&mut rng);
+        let x = sample_to(1.0, 3.0, rng);
+        return x;
     } else {
-        return 3.0;
+        let x = sample_to(2.0, 10.0, rng);
+        return x;
     }
 }
 
@@ -32,8 +53,20 @@ fn main() {
 
     let mut rng = Pcg64Mcg::seed_from_u64(1);
 
+    /* 
     let a = model(&mut rng);
     println!("Sample is {}", a);
     let b = model(&mut rng);
     println!("Sample is {}", b);
+    */ 
+
+    let mut mean = 0.0;
+    let n_samples = 1_000_000;
+    for _ in 0..n_samples { 
+        let x = model(&mut rng);
+        // println!("Sample: {}", x);
+        mean += x;
+    }
+    mean = mean/(n_samples as f64);
+    println!{"Mean: {}", mean};
 }
