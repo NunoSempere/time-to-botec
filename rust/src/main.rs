@@ -16,9 +16,11 @@ fn main() {
     println!("Hello, world!");
 
     let mut rng = Pcg64Mcg::seed_from_u64(1);
-    // mean 2, standard deviation 3
-    let v = model(&mut rng);
-    println!("{} is from a N(2, 9) distribution", v)
+
+    let a = model(&mut rng);
+    println!("{} is from a N(2, 9) distribution", a);
+    let b = model(&mut rng);
+    println!("{} is from a N(2, 9) distribution", b);
 }
 
 
