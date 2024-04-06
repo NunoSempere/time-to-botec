@@ -128,14 +128,14 @@ func main() {
 	avg = avg / float64(n_samples)
 	fmt.Printf("Average: %v\n", avg)
 	/*
-	  // Without concurrency:
-		n_samples := 1_000_000
-		var r = rand.New(rand.NewPCG(uint64(1), uint64(2)))
-		var avg float64 = 0
-		for i := 0; i < n_samples; i++ {
-			avg += sample_mixture(fs[0:], ws[0:], r)
-		}
-		avg = avg / float64(n_samples)
-		fmt.Printf("Average: %v\n", avg)
+		  // Without concurrency:
+			n_samples := 1_000_000
+			var r = rand.New(rand.NewPCG(uint64(1), uint64(2)))
+			var avg float64 = 0
+			for i := 0; i < n_samples; i++ {
+				avg += sample_mixture(fs[0:], ws[0:], r)
+			}
+			avg = avg / float64(n_samples)
+			fmt.Printf("Average: %v\n", avg)
 	*/
 }

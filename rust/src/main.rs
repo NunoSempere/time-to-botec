@@ -1,9 +1,6 @@
 use rand_core::SeedableRng;
-use rand_distr::{Distribution, Normal, LogNormal, Uniform};
+use rand_distr::{Distribution, LogNormal, Uniform};
 use rand_pcg::Pcg64Mcg;
-
-// use rand::thread_rng;
-// use rand::prelude::*
 
 fn sample_to(low: f64, high: f64, mut rng: &mut Pcg64Mcg) -> f64 {
     let normal90 = 1.6448536269514727; // change to global const later
@@ -12,16 +9,10 @@ fn sample_to(low: f64, high: f64, mut rng: &mut Pcg64Mcg) -> f64 {
     let normal_mean = (loghigh + loglow)/2.0;
     let normal_std = (loghigh - loglow) / (2.0 * normal90);
 
-    /*
     let lognormal = LogNormal::new(normal_mean, normal_std).unwrap(); 
     let x = lognormal.sample(&mut rng);
     // https://docs.rs/rand_distr/latest/src/rand_distr/normal.rs.html#232-236
-    */
-    let normal = Normal::new(normal_mean, normal_std).unwrap(); 
-    let x = normal.sample(&mut rng);
-    let y = x.exp();
-
-    return y;
+    return x; 
 }
 
 fn model(mut rng: &mut Pcg64Mcg) -> f64 {
@@ -38,8 +29,6 @@ fn model(mut rng: &mut Pcg64Mcg) -> f64 {
     } else if p < (ws[0] + ws[1]) {
         return 1.0;
     } else if p < (ws[0] + ws[1] + ws[2]) {
-        // let normal = Normal::new(2.0, 3.0).unwrap();
-        // let v = normal.sample(&mut rng);
         let x = sample_to(1.0, 3.0, rng);
         return x;
     } else {
@@ -49,16 +38,7 @@ fn model(mut rng: &mut Pcg64Mcg) -> f64 {
 }
 
 fn main() {
-    println!("Hello, world!");
-
     let mut rng = Pcg64Mcg::seed_from_u64(1);
-
-    /* 
-    let a = model(&mut rng);
-    println!("Sample is {}", a);
-    let b = model(&mut rng);
-    println!("Sample is {}", b);
-    */ 
 
     let mut mean = 0.0;
     let n_samples = 1_000_000;

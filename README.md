@@ -146,6 +146,10 @@ The beautiful thing about bc is that it's an arbitrary precision calculator:
 
 I decided to go with [Gavin Howard's bc](https://git.gavinhoward.com/gavin/bc), because I've been following the guy some time, and I respect him. It also had some crucial extensions, like a random number generator and allowing specifying functions and variables with names longer than one letter.
 
+### Rust
+
+I'm still making up my mind about Rust. It seems foreign. Mutable pointers seem kinda weird. Their randomness libraries are very nice, and the ziggurat method they're using to sample from a normal is very nice. I haven't added parallelism yet. You can see some notes in the Rust folder.
+
 ### Overall thoughts
 
 Overall I don't think that this is a fair comparison of the languages intrinsically, because I'm just differentially good at them, because I've chosen to put more effort in ones than in others. But it is still useful to me personally, and perhaps mildly informative to others. 
@@ -154,13 +158,13 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 
 - [x] bc (the standard posix calculator)
 - [x] OCaml
+- [x] Go 
+- [ ] Rust
 - [ ] PyMC
 - [ ] Zig
-- [ ] Rust
 - [ ] Forth
 - [ ] Julia (TuringML, MCHammer) 
 - [ ] Lisp
-- [ ] Go 
 - [ ] sh/bash, lol?
 - [ ] Dagger (<https://usedagger.com/>)
 - [ ] Haskell
