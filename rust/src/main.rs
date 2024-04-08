@@ -12,7 +12,7 @@ fn sample_to(low: f64, high: f64, mut rng: &mut Pcg64Mcg) -> f64 {
     let lognormal = LogNormal::new(normal_mean, normal_std).unwrap(); 
     let x = lognormal.sample(&mut rng);
     // https://docs.rs/rand_distr/latest/src/rand_distr/normal.rs.html#232-236
-    return x; 
+    x; 
 }
 
 fn model(mut rng: &mut Pcg64Mcg) -> f64 {
@@ -25,15 +25,13 @@ fn model(mut rng: &mut Pcg64Mcg) -> f64 {
     let uniform = Uniform::new(0.0, 1.0); /* I don't understand why this doesn't need to be unwrapped, unlike normal below */
     let p: f64  = uniform.sample(&mut rng);
     if p < ws[0] {
-        return 0.0;
+        0.0;
     } else if p < (ws[0] + ws[1]) {
-        return 1.0;
+        1.0;
     } else if p < (ws[0] + ws[1] + ws[2]) {
-        let x = sample_to(1.0, 3.0, rng);
-        return x;
+        sample_to(1.0, 3.0, rng);
     } else {
-        let x = sample_to(2.0, 10.0, rng);
-        return x;
+        sample_to(2.0, 10.0, rng);
     }
 }
 
