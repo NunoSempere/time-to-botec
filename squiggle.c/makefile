@@ -1,6 +1,7 @@
 OUTPUT=./samples
 CC=gcc
 OPTIMIZATIONS=-funit-at-a-time -march=native -fno-math-errno -ffast-math -std=gnu99 -fno-unroll-loops -flto
+SHELL=sh
 
 build:
 	$(CC) -O3 samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o $(OUTPUT)
