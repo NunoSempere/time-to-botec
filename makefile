@@ -26,4 +26,4 @@ time-all:
 	@echo "# squiggle.go" && cd go && make time-linux && echo && echo
 
 record:
-	make time-all | tee time.txt 2>&1
+	make time-all  2>&1 | tee time.txt

@@ -24,20 +24,20 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 
 | Language                    | Time      | Lines of code |
 |-----------------------------|-----------|---------------|
-| squiggle.c (danger)         | ms    | 35*  | 
-| C                           | 3.4ms    | 252  |
-| squiggle.c                  | 4.4msms    | 29*  | 
-| go                          | 12.20ms   | 150  | 
-| Nim                         | 25.00ms   | 84   |
-| Lua (LuaJIT)                | 54.20ms   | 82   |
-| Python (numpy)              | 69ms     | 48   |
-| OCaml (flambda)             | 98.30ms     | 123  |
-| Squiggle (bun)              | 238.5ms     | 14*  |
-| Javascript (node)           | 280ms     | 69   |
-| SquigglePy (v0.28)          | 902ms   | 18*  |
-| R (4.2.1)                   | 4,857ms   | 49   |
-| Python 3.12                 | 7,418ms  | 56   |
-| Gavin Howard's bc           | 34,398ms  | 101  |
+| C                           | 3.40ms    | 252  |
+| squiggle.c (danger)         | 4.51ms    | 35*  | 
+| squiggle.c                  | 6.80ms    | 31*  | 
+| go                          | 12.30ms   | 141  | 
+| Nim                         | 24.80ms   | 84   |
+| Lua (LuaJIT)                | 53.70ms   | 82   |
+| Python (numpy)              | 77ms      | 48   |
+| OCaml (flambda)             | 96.30ms   | 123  |
+| Squiggle (bun)              | 236.20ms  | 14*  |
+| Javascript (node)           | 281ms     | 69   |
+| SquigglePy (v0.28)          | 940ms     | 18*  |
+| R (4.2.1)                   | 4,826ms   | 49   |
+| Python 3.12                 | 7,405ms   | 56   |
+| Gavin Howard's bc           | 34,960ms  | 101  |
 
 Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples. But different implementations use different algorithms and, occasionally, different time measuring methodologies (for the C, Nim and Lua implementations, I run the program 100 times and take the mean). Their speed was also measured under different loads in my machine. So I think that these time estimates are accurate within maybe ~2x or so.
 
