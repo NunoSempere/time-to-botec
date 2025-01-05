@@ -25,6 +25,6 @@ async function main(){
       sparkLine: 20,
     }
   })
-  console.log(output.value.result.value)
+  console.log(output.result.value.result._value.value)
 }
 main()
