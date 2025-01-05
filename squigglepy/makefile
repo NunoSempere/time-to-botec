@@ -1,9 +1,13 @@
 SHELL := /bin/bash ## <= required to use time
 run:
-	python3.9 samples.py
+	venv/bin/python3 samples.py
+
 
 install:
-	pip3 install squigglepy==0.27
+	# pipx install squigglepy==0.28
+	uv venv
+	source .venv/bin/activate
+	uv pip install squigglepy==0.28
 
 time:
 	time python3.9 samples.py

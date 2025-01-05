@@ -1,39 +1,27 @@
 # bc
 time ghbc -l squiggle.bc estimate.bc
-.8880956915396169
-
-real	0m15.941s
-user	0m15.936s
-sys	0m0.000s
+.8871839775994587
 
 
 # C
 Running 100x and taking avg time: OMP_NUM_THREADS=16 out/samples
-Time using 16 threads: 6.10ms
+Time using 16 threads: 3.30ms
 
 
 
 # js (bun)
-0.8890972216037947
-
-real	0m0.592s
-user	0m0.560s
-sys	0m0.047s
+[0m[33m0.8883080426768405[0m
 
 
 # js (node)
-0.8886602152847817
-
-real	0m0.404s
-user	0m0.518s
-sys	0m0.081s
+0.8899545109428865
 
 
 # lua (luajit)
 Requires /bin/time, found on GNU/Linux systems
 
 Running 100x and taking avg time of: luajit samples.lua
-Time: 67.90ms
+Time: 53.70ms
 
 
 
@@ -41,7 +29,7 @@ Time: 67.90ms
 Requires /bin/time, found on GNU/Linux systems
 
 Running 100x and taking avg time of: 
-Time: 41.00ms
+Time: 24.60ms
 
 
 
@@ -49,288 +37,8 @@ Time: 41.00ms
 Requires /bin/time, found on GNU/Linux systems
 
 Running 100x and taking avg time of: 
-Time: 185.50ms
+Time: 96.50ms
 
 
 
 # Python (3.9)
-0.8887373869178242
-
-real	0m12.096s
-user	0m12.307s
-sys	0m1.081s
-
-
-# Python (numpy)
-0.8887373869178242
-
-real	0m11.907s
-user	0m12.180s
-sys	0m1.092s
-
-
-# R (3.6.1)
-[1] 0.8875992
-
-real	0m4.567s
-user	0m4.532s
-sys	0m0.029s
-
-
-# Squiggle (0.8.6)
-Requires /bin/time, found on GNU/Linux systems
-
-Running 100x and taking avg time of: 
-Time: 379.80ms
-
-
-
-# SquigglePy (0.27)
-time python3.9 samples.py
-  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.71it/s]100%|██████████| 4/4 [00:00<00:00, 21.89it/s]
-  0%|          | 0/1000000 [00:00<?, ?it/s] 10%|█         | 100926/1000000 [00:00<00:00, 1009253.74it/s] 23%|██▎       | 233593/1000000 [00:00<00:00, 1195967.71it/s] 37%|███▋      | 369110/1000000 [00:00<00:00, 1268660.47it/s] 51%|█████     | 506546/1000000 [00:00<00:00, 1310386.16it/s] 65%|██████▍   | 647417/1000000 [00:00<00:00, 1345838.18it/s] 79%|███████▉  | 787714/1000000 [00:00<00:00, 1365262.30it/s] 93%|█████████▎| 929866/1000000 [00:00<00:00, 1383650.33it/s]100%|██████████| 1000000/1000000 [00:00<00:00, 1321333.61it/s]
-0.8885170299156587
-
-real	0m1.534s
-user	0m1.951s
-sys	0m2.252s
-
-
-# squiggle.c
-rm -r squiggle_c
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.c
---2024-02-25 00:21:11--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.c
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 7942 (7.8K) [text/plain]
-Saving to: ‘squiggle.c’
-
-     0K .......                                               100% 1.24G=0s
-
-2024-02-25 00:21:13 (1.24 GB/s) - ‘squiggle.c’ saved [7942/7942]
-
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.h
---2024-02-25 00:21:13--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.h
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 1348 (1.3K) [text/plain]
-Saving to: ‘squiggle.h’
-
-     0K .                                                     100%  284M=0s
-
-2024-02-25 00:21:15 (284 MB/s) - ‘squiggle.h’ saved [1348/1348]
-
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.c
---2024-02-25 00:21:15--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.c
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 15606 (15K) [text/plain]
-Saving to: ‘squiggle_more.c’
-
-     0K .......... .....                                      100% 99.8M=0s
-
-2024-02-25 00:21:17 (99.8 MB/s) - ‘squiggle_more.c’ saved [15606/15606]
-
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.h
---2024-02-25 00:21:17--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.h
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 1111 (1.1K) [text/plain]
-Saving to: ‘squiggle_more.h’
-
-     0K .                                                     100%  244M=0s
-
-2024-02-25 00:21:18 (244 MB/s) - ‘squiggle_more.h’ saved [1111/1111]
-
-mkdir temp
-mv squiggle* temp
-mv temp squiggle_c
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/examples/more/12_time_to_botec_parallel/example.c -O samples.c
---2024-02-25 00:21:18--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/examples/more/12_time_to_botec_parallel/example.c
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 1022 [text/plain]
-Saving to: ‘samples.c’
-
-     0K                                                       100%  248M=0s
-
-2024-02-25 00:21:20 (248 MB/s) - ‘samples.c’ saved [1022/1022]
-
-sed -i 's|../../..|squiggle_c|' samples.c
-gcc -O3 samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o ./samples
-Running 1000x and taking avg time: OMP_NUM_THREADS=16 ./samples
-Time using 16 threads: 8.69ms
-
-
-
-# squiggle.c
-rm -r squiggle_c
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.c
---2024-02-25 00:21:29--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.c
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 7942 (7.8K) [text/plain]
-Saving to: ‘squiggle.c’
-
-     0K .......                                               100% 1.98G=0s
-
-2024-02-25 00:21:32 (1.98 GB/s) - ‘squiggle.c’ saved [7942/7942]
-
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.h
---2024-02-25 00:21:32--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.h
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 1348 (1.3K) [text/plain]
-Saving to: ‘squiggle.h’
-
-     0K .                                                     100%  277M=0s
-
-2024-02-25 00:21:33 (277 MB/s) - ‘squiggle.h’ saved [1348/1348]
-
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.c
---2024-02-25 00:21:33--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.c
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 15606 (15K) [text/plain]
-Saving to: ‘squiggle_more.c’
-
-     0K .......... .....                                      100%  102M=0s
-
-2024-02-25 00:21:35 (102 MB/s) - ‘squiggle_more.c’ saved [15606/15606]
-
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.h
---2024-02-25 00:21:35--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.h
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 1111 (1.1K) [text/plain]
-Saving to: ‘squiggle_more.h’
-
-     0K .                                                     100%  490M=0s
-
-2024-02-25 00:21:36 (490 MB/s) - ‘squiggle_more.h’ saved [1111/1111]
-
-mkdir temp
-mv squiggle* temp
-mv temp squiggle_c
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/examples/more/15_time_to_botec_custom_mixture/example.c -O samples.c
---2024-02-25 00:21:36--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/examples/more/15_time_to_botec_custom_mixture/example.c
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 795 [text/plain]
-Saving to: ‘samples.c’
-
-     0K                                                       100%  256M=0s
-
-2024-02-25 00:21:38 (256 MB/s) - ‘samples.c’ saved [795/795]
-
-sed -i 's|../../..|squiggle_c|' samples.c
-# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-rm -f *.gcda
-gcc -Ofast -fprofile-generate -funit-at-a-time -march=native -fno-math-errno -ffast-math -std=gnu99 -fno-unroll-loops -flto samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o ./samples
-././samples
-Avg: 0.888998
-gcc -Ofast -fprofile-use  -funit-at-a-time -march=native -fno-math-errno -ffast-math -std=gnu99 -fno-unroll-loops -flto samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o ./samples
-rm *.gcda
-# Using -Ofast increases speed a bit, but I don't trust it. <https://stackoverflow.com/questions/61232427/gcc-differences-between-o3-vs-ofast-optimizations>
-Running 1000x and taking avg time: OMP_NUM_THREADS=16 ./samples
-Time using 16 threads: 4.95ms
-
-
-
-# squiggle.c (danger mode)
-rm -r squiggle_c
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.c
---2024-02-25 00:21:44--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.c
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 7942 (7.8K) [text/plain]
-Saving to: ‘squiggle.c’
-
-     0K .......                                               100% 1.26G=0s
-
-2024-02-25 00:21:46 (1.26 GB/s) - ‘squiggle.c’ saved [7942/7942]
-
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.h
---2024-02-25 00:21:46--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle.h
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 1348 (1.3K) [text/plain]
-Saving to: ‘squiggle.h’
-
-     0K .                                                     100%  225M=0s
-
-2024-02-25 00:21:47 (225 MB/s) - ‘squiggle.h’ saved [1348/1348]
-
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.c
---2024-02-25 00:21:47--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.c
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 15606 (15K) [text/plain]
-Saving to: ‘squiggle_more.c’
-
-     0K .......... .....                                      100%  103M=0s
-
-2024-02-25 00:21:49 (103 MB/s) - ‘squiggle_more.c’ saved [15606/15606]
-
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.h
---2024-02-25 00:21:49--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/squiggle_more.h
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 1111 (1.1K) [text/plain]
-Saving to: ‘squiggle_more.h’
-
-     0K .                                                     100%  219M=0s
-
-2024-02-25 00:21:56 (219 MB/s) - ‘squiggle_more.h’ saved [1111/1111]
-
-mkdir temp
-mv squiggle* temp
-mv temp squiggle_c
-wget https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/examples/more/15_time_to_botec_custom_mixture/example.c -O samples.c
---2024-02-25 00:21:56--  https://git.nunosempere.com/personal/squiggle.c/raw/branch/master/examples/more/15_time_to_botec_custom_mixture/example.c
-Resolving git.nunosempere.com (git.nunosempere.com)... 164.92.249.28
-Connecting to git.nunosempere.com (git.nunosempere.com)|164.92.249.28|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 795 [text/plain]
-Saving to: ‘samples.c’
-
-     0K                                                       100%  184M=0s
-
-2024-02-25 00:21:59 (184 MB/s) - ‘samples.c’ saved [795/795]
-
-sed -i 's|../../..|squiggle_c|' samples.c
-# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-rm -f *.gcda
-gcc -Ofast -fprofile-generate -funit-at-a-time -march=native -fno-math-errno -ffast-math -std=gnu99 -fno-unroll-loops -flto samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o ./samples
-././samples
-Avg: 0.888998
-gcc -Ofast -fprofile-use  -funit-at-a-time -march=native -fno-math-errno -ffast-math -std=gnu99 -fno-unroll-loops -flto samples.c ./squiggle_c/squiggle.c  ./squiggle_c/squiggle_more.c -lm -fopenmp -o ./samples
-rm *.gcda
-# Using -Ofast increases speed a bit, but I don't trust it. <https://stackoverflow.com/questions/61232427/gcc-differences-between-o3-vs-ofast-optimizations>
-Running 1000x and taking avg time: OMP_NUM_THREADS=16 ./samples
-Time using 16 threads: 4.44ms
-
-
-
-# squiggle.go
-Running 100x and taking avg time: ./squiggle
-Time using 16 threads: 21.30ms
-
-
-# Python (numpy)
-Mean result: 0.8848672124030412
-Mean result: 0.8848672124030412

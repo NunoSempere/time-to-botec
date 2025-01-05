@@ -33,6 +33,9 @@ OPENMP=-fopenmp
 STYLE_BLUEPRINT=webkit
 FORMATTER=clang-format -i -style=$(STYLE_BLUEPRINT)
 
+deps:
+	sudo apt install libomp-dev time
+
 
 ## make build
 build: $(SRC)
