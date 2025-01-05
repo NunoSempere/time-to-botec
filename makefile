@@ -15,14 +15,14 @@ time-all:
 	@echo "# lua (luajit)" && cd lua && make time-linux && echo && echo
 	@echo "# nim" && cd nim && make time-linux && echo && echo
 	@echo "# ocaml" && cd ocaml && make time-linux && echo && echo
-	@echo "# Python (3.12)" && cd python && time python samples.py && echo && echo
-	@echo "# Python (numpy)" && cd python && time python samples-fast.py && echo && echo
+	@echo "# Python (3.12)" && cd python && time python3 samples.py && echo && echo
+	@echo "# Python (numpy)" && cd python && time python3 samples-fast.py && echo && echo
 	@echo "# R (4.2.1)" && cd R && time r samples.R && echo && echo
 	@echo "# Squiggle (0.8.6)" && cd squiggle && make time-linux && echo && echo
 	@echo "# SquigglePy (0.28)" && cd squigglepy && make time && echo && echo
 	@echo "# squiggle.c" && cd squiggle.c && make install && make build && make time-linux && echo && echo
-	@echo "# squiggle.c" && cd squiggle.c && make install-custom && make build-experimental &&  make time-linux && echo && echo
-	@echo "# squiggle.c (danger mode)" && cd squiggle.c && make install-custom && make build-experimental && make time-linux && echo && echo
+	# @echo "# squiggle.c" && cd squiggle.c && make install-custom && make build-experimental &&  make time-linux && echo && echo
+	@echo "# squiggle.c (danger mode)" && cd squiggle.c && make build-experimental && make time-linux && echo && echo
 	@echo "# squiggle.go" && cd go && make time-linux && echo && echo
 
 record:

@@ -10,4 +10,4 @@ install:
 	uv pip install squigglepy==0.28
 
 time:
-	time python3.9 samples.py
+	source .venv/bin/activate && time python3 samples.py

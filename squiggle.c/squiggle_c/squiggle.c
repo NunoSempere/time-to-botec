@@ -50,7 +50,7 @@ double sample_unit_normal(uint64_t* seed)
     // // See: <https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform>
     double u1 = sample_unit_uniform(seed);
     double u2 = sample_unit_uniform(seed);
-    double z = sqrt(-2.0 * log(u1)) * sin(2.0 * PI * u2);
+    double z = sqrt(-2.0 * log(u1)) * sin(2 * PI * u2);
     return z;
 }
 
@@ -90,7 +90,7 @@ double sample_normal_from_90_ci(double low, double high, uint64_t* seed)
     // 5. If we want a 90% confidence interval from high to low,
     // we can set mean = (high + low)/2; the midpoint, and L = high-low,
     // Normal([high + low]/2, [high - low]/(2 * 1.6448536269514722))
-    double mean = (high + low) * 0.5;
+    double mean = (high + low) / 2.0;
     double std = (high - low) / (2.0 * NORMAL90CONFIDENCE);
     return sample_normal(mean, std, seed);
 }

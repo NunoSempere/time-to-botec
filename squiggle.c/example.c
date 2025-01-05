@@ -1,5 +1,5 @@
-#include "squiggle_c/squiggle.h"
-#include "squiggle_c/squiggle_more.h"
+#include "../../../squiggle.h"
+#include "../../../squiggle_more.h"
 #include <stdio.h>
 #include <stdlib.h>
 
