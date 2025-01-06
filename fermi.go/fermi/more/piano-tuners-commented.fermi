@@ -1,0 +1,9 @@
+5M 12M     # number of people living in Chicago
+beta 1 200 # fraction of people that have a piano
+30 180     # minutes it takes to tune a piano, including travel time
+/ 48 52    # weeks a year that piano tuners work for
+/ 5 6      # days a week in which piano tuners work
+/ 6 8      # hours a day in which piano tuners work
+/ 60       # minutes to an hour
+=: piano_tuners
+exit

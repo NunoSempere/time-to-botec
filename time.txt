@@ -187,5 +187,8 @@ Time using 16 threads: 4.51ms
 Running 100x and taking avg time: ./squiggle
 Time using 16 threads: 12.30ms
 
+# rust
+Running 100x and taking avg time
+Time: 13.80ms
 
 

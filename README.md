@@ -28,10 +28,12 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | squiggle.c (danger)         | 4.51ms    | 35*  | 
 | squiggle.c                  | 6.80ms    | 31*  | 
 | go                          | 12.30ms   | 141  | 
+| Rust                        | 13.80ms   | 141  | 
 | Nim                         | 24.80ms   | 84   |
 | Lua (LuaJIT)                | 53.70ms   | 82   |
 | Python (numpy)              | 77ms      | 48   |
 | OCaml (flambda)             | 96.30ms   | 123  |
+| fermi.go                    | 139.00ms  | 17*  |
 | Squiggle (bun)              | 236.20ms  | 14*  |
 | Javascript (node)           | 281ms     | 69   |
 | SquigglePy (v0.28)          | 940ms     | 18*  |
