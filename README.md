@@ -179,6 +179,8 @@ Overall I don't think that this is a fair comparison of the languages intrinsica
 
 The future of this project is uncertain. In most words, I simply forget about this repository.
 
+TODO: Use [hyperfine](https://github.com/sharkdp/hyperfine) for time comparisons.
+
 ## Other similar projects
 
 - Squigglepy: <https://github.com/rethinkpriorities/squigglepy>
