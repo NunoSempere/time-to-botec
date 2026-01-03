@@ -1,5 +1,6 @@
 **/samples-gpt
 rust/target/
 .old/
+ols.json
 **/node_modules
 **/venv

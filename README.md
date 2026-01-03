@@ -24,11 +24,13 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 
 | Language                    | Time      | Lines of code |
 |-----------------------------|-----------|---------------|
+| Odin (Multi-Thread)         | 2.80ms    | 76   |
 | C                           | 3.40ms    | 252  |
 | squiggle.c (danger)         | 4.51ms    | 35*  | 
 | squiggle.c                  | 6.80ms    | 31*  | 
 | go                          | 12.30ms   | 141  | 
-| Rust                        | 13.80ms   | 141  | 
+| Rust                        | 13.80ms   | 141  |
+| Odin (Single-Thread)        | 20.00ms   | 39   | 
 | Nim                         | 24.80ms   | 84   |
 | Lua (LuaJIT)                | 53.70ms   | 82   |
 | Python (numpy)              | 77ms      | 48   |
@@ -41,11 +43,30 @@ The name of this repository is a pun on two meanings of "time to": "how much tim
 | Python 3.12                 | 7,405ms   | 56   |
 | Gavin Howard's bc           | 34,960ms  | 101  |
 
-Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples. But different implementations use different algorithms and, occasionally, different time measuring methodologies (for the C, Nim and Lua implementations, I run the program 100 times and take the mean). Their speed was also measured under different loads in my machine. So I think that these time estimates are accurate within maybe ~2x or so.
+Time measurements taken with the [time](https://man7.org/linux/man-pages/man1/time.1.html) tool, using 1M samples. But different implementations use different algorithms and, occasionally, different time measuring methodologies (for the C, Odin, Nim and Lua implementations, I run the program 100 times and take the mean). Their speed was also measured under different loads in my machine. So I think that these time estimates are accurate within maybe ~2x or so.
 
 Note that the number of lines is much shorter for Squiggle, SquigglePy and squiggle.c because I'm just counting the lines needed to get these libraries to output a model, not the lines inside them.
 
 ## Notes
+
+### Odin [by [JJSierraM](https://github.com/JJSierraM)]
+
+Odin was a discovery I made some time ago that made me really happy instantly after investigation. The idea behind the creator ([GingerBill](https://www.gingerbill.org/)¹) is to create a language that offers the benefits of C but with the ease of use and semantics of modern languages. Although it may sound like *yet another "C killer"*, it trully achieves its goals. It doesn´t have the verbosity and cumbersomeness of Rust (which, for me, is more a C++ substitute than C one) or the unfriendlyness that I find in Zig semantics. It manages to tickle a part of my brain that I very much enjoy being tickled. If you are a C enjoyer I definitely encourage you to try to learn Odin, reading through its [Overview](https://odin-lang.org/docs/overview/) or watching this (albeit a bit old) [presentation by its own creator](https://www.youtube.com/watch?v=rCqFdYUnC24). After this short discussion regarding the language, my comments on the implementation:
+
+1. There are three versions of the code: c-like, odin-like/single-thread and odin-like/multi-thread
+2. The C-like version is a literal translation from the C version named "02-better-algorithm-one-thread" into Odin.
+3. The odin-like version are more Odin idiomatic, using all the capabilities from its libraries, reducing greatly the line count.
+4. In the comparison table I have only included the single-thread and multi-thread idiomatic versions. The C-like version (which is single-thread) is slightly faster than the idiomatic one, but as I think the main beenfit of the language is its ergonomics while keeping the high performance, it was more adequate to include those versions. Also, it makes it easier to compare similar things.
+5. If you don´t have Odin in your system, you can install it by calling make install-odin from the odin folder of the project (it requires sudo-ing as you have to save it in bin for the rest of the commands to work, as it assumes you have it in PATH)
+
+The idiomatic, multithread vesion has achieved, in my machine², 2.80ms after executing it 100 times and averaging, being able to even beat the C multi threaded version, an absolute feat! I have developed it over a couple of days and as a first exercise to get to know the language. Even with my previous experience in high performance computing, I see this as an absolute victory for Odin. 
+
+It is true that it uses the same approach as the Rust version (to compute and add up results instead of writing them in an array and then manipulating it), but as the Rust and Go versions do so and it's considered valid, I don´t see a problem with it.
+
+___
+¹ Careful with the flashbang from the link.
+
+² My machine: AMD 5800X3D, 16GB DDR4 3200MHz.
 
 ### Nim
 
